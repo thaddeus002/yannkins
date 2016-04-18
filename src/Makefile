@@ -3,18 +3,24 @@
 	PREFIX=/usr/local
 #endif
 
-OBJS=cree_page.o project.o
+OBJS=cree_page.o project.o csv/csv.o html/html.o
 CFLAGS="-I$(PREFIX)/include"
 
 all:cree_page
 
 %.c: %.h
 
+csv/csv.o:
+	make -C csv
+
+html/html.o:
+	make -C html
+
 %.o: %.c
 	gcc -c $(CFLAGS) $<
 
 cree_page: $(OBJS)
-	gcc -o cree_page $(OBJS) -L$(PREFIX)/lib -lcsv -lhtml
+	gcc -o cree_page $(OBJS)
 
 clean:
 	rm -f $(OBJS) cree_page.o

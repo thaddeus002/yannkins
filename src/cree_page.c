@@ -12,8 +12,8 @@
 #include <stdlib.h> // free()
 #include <string.h> // strlen()
 #include <errno.h>
-#include "html.h"
-#include "csv.h" // link with -lcsv
+#include "html/html.h"
+#include "csv/csv.h"
 #include "project.h"
 
 #define TITLE "Statistiques Yannkins - Le meilleur des services d'intégration continue"
