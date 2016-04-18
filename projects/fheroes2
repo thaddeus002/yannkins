@@ -1,0 +1,7 @@
+PROJECT_NAME="FHeroes2"
+SVN_DEPOT="svn://svn.code.sf.net/p/fheroes2/code"
+SVN_USER=""
+SVN_PASSWD=""
+COMPIL="make -C fheroes2/src/engine"
+TESTS_UNI="ls -l"
+
