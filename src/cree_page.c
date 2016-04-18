@@ -1,10 +1,13 @@
 /**
- * Create the HTML page.
+ * @file cree_page.c
+ * @brief Create the HTML pages.
+ *
+ * This program must be run after the tasks of configurated projects. It will create the index pages
+ * with the links to projects resumes, plus one page by projects.
+ *
+ * Each project's page will present the results of the tasks and a list of the latest commit's comments.
  */
 
-
-//#define YANNKINS_DIR "/var/yannkins"
-#define YANNKINS_DIR "."
 
 #include <stdio.h>
 #include <sys/types.h>
@@ -16,7 +19,13 @@
 #include "csv/csv.h"
 #include "project.h"
 
-#define TITLE "Statistiques Yannkins - Le meilleur des services d'intégration continue"
+
+/** working directory */
+//#define YANNKINS_DIR "/var/yannkins"
+#define YANNKINS_DIR "."
+
+/** title of the html page */
+#define TITLE "Yannkins' statistics - The best of continuous integration services"
 #define FAIL_ICON "icons/fail.png"
 #define OK_ICON "icons/ok.png"
 #define HTML_FILE "www/index.html"
@@ -46,7 +55,6 @@ typedef struct yannkins_line_t_ {
 
 
 void usage(char *prog){
-
 	fprintf(stderr, "\nUsage: %s fichier.csv\n\n", prog);
 	exit(1);
 }
