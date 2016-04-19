@@ -1,4 +1,4 @@
-/** @file project.h données de définition d'un projet */
+/** @file project.h define a project */
 
 #ifndef YK_PROJECT_H
 #define YK_PROJECT_H 1

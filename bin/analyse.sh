@@ -31,7 +31,7 @@ for p in ${PROJECTS_HOME}/*; do
         rm -rf ${PROJECT_NAME}
         COMMANDE="svn co ${SVN_DEPOT}/trunk ${PROJECT_NAME}"
         printf "%s\n" "${COMMANDE}"
-        ${YANNKINS_HOME}/bin/tache.sh "SVN_CHECKOUT_${PROJECT_NAME}" "${COMMANDE}"
+        tache.sh "SVN_CHECKOUT_${PROJECT_NAME}" "${COMMANDE}"
         cd ${YANNKINS_HOME}
 
         # Compiling project
@@ -40,7 +40,7 @@ for p in ${PROJECTS_HOME}/*; do
         #if [ ${COMPIL}_ != _ ]; then
         if [ ${COMP} -gt 0 ]; then 
             cd ${SVN_HOME}/${PROJECT_NAME}
-            ${YANNKINS_HOME}/bin/tache.sh COMPILATION_${PROJECT_NAME} "${COMPIL}"
+            tache.sh COMPILATION_${PROJECT_NAME} "${COMPIL}"
             cd -
         fi
 
@@ -50,19 +50,19 @@ for p in ${PROJECTS_HOME}/*; do
         #if [ ${TESTS_UNI}_ != _ ]; then
         if [ ${TESTS} -gt 0 ]; then 
             cd ${SVN_HOME}/${PROJECT_NAME}
-            ${YANNKINS_HOME}/bin/tache.sh TESTS_${PROJECT_NAME} "${TESTS_UNI}"
+            tache.sh TESTS_${PROJECT_NAME} "${TESTS_UNI}"
             cd -
         fi
 
         # Logs SVN
         printf "Checking SVN logs\n"
         #printf "#;auteur;date;nb lignes;commentaires\n" > svnlogl10.csv
-	printf "#;author;date;number of lines;commentaries\n" > svnlogl10.csv
+        printf "#;author;date;number of lines;commentaries\n" > svnlogl10.csv
         svn log -l 10 ${SVN_DEPOT}/trunk | tr "|" ";" | tr "\n" "$" | sed -e 's/\$\$/; /g' | sed -e 's/\$--/\n--/g' | sed -re 's/-+\$//g' | sed -e 's/\$/\<br\/\>/g' >> svnlogl10.csv
 
 		printf "Creating project's page\n"
 		mv svnlogl10.csv ${YANNKINS_HOME}/log/SVNLOG_${PROJECT_NAME}
-        ${YANNKINS_HOME}/bin/cree_page
+        cree_page
         #dillo table.html
     fi
 done

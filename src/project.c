@@ -1,4 +1,4 @@
-/** @file project.c données de définition d'un projet */
+/** @file project.c define a project */
 
 #include "project.h"
 #include <stdio.h>
