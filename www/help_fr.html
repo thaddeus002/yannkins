@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Statistiques Yannkins - Le meilleur des services d'intégration continue</title>
+	<link rel="stylesheet" href="style/style.css">
+	<meta charset="utf-8">
+</head>
+<body>
+
+<div id=bandeau>
+	<a href="index.html">projets</a>
+	<a href="help.html">aide</a>
+	<a href="about.html">à propos</a>
+</div>
+
+<h1>Aide</h1>
+
+<p>Pour créer un projet, ajoutez simplement un nouveau fichier dans le répertoire "projets".
+Ce fichier doit contenir au minimun les champs suivants :
+<ul>
+<li>PROJECT_NAME : le nom du projet
+<li>SVN_DEPOT : nom du dépôt SVN du projet
+<li>SVN_USER : utilisateur SVN - peut être laissé vide
+<li>SVN_PASSWD : le mot de passe SVN - peut être laissé vide
+<li>COMPIL : commande de compilation
+<li>TESTS_UNI : commande d'éxécution des tests unitaires
+</ul>
+Les lignes commençant par '#' sont considérés comme des commentaires.
+</p>
+
+<p>
+La commande "analyse.sh" lance l'analyse de tous les projets et la mise à jour de la page 
+index.html et des pages des projets. L'idéal consiste à placer cette commande dans une tâche
+cron pour la lancer automatiquement à horaires fixes. Il est aussi possible de la lancer 
+manuellement. Il suffit alors de consulter ces pages, soit localement soit les rendant 
+accéssibles par l'intermédiaire d'un serveur HTTP.
+</p>
+
+
+</body>
+</html>

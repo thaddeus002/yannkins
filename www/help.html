@@ -1,39 +1,38 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Statistiques Yannkins - Le meilleur des services d'intégration continue</title>
+	<title>Yannkins' statistics - The best of continuous integration services</title>
 	<link rel="stylesheet" href="style/style.css">
 	<meta charset="utf-8">
 </head>
 <body>
 
 <div id=bandeau>
-	<a href="index.html">projets</a>
-	<a href="help.html">aide</a>
-	<a href="about.html">à propos</a>
+	<a href="index.html">projects</a>
+	<a href="help.html">help</a>
+	<a href="about.html">about</a>
 </div>
 
 <h1>Aide</h1>
 
-<p>Pour créer un projet, ajoutez simplement un nouveau fichier dans le répertoire "projets".
-Ce fichier doit contenir au minimun les champs suivants :
+<p>To create a project, you simply have to add a new file in the directory "projets".
+This file must content the following fields :
 <ul>
-<li>PROJECT_NAME : le nom du projet
-<li>SVN_DEPOT : nom du dépôt SVN du projet
-<li>SVN_USER : utilisateur SVN - peut être laissé vide
-<li>SVN_PASSWD : le mot de passe SVN - peut être laissé vide
-<li>COMPIL : commande de compilation
-<li>TESTS_UNI : commande d'éxécution des tests unitaires
+<li>PROJECT_NAME : name of the project
+<li>SVN_DEPOT : SVN repository of the project
+<li>SVN_USER : SVN user - may be empty
+<li>SVN_PASSWD : SVN password - may be empty
+<li>COMPIL : compilation command
+<li>TESTS_UNI : units tests command
 </ul>
-Les lignes commençant par '#' sont considérés comme des commentaires.
+The lines beginning with '#' are commentaries.
 </p>
 
 <p>
-La commande "analyse.sh" lance l'analyse de tous les projets et la mise à jour de la page 
-index.html et des pages des projets. L'idéal consiste à placer cette commande dans une tâche
-cron pour la lancer automatiquement à horaires fixes. Il est aussi possible de la lancer 
-manuellement. Il suffit alors de consulter ces pages, soit localement soit les rendant 
-accéssibles par l'intermédiaire d'un serveur HTTP.
+The "analyse.sh" command launch the analysis of all projects, and the update of "index.html"
+and of the pages of the projects. You can put this command in a cron task to automatically
+execute it every day at a selected hour. But you also can launch it manually. The html reports
+can then be see locally or via a web server. 
 </p>
 
 
