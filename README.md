@@ -17,27 +17,27 @@ Only SVN is supported, but support for git is in the roadmap.
 
 ## How to get started ?
 
-1. First download the source code
+**First download the source code**
 
 `git clone https://github.com/thaddeus002/yannkins.git`
 
-2. Compile source
+**Compile source**
 
 `cd yannkins; make; make install`
 
-3. Configure a project
+**Configure a project**
 
 Define a environment variable YANNKINS_HOME to point to the working directory for Yannkins.
-Create directories ${YANNKINS_HOME}/projets, ${YANNKINS_HOME}/log, ${YANNKINS_HOME}/svn, and ${YANNKINS_HOME}/www. This last can be a symbilic link to /var/www/html.
-Then create a file describing your project. Your can inspire yourself with the example yannkins/projects/fheroes2 in yannkins' repository.
+Create directories `${YANNKINS_HOME}/projets`, `${YANNKINS_HOME}/log`, `${YANNKINS_HOME}/svn`, and `${YANNKINS_HOME}/www`. This last can be a symbilic link to `/var/www/html`.
+Then create a file describing your project. Your can inspire yourself with the example `yannkins/projects/fheroes2` in yannkins' repository.
 
-4. Launch the analyse
+**Launch the analyse**
 
 Launch the script `analyse.sh`.
 
-5. View the results
+**View the results**
 
-A the end of analyse, you must find html files in ${YANNKINS_HOME}/www. Open index.html in a browser to acces the list of yours projects, with links to projects' pages.
+A the end of analyse, you must find html files in `${YANNKINS_HOME}/www`. Open index.html in a browser to acces the list of yours projects, with links to projects' pages.
 If this process completes succefully, you may want to put the task `/usr/local/bin/analyse.sh` in a crontab to execute it automatically.
 
 ## License
