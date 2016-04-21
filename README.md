@@ -40,7 +40,7 @@ Launch the script `analyse.sh`.
 A the end of analyse, you must find html files in ${YANNKINS_HOME}/www. Open index.html in a browser to acces the list of yours projects, with links to projects' pages.
 If this process completes succefully, you may want to put the task `/usr/local/bin/analyse.sh` in a crontab to execute it automatically.
 
-## Licence
+## License
 
-Yannkins is free software under GPL v3 licence. Read the file [[LICENCE|LICENCE]] for more informations.
+Yannkins is free software under GPL v3 licence. Read the file [[LICENSE|LICENSE]] for more informations.
  
