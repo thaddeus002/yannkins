@@ -60,8 +60,8 @@ for p in ${PROJECTS_HOME}/*; do
         printf "#;author;date;number of lines;commentaries\n" > svnlogl10.csv
         svn log -l 10 ${SVN_DEPOT}/trunk | tr "|" ";" | tr "\n" "$" | sed -e 's/\$\$/; /g' | sed -e 's/\$--/\n--/g' | sed -re 's/-+\$//g' | sed -e 's/\$/\<br\/\>/g' >> svnlogl10.csv
 
-		printf "Creating project's page\n"
-		mv svnlogl10.csv ${YANNKINS_HOME}/log/SVNLOG_${PROJECT_NAME}
+        printf "Creating project's page\n"
+        mv svnlogl10.csv ${YANNKINS_HOME}/log/SVNLOG_${PROJECT_NAME}
         cree_page
         #dillo table.html
     fi
