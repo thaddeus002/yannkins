@@ -376,9 +376,9 @@ int write_yannkins_html(char *project, char *yannkinsRep){
 	data=lecture_fichier_csv_entier(fichier, ';');
 	if(data!=NULL) {
 		elementsCherches[0]="#";
-		elementsCherches[1]="auteur";
+		elementsCherches[1]="author";
 		elementsCherches[2]="date";
-		elementsCherches[3]="commentaires";
+		elementsCherches[3]="commentaries";
 		data_s=selectionne_colonnes(data, elementsCherches, 4, &nb);
 		tronquer_colonne(data_s, elementsCherches[2], 20);
 
