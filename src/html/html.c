@@ -1,5 +1,6 @@
 /**
- * Création d'une page HTML
+ * @file html.c
+ * @brief Creation of a HTML page
  * @author Yannick Garcia
  * @date 02/08/2015
  */
@@ -7,56 +8,41 @@
 #include <stdio.h>
 #include "html.h"
 
-
+/** @deprecated old header of HTML page */
 #define HTML4_HEADER "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\">"
+/** Header to use in pages */
 #define HTML5_HEADER "<!DOCTYPE html>"
 
-/**
- * @brief Write the beginning of file (open html balise).
- * @param fd output to write
- */
+
 void html_ecrit_ouverture(FILE *fd){
 	fprintf(fd, "%s\n", HTML5_HEADER);
 	fprintf(fd, "<html>\n");
 }
 
-/**
- * @brief Write the end of file (close html balise).
- * @param fd output to write
- */
+
 void html_ecrit_fermeture(FILE *fd){
 	fprintf(fd, "</html>\n");
 }
 
-/**
- * @brief Write de HTML header.
- * @param fd output to write
- * @param title the title of the page
- */
+
 void html_ecrit_entete(FILE *fd, char *title){
 	fprintf(fd, "<head>\n");
 	fprintf(fd, "\t<title>%s</title>\n\t<link rel=\"stylesheet\" href=\"style/style.css\">\n", title);
 	fprintf(fd, "\t<meta charset=\"utf-8\">\n</head>\n");
 }
 
-/**
- * @brief Write the beginning of body (open body balise).
- * @param fd output to write
- */
+
 void html_open_body(FILE *fd){
 	fprintf(fd, "<body>\n");
 }
 
-/**
- * @brief Write the end of body (close body balise).
- * @param fd : output to write
- */
+
 void html_close_body(FILE *fd){
 	fprintf(fd, "</body>\n");
 }
 
-// fct privée
-void html_write_title_with_hr_or_not(FILE *fd, int level, char *title, int with_hr){
+// internal function
+static void html_write_title_with_hr_or_not(FILE *fd, int level, char *title, int with_hr){
 	fprintf(fd, "<h%d>%s</h%d>", level, title, level);
 	if(with_hr){
 		fprintf(fd, "<hr/>");
@@ -69,21 +55,17 @@ void html_write_title(FILE *fd, int level, char *title){
 	html_write_title_with_hr_or_not(fd, level, title, 0);
 }
 
+
 void html_write_title_with_hr(FILE *fd, int level, char *title){
 	html_write_title_with_hr_or_not(fd, level, title, 1);
 }
+
 
 void html_write_link(FILE *fd, char *text, char *link){
 	fprintf(fd, "<a href=%s>%s</a>\n", link, text);
 }
 
 
-
-/**
- * @brief Write the date in human readable form.
- * @param fd where to write
- * @param date the data to write
- */
 void html_ecrit_date(FILE *fd, time_t date){
 
 	struct tm time;
@@ -94,11 +76,6 @@ void html_ecrit_date(FILE *fd, time_t date){
 }
 
 
-/**
- * @brief write data in a table.
- * @param fd where to write
- * @param data the data to present in the HTML page
- */
 void html_write_table(FILE *fd, table_csv_t *data){
 
 	int i, j; // counters

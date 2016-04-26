@@ -1,6 +1,6 @@
 /**
  * @file html.h
- * Creation of a HTML page
+ * @brief Creation of a HTML page
  * @author Yannick Garcia
  * @date 02/08/2015
  */
