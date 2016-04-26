@@ -1,6 +1,6 @@
 /**
  * @file html.h
- * Création d'une page HTML
+ * Creation of a HTML page
  * @author Yannick Garcia
  * @date 02/08/2015
  */
@@ -15,9 +15,6 @@
 #include "../csv/csv.h"
 
 
-#define HTML4_HEADER "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\">"
-#define HTML5_HEADER "<!DOCTYPE html>"
-
 /**
  * @brief Write the beginning of file (open html balise).
  * @param fd output to write
@@ -31,7 +28,7 @@ void html_ecrit_ouverture(FILE *fd);
 void html_ecrit_fermeture(FILE *fd);
 
 /**
- * @brief Write de HTML header.
+ * @brief Write the HTML header.
  * @param fd output to write
  * @param title the title of the page
  */
@@ -45,18 +42,34 @@ void html_open_body(FILE *fd);
 
 /**
  * @brief Write the end of body (close body balise).
- * @param fd : output to write
+ * @param fd output to write
  */
 void html_close_body(FILE *fd);
 
-
+/**
+ * @brief Write a chapter title with H balise.
+ * @param fd output to write
+ * @param level level of the title : 1 to 5
+ * @param title content enter <h> and </h> balise
+ */
 void html_write_title(FILE *fd, int level, char *title);
+
+/**
+ * @brief Write a chapter title with H balise, and an horizontal line
+ * under the title
+ * @param fd output to write
+ * @param level level of the title : 1 to 5
+ * @param title content enter <h> and </h> balise
+ */
 void html_write_title_with_hr(FILE *fd, int level, char *title);
 
-
+/**
+ * @brief Write a text with a hyperlink.
+ * @param fd output to write
+ * @param text appearing text
+ * @param link url to point in the link
+ */
 void html_write_link(FILE *fd, char *text, char *link);
-
-
 
 /**
  * @brief Write the date in human readable form.
@@ -64,7 +77,6 @@ void html_write_link(FILE *fd, char *text, char *link);
  * @param date the data to write
  */
 void html_ecrit_date(FILE *fd, time_t date);
-
 
 /**
  * @brief write data in a table.
