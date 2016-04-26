@@ -1,10 +1,9 @@
-/************************************************************************/
-/* Gestion de fichiers au format csv (colonnes séparées par des ';' ou  */
-/* des ',')                                                             */
-/* Auteur : Y. GARCIA                                                   */
-/* Derniere modification : 03/05/2013                                   */
-/************************************************************************/
-
+/**
+ * @file csv.h
+ * @brief Utilitaries functions and types to manipulates data. These data
+ * can be read from or write in csv files. 
+ * @author Yannick Garcia
+ */
 
 #ifndef CSV_H_
 #define CSV_H_
@@ -12,30 +11,28 @@
 #include <stdio.h>
 
 
-
-/** structure de décomposition d'un fichier csv */
+/** Structur representing one csv line or one serie of data */
 typedef struct ligne_csv_t_ {
-	char **valeurs; /* valeurs des differents champs */
+	char **valeurs; /**< fields values */
 
-	struct ligne_csv_t_ *next; /* permet de chainer une structure par ligne de données du fichier csv */
+	struct ligne_csv_t_ *next; /**< to make a linked list of csv lines */
 } ligne_csv_t;
 
 
+/** An entire csv file */
 typedef struct{
-	int nbCol, nbLig; /* nb de colonnes et de lignes - Ne pas modifier directement */
-	char **entetes; /* noms des colonnes */
+	int nbCol; /**< number of colums - Don't directly modify this value */
+	int nbLig; /**< number of lines - Don't directly modify this value */
+	char **entetes; /**< columns' names */
 
-	ligne_csv_t *lignes;
+	ligne_csv_t *lignes; /**< a linked list of lines */
 } table_csv_t;
 
 
 
 
-
-
-
 /************************************************************************/
-/*                           LES FONCTIONS                              */
+/*                            THE FUNCTIONS                             */
 /************************************************************************/
 
 
