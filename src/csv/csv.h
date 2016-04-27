@@ -30,7 +30,6 @@ typedef struct{
 
 
 
-
 /************************************************************************/
 /*                            THE FUNCTIONS                             */
 /************************************************************************/
@@ -47,9 +46,13 @@ typedef struct{
 table_csv_t *lecture_fichier_csv_entier(char *nomFichier, char separateur);
 
 
-
 /**
- * @brief Créée une nouvelle table avec un nb de colonnes réduit.
+ * @brief Create a new table with less columns.
+ * @param table the origin table
+ * @param elementsCherches table of columns names to look for
+ * @param nbElementsCherches number of elements in elementsCherches
+ * @param nbElementsTrouves the function will plce here  the number of columns found 
+ * @return the new table
  */
 table_csv_t *selectionne_colonnes(table_csv_t *table, char **elementsCherches, int nbElementsCherches, int *nbElementsTrouves);
 
@@ -64,13 +67,10 @@ table_csv_t *selectionne_colonnes(table_csv_t *table, char **elementsCherches, i
 int tronquer_colonne(table_csv_t *table, char *nom_colonne, int longueur);
 
 
-
-
-/* libération de la mémoire occupée par un tableau de lignes csv */
-/* ATTENTION : cette fct doit sortir de l'API */
-void detruit_ligne_csv(ligne_csv_t *table, int nbColonnes);
-
-/* libération de la mémoire occupée par une table csv */
+/**
+ * @brief free memory occuped by a table_csv_t
+ * @param table the struct to free
+ */
 void destroy_table_csv(table_csv_t *table);
 
 
@@ -114,8 +114,6 @@ int fusionne_tables(table_csv_t *table1, table_csv_t *table2);
 /* créée un fichier avec le contenu de la table */
 /* en cas de \r\n ou de separateur dans un champ, passage du champ entre guillemets */
 int ecrit_csv(char *nomFichier, table_csv_t *table, char separateur);
-/* écrit dans le flux au format BUFS ASCII */
-int ecrit_csv_BUFS(FILE *flux, table_csv_t *table, char separateur);
 
 
 #endif

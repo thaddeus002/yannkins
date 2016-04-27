@@ -303,10 +303,10 @@ table_csv_t *lecture_fichier_csv_entier(char *nomFichier, char separateur){
 
 
 /* libération de la mémoire occupée par un table csv */
-void detruit_ligne_csv(ligne_csv_t *table, int nbColonnes){
+static void detruit_ligne_csv(ligne_csv_t *table, int nbColonnes){
 
-	int i; /* compteur */
-	ligne_csv_t *courant; /* pour le parcourt de la table */
+	int i; // compteur
+	ligne_csv_t *courant; // pour le parcourt de la table
 	
 	courant=table;
 
@@ -1006,37 +1006,6 @@ int ecrit_csv(char *nomFichier, table_csv_t *table, char separateur){
 	return(0);
 }
 
-/* écrit dans le flux au format BUFS ASCII */
-int ecrit_csv_BUFS(FILE *flux, table_csv_t *table, char separateur){
-	int i, j; /*compteurs*/
-	ligne_csv_t *courant; /* parcourt des lignes */
-
-	if(table==NULL) return(-1);
-
-	/*entetes*/
-	fprintf(flux, "D=");
-	for(j=0; j<table->nbCol; j++) {
-		fprintf(flux, "%s", table->entetes[j]);
-		if(j<table->nbCol-1) fprintf(flux, "%c", separateur);
-	}
-	fprintf(flux, "\n");
-
-	/* lignes*/
-	courant = table->lignes;
-	for(i=0; i<table->nbLig; i++) {
-		fprintf(flux, "O=");
-		for(j=0; j<table->nbCol; j++) {
-		
-			fprintf(flux, "%s", courant->valeurs[j]);
-			if(j<table->nbCol-1) fprintf(flux, "%c", separateur);
-		}
-		fprintf(flux, "\n");
-		
-		courant=courant->next;
-	}
-
-	return(0);
-}
 
 int tronquer_colonne(table_csv_t *table, char *nom_colonne, int longueur){
 
