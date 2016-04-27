@@ -74,9 +74,24 @@ int tronquer_colonne(table_csv_t *table, char *nom_colonne, int longueur);
 void destroy_table_csv(table_csv_t *table);
 
 
-/* renvoie une table avec les lignes correspondant à nomColonne==valeur */
+/**
+ * @brief select the lines with property name=value.
+ * @param table the table where look for data
+ * @param nomColonne name of column
+ * @param valeur value to find in the column
+ * @return the new table with only the selected lines
+ */
 table_csv_t *selectionne_lignes(table_csv_t *table, const char *nomColonne, const char *valeur);
-/* renvoie une table avec les lignes correspondant à min<=valeur(nomColonne)<=max */
+
+
+/**
+ * @brief select the lines with property min<=value<=max.
+ * @param table the table where look for data
+ * @param nomColonne name of column
+ * @param min the minimun value for the column
+ * @param max the maximun value for the column
+ * @return the new table with only the selected lines
+ */
 table_csv_t *selectionne_lignes_plage(table_csv_t *table, const char *nomColonne, const char *min, const char *max);
 
 
