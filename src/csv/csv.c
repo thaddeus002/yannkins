@@ -18,26 +18,15 @@
 /* FONCTIONS INTERNES */
 
 /* supprime les guillemets d'une chaine */
-void supprime_guillemets(char *chaine);
+static void supprime_guillemets(char *chaine);
 
 /* passe une chaine de caractères en majuscules */
-void passe_en_majuscules(char *chaine);
-
-
-
-
-/* recherche des colonnes souhaitées */
-/* pLigne est la premiere ligne du fichier */
-/* colonnes est le tableau à remplir */
-/* labels sont les entetes de colonnes à chercher. Le dernier est "NULL" */
-/* et nb leur nombre */
-/* pour les labels non trouvés, la valeur -1 est placée dans le tableau */
-int recherche_colonnes_(char *pLigne, int *colonnes, char **labels, int nb);
+static void passe_en_majuscules(char *chaine);
 
 
 /* renvoie le numéro d'une colonne en commençant à 0 */
 /* -1 si la colonne n'est pas trouvée */
-int cherche_colonne(table_csv_t *table, const char *nomColonne){
+static int cherche_colonne(table_csv_t *table, const char *nomColonne){
 
 	int n; /* numéro de colonne */
 	char entete[100]; /* un nom d'entete de colonne */
@@ -71,7 +60,7 @@ int cherche_colonne(table_csv_t *table, const char *nomColonne){
 /* nbElts est le nb d'éléments qui ont été lus (l'entier doit être pret alloué) */
 /* nbElts est <0 si il y a eu un problème */
 /* Les sauts de lignes ou les séparateurs entre guilemets "" ne sont pas pris en compte */
-char **lit_ligne(int *nbElts, FILE *fichier, char separateur){
+static char **lit_ligne(int *nbElts, FILE *fichier, char separateur){
 
 	char **retour; /* la valeur à renvoyer */
 	int nA; /* nb d'allocations de x char* */
@@ -775,116 +764,6 @@ int fusionne_tables(table_csv_t *table1, table_csv_t *table2){
 
 
 
-
-
-
-
-
-
-/************************************************************************/
-/*                        FONCTIONS INTERNES                            */
-/************************************************************************/
-
-
-/* supprime les guillemets d'une chaine */
-void supprime_guillemets(char *chaine){
-	int l; /* taille de la chaine */
-	int i; /* compteur */
-
-	l=strlen(chaine);
-	if(l>=2){
-		if((chaine[0]=='"') && (chaine[l-1]=='"')){
-			for(i=0; i<l-2; i++){
-				chaine[i]=chaine[i+1];
-			}
-			chaine[l-2]='\0';
-		}
-	}
-}
-
-
-/* passe une chaine de caractères en majuscules */
-void passe_en_majuscules(char *chaine){
-	int i; /* compteur */
-
-	//printf("longueur de %s: %d\n", chaine, strlen(chaine));
-
-	for(i=0;i<strlen(chaine);i++)
-		if((chaine[i]>='a') && (chaine[i]<='z'))
-			chaine[i]=chaine[i]+'A'-'a';
-			//printf("%c -> %c\n", chaine[i], chaine[i]+'A'-'a');
-
-}
-
-
-/* recherche des colonnes souhaitées */
-/* pLigne est la premiere ligne du fichier */
-/* colonnes est le tableau à remplir */
-/* labels sont les entetes de colonnes à chercher. Le dernier est NULL */
-/* et nb leur nombre */
-/* pour les labels non trouvés, la valeur -1 est placée dans le tableau */
-int recherche_colonnes_(char *pLigne, int *colonnes, char **labels, int nb){
-	int i,j; /* compteurs */
-	int n; /* num  de colonne */
-	int t; /* nb d'éléments trouvés */
-	int fin; /* indique la fin de pLigne */
-	
-	/* initialisations */
-	for(i=0; i<nb; i++) colonnes[i]=-1;
-	n=0;
-	t=0;
-	fin=0;
-
-	#ifdef DEBUG
-	printf("Recherche des numéros de colonnes\n");
-	#endif
-
-	/* parcourt de la ligne */
-	while(strlen(pLigne)>0){
-		
-		i=0;
-		while( (pLigne[i]!=';') && (pLigne[i]!='\0') ) i++;
-		if(pLigne[i]=='\0') fin=1;
-		else pLigne[i]='\0';
-		n++;
-		
-		#ifdef DEBUG
-		printf("Nom colonne: %s\n", pLigne);
-		#endif
-
-		/* on enleve le \n de la dernière colonne */
-		if(pLigne[strlen(pLigne)-1]=='\n') {
-			pLigne[strlen(pLigne)-1]='\0';
-			i=i-1;
-		}
-		
-		/* on enleve les guillemets */
-		if((pLigne[0]=='"') && (pLigne[strlen(pLigne)-1]=='"')){
-			pLigne[strlen(pLigne)-1]='\0';
-			pLigne=pLigne+1;
-			i=i-1;
-		}
-		
-		/* on compare aux chaines connues */
-		for(j=0; j<nb; j++){
-			if(labels[j]!=NULL) if(!strcmp(pLigne, labels[j])){
-				colonnes[j]=n;
-				t++;
-				break;
-			}
-		}
-
-		pLigne=pLigne+i+(!fin);
-	}
-
-	/* fin */
-	return(t);
-}
-
-
-
-
-
 table_csv_t *selectionne_colonnes(table_csv_t *table, char **elementsCherches, int nbElementsCherches, int *nbElementsTrouves){
 
 	int i=0; // comptage des colonnes
@@ -1038,4 +917,42 @@ int tronquer_colonne(table_csv_t *table, char *nom_colonne, int longueur){
 	}
 
 	return 0;
+}
+
+
+
+
+/************************************************************************/
+/*                        FONCTIONS INTERNES                            */
+/************************************************************************/
+
+
+/* supprime les guillemets d'une chaine */
+static void supprime_guillemets(char *chaine){
+	int l; /* taille de la chaine */
+	int i; /* compteur */
+
+	l=strlen(chaine);
+	if(l>=2){
+		if((chaine[0]=='"') && (chaine[l-1]=='"')){
+			for(i=0; i<l-2; i++){
+				chaine[i]=chaine[i+1];
+			}
+			chaine[l-2]='\0';
+		}
+	}
+}
+
+
+/* passe une chaine de caractères en majuscules */
+static void passe_en_majuscules(char *chaine){
+	int i; /* compteur */
+
+	//printf("longueur de %s: %d\n", chaine, strlen(chaine));
+
+	for(i=0;i<strlen(chaine);i++)
+		if((chaine[i]>='a') && (chaine[i]<='z'))
+			chaine[i]=chaine[i]+'A'-'a';
+			//printf("%c -> %c\n", chaine[i], chaine[i]+'A'-'a');
+
 }
