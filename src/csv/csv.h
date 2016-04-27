@@ -37,16 +37,15 @@ typedef struct{
 
 
 /**
- * Fct de lecture d'un fichier CSV.
- * Enleve les guillemets autour des champs.
- * @return NULL si le fichier ne peut être ouvert
+ * @brief read a csv file.
+ *
+ * The quotes between fields are removed.
+ * @param nomFichier the name of csv file
+ * @param separateur the split character
+ * @return NULL if the file can not be read
  */
 table_csv_t *lecture_fichier_csv_entier(char *nomFichier, char separateur);
 
-/* Fct de lecture d'un fichier CSV */
-/* Séparateur de champs : ";" */
-/* ATTENTION : cette fct est obsolete - doit disparaitre */
-ligne_csv_t *lecture_fichier_csv(char *nomFichier, char **elementsCherches, int nbElementsCherches);
 
 
 /**
