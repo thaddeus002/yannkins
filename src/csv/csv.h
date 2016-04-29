@@ -95,39 +95,79 @@ table_csv_t *selectionne_lignes(table_csv_t *table, const char *nomColonne, cons
 table_csv_t *selectionne_lignes_plage(table_csv_t *table, const char *nomColonne, const char *min, const char *max);
 
 
-/* remplie le champ valeur avec le contenu de la colonne demandée pour le numéro de ligne voulu */
-/* renvoie un code d'erreur non nul en cas d'erreur */
+/**
+ * @brief find the value at a given position.
+ * @param valeur the function will put here the result - must be allocated
+ * @param table the data
+ * @param nomColonne column name to look for
+ * @param numLigne line number (beginning at 1) to look for
+ * @return a non null code if un error occured
+ */
 int cherche_valeur(char valeur[100], table_csv_t *table, char *nomColonne, int numLigne); 
 
 
-/* créé une nouvelle table vide avec les entetes donnés */
+/**
+ * @brief create an empty data table
+ * @param entetes headers of columns
+ * @param nbCol number of columns 
+ * @return the newly created table
+ */
 table_csv_t *cree_table(char **entetes, int nbCol);
 
 
-/* ajoute une ligne de données à la table */
-/* Si il y a moins d'éléments que de colonnes dans la table, les autres éléments sont initialisés à NULL */
-/* Si il y en a plus, renvoie un code d'erreur non nul */
+/**
+ * @brief Add a line to csv table
+ *
+ * If the line to add has less elements than the number of columns, the line
+ * will be complete with NULL. If there are more element an error code
+ * will be reurned.
+ * @param table the csv table
+ * @param contenu the data to add
+ * @param nbContenu to number of elements in contenu
+ * @return a non null code if un error occured
+ */
 int ajoute_ligne(table_csv_t *table, char **contenu, int nbContenu);
 
 
-/* affiche la table dans le flux passé en argument */
+/**
+ * @brief Show the table.
+ * @param table the data to print
+ * @param flux the stream where print the data
+ */
 void affiche_table(table_csv_t *table, FILE *flux);
 
 
-/* tri la table par ordre decroissant pour la colonne souhaitée */
-/* renvoie un code non nul en cas d'échec */
+/**
+ * @brief sort the table in decreasing order for a given column
+ * @param table the table to sort
+ * @param nomColonne the name of the column to sort by
+ * @return a non null code if un error occured
+ */
 int tri_table_decroissant(table_csv_t *table, const char *nomColonne);
 
 
-/* fusion de deux tables */
-/* la table1 se verra ajouter les lignes de la table deux si les lignes d'entete sont identiques */
-/* Renvoie 0 en cas de réussite */ 
+/**
+ * @brief merge two tables.
+ *
+ * The first table will be added the lines of the seconds if the headers lines are
+ * identicals.
+ * @param table1 the first table 
+ * @param table2 the second table
+ * @return a non null code if un error occured
+ */
 int fusionne_tables(table_csv_t *table1, table_csv_t *table2);
 
 
-/* A COMPLETER */
-/* créée un fichier avec le contenu de la table */
-/* en cas de \r\n ou de separateur dans un champ, passage du champ entre guillemets */
+/**
+ * @brief write a file with the content of a table_csv_t
+ *
+ * In case of \r\n or delimiter character in a field, this field will be between
+ * doble quotes.
+ * @param nomFichier the name of the file to create
+ * @param table the data
+ * @param separateur fields delimiter
+ * @return a non null code if un error occured
+ */
 int ecrit_csv(char *nomFichier, table_csv_t *table, char separateur);
 
 

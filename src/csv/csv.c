@@ -183,7 +183,27 @@ static char **lit_ligne(int *nbElts, FILE *fichier, char separateur){
 	return(retour);
 }
 
+/**
+ * @brief find if ther is a delimiter or a \n in the field
+ * @param field string in which look for delimiter
+ * @param delimiter the delimiter character
+ * @return 0 is neither delimiter or \n was found. 1 otherwise.
+ */
+static int hasDelimiter(char *field, char delimiter) {
 
+	char *current = field;
+
+	while( *current != '\0' ) {
+
+		if( (*current == delimiter) || (*current == '\n') ) {
+			return 1;
+		}
+
+		current++;
+	}
+
+	return 0;
+}
 
 
 /* FONCTIONS EXTERNES */
@@ -843,9 +863,7 @@ table_csv_t *selectionne_colonnes(table_csv_t *table, char **elementsCherches, i
 	return selection;
 }
 
-/* a completer */
-/* créée un fichier avec le contenu de la table */
-/* en cas de \r\n ou de separateur dans un champ, passage du champ entre guillemets */
+
 int ecrit_csv(char *nomFichier, table_csv_t *table, char separateur){
 	int i, j; /*compteurs*/
 	ligne_csv_t *courant; /* parcourt des lignes */
@@ -861,9 +879,17 @@ int ecrit_csv(char *nomFichier, table_csv_t *table, char separateur){
 
 	/*entetes*/
 	for(j=0; j<table->nbCol; j++) {
-		fprintf(fo, "%s", table->entetes[j]);
-		if(j<table->nbCol-1) fprintf(fo, "%c", separateur);
-		else fprintf(fo, "\n");
+		if(hasDelimiter(table->entetes[j], separateur)) {
+			fprintf(fo, "\"%s\"", table->entetes[j]);
+		} else {
+			fprintf(fo, "%s", table->entetes[j]);
+		}
+
+		if(j<table->nbCol-1) {
+			fprintf(fo, "%c", separateur);
+		} else {
+			fprintf(fo, "\n");
+		}
 	}
 
 	/* lignes*/
@@ -871,10 +897,17 @@ int ecrit_csv(char *nomFichier, table_csv_t *table, char separateur){
 	courant = table->lignes;
 	for(i=0; i<table->nbLig; i++) {
 		for(j=0; j<table->nbCol; j++) {
-		
-			fprintf(fo, "%s", courant->valeurs[j]);
-			if(j<table->nbCol-1) fprintf(fo, "%c", separateur);
-			else fprintf(fo, "\n");
+
+			if(hasDelimiter(courant->valeurs[j], separateur)){
+				fprintf(fo, "\"%s\"", courant->valeurs[j]);
+			} else {
+				fprintf(fo, "%s", courant->valeurs[j]);
+			}
+			if(j<table->nbCol-1) {
+				fprintf(fo, "%c", separateur);
+			} else {
+				fprintf(fo, "\n");
+			}
 		}
 		
 		courant=courant->next;
@@ -954,5 +987,4 @@ static void passe_en_majuscules(char *chaine){
 		if((chaine[i]>='a') && (chaine[i]<='z'))
 			chaine[i]=chaine[i]+'A'-'a';
 			//printf("%c -> %c\n", chaine[i], chaine[i]+'A'-'a');
-
 }
