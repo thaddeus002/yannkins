@@ -1,8 +1,9 @@
-/************************************************************************/
-/* Gestion de fichiers au format csv (colonnes séparées par des ;)      */
-/* Auteur : Y. GARCIA                                                   */
-/************************************************************************/
-
+/**
+ * @file csv.c
+ * @brief Utilitaries functions and types to manipulates data. These data
+ * can be read from or write in csv files with ';' delimiter. 
+ * @author Yannick Garcia
+ */
 
 #include <string.h>
 #include <stdio.h>
@@ -17,15 +18,17 @@
 
 /* FONCTIONS INTERNES */
 
-/* supprime les guillemets d'une chaine */
+/** supprime les guillemets d'une chaine */
 static void supprime_guillemets(char *chaine);
 
-/* passe une chaine de caractères en majuscules */
+/** passe une chaine de caractères en majuscules */
 static void passe_en_majuscules(char *chaine);
 
 
-/* renvoie le numéro d'une colonne en commençant à 0 */
-/* -1 si la colonne n'est pas trouvée */
+/**
+ * renvoie le numéro d'une colonne en commençant à 0
+ * -1 si la colonne n'est pas trouvée
+ */
 static int cherche_colonne(table_csv_t *table, const char *nomColonne){
 
 	int n; /* numéro de colonne */
@@ -56,10 +59,12 @@ static int cherche_colonne(table_csv_t *table, const char *nomColonne){
 }
 
 
-/* lit une ligne dans le fichier et place le résultat dans la valeur renvoyée */
-/* nbElts est le nb d'éléments qui ont été lus (l'entier doit être pret alloué) */
-/* nbElts est <0 si il y a eu un problème */
-/* Les sauts de lignes ou les séparateurs entre guilemets "" ne sont pas pris en compte */
+/**
+ * lit une ligne dans le fichier et place le résultat dans la valeur renvoyée
+ * nbElts est le nb d'éléments qui ont été lus (l'entier doit être pret alloué)
+ * nbElts est <0 si il y a eu un problème
+ * Les sauts de lignes ou les séparateurs entre guilemets "" ne sont pas pris en compte
+ */
 static char **lit_ligne(int *nbElts, FILE *fichier, char separateur){
 
 	char **retour; /* la valeur à renvoyer */
@@ -310,8 +315,6 @@ table_csv_t *lecture_fichier_csv_entier(char *nomFichier, char separateur){
 }
 
 
-
-/* libération de la mémoire occupée par un table csv */
 static void detruit_ligne_csv(ligne_csv_t *table, int nbColonnes){
 
 	int i; // compteur
@@ -330,7 +333,6 @@ static void detruit_ligne_csv(ligne_csv_t *table, int nbColonnes){
 }
 
 
-/* libération de la mémoire occupée par une table csv */
 void destroy_table_csv(table_csv_t *table){
 	int i; /* compteur */
 	ligne_csv_t *ligne, *suivante; /* parcourt des lignes */
@@ -359,18 +361,12 @@ void destroy_table_csv(table_csv_t *table){
 
 
 
-
-
-
-/* renvoie une table avec les lignes correspondant à nomColonne==valeur */
 table_csv_t *selectionne_lignes(table_csv_t *table, const char *nomColonne, const char *valeur){
 
 	return(selectionne_lignes_plage(table, nomColonne, valeur, valeur));
 }
 
 
-
-/* renvoie une table avec les lignes correspondant à min<=valeur(nomColonne)<=max */
 table_csv_t *selectionne_lignes_plage(table_csv_t *table, const char *nomColonne, const char *min, const char *max){
 	table_csv_t *retour; /* valeur à retourner */
 	ligne_csv_t *ligne; /* une ligne de la table à parcourrir */
@@ -458,9 +454,6 @@ table_csv_t *selectionne_lignes_plage(table_csv_t *table, const char *nomColonne
 }
 
 
-
-/* remplie le champ valeur avec le contenu de la colonne demandée pour le numéro de ligne voulu */
-/* renvoie un code d'erreur non nul en cas d'erreur */
 int cherche_valeur(char valeur[100], table_csv_t *table, char *nomColonne, int numLigne){
 
 	int i, j; /* compteurs */
@@ -499,7 +492,6 @@ int cherche_valeur(char valeur[100], table_csv_t *table, char *nomColonne, int n
 
 
 
-/* créé une nouvelle table vide avec les entetes donnés */
 table_csv_t *cree_table(char **entetes, int nbCol){
 	
 	table_csv_t *table; /*la valeur de retour */
@@ -539,9 +531,6 @@ table_csv_t *cree_table(char **entetes, int nbCol){
 }
 
 
-/* ajoute une ligne de données à la table */
-/* Si il y a moins d'éléments que de colonnes dans la table, les autres éléments sont initialisés à NULL */
-/* Si il y en a plus, renvoie un code d'erreur non nul */
 int ajoute_ligne(table_csv_t *table, char **contenu, int nbContenu){
 
 	ligne_csv_t *nouvelle, *derniere; /* lignes de la table */
@@ -584,7 +573,6 @@ int ajoute_ligne(table_csv_t *table, char **contenu, int nbContenu){
 }
 
 
-/* affiche la table dans le flux passé en argument */
 void affiche_table(table_csv_t *table, FILE *flux){
 
 	const char vertical='-';
@@ -656,14 +644,10 @@ void affiche_table(table_csv_t *table, FILE *flux){
 		fprintf(flux, "\n");
 
 	}
-
 }
 
 
 
-
-/* tri la table par ordre decroissant pour la colonne souhaitée */
-/* renvoie un code non nul en cas d'échec */
 int tri_table_decroissant(table_csv_t *table, const char *nomColonne){
 	int n; /* indice de la colonne de tri */
 	int i, j/*, k*/; /* compteurs */
@@ -747,10 +731,6 @@ int tri_table_decroissant(table_csv_t *table, const char *nomColonne){
 }
 
 
-
-/* fusion de deux tables */
-/* la table1 se verra ajouter les lignes de la table deux si les lignes d'entete sont identiques */
-/* Renvoie 0 en cas de réussite */ 
 int fusionne_tables(table_csv_t *table1, table_csv_t *table2){
 	
 	int i; /* compteur */
@@ -780,8 +760,6 @@ int fusionne_tables(table_csv_t *table1, table_csv_t *table2){
 	/* fin */
 	return(0);
 }
-
-
 
 
 table_csv_t *selectionne_colonnes(table_csv_t *table, char **elementsCherches, int nbElementsCherches, int *nbElementsTrouves){
@@ -960,10 +938,10 @@ int tronquer_colonne(table_csv_t *table, char *nom_colonne, int longueur){
 /************************************************************************/
 
 
-/* supprime les guillemets d'une chaine */
+/** supprime les guillemets d'une chaine */
 static void supprime_guillemets(char *chaine){
-	int l; /* taille de la chaine */
-	int i; /* compteur */
+	int l; /* length of the string */
+	int i; /* counter */
 
 	l=strlen(chaine);
 	if(l>=2){
@@ -977,14 +955,11 @@ static void supprime_guillemets(char *chaine){
 }
 
 
-/* passe une chaine de caractères en majuscules */
+/** passe une chaine de caractères en majuscules */
 static void passe_en_majuscules(char *chaine){
-	int i; /* compteur */
-
-	//printf("longueur de %s: %d\n", chaine, strlen(chaine));
+	int i; /* counter */
 
 	for(i=0;i<strlen(chaine);i++)
 		if((chaine[i]>='a') && (chaine[i]<='z'))
 			chaine[i]=chaine[i]+'A'-'a';
-			//printf("%c -> %c\n", chaine[i], chaine[i]+'A'-'a');
 }
