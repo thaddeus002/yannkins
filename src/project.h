@@ -1,4 +1,7 @@
-/** @file project.h define a project */
+/**
+ * @file project.h
+ * @brief define a project
+ */
 
 #ifndef YK_PROJECT_H
 #define YK_PROJECT_H 1
@@ -9,8 +12,8 @@
 typedef struct {
 	char *project_name; /**< name of this project */
 	char *svn_depot; /**< svn repository */
-	char *svn_user;
-	char *svn_password; 
+	char *svn_user; /**< login for svn authentification */
+	char *svn_password; /**< password for svn authentification */
 	char *compil_cmd; /**< compilation command*/
 	char *tests_cmd; /**< unit tests command */
 } yk_project;

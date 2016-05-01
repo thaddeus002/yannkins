@@ -1,4 +1,7 @@
-/** @file project.c define a project */
+/**
+ * @file project.c
+ * @brief define a project
+ */
 
 #include "project.h"
 #include <stdio.h>

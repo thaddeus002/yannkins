@@ -11,29 +11,38 @@
 
 #include "csv.h"
 
-
+/** Buffer size */
 #define TAILLE_BUF 10024
 
 
 
-/* FONCTIONS INTERNES */
+/* INTERNAL FUNCTIONS */
 
-/** supprime les guillemets d'une chaine */
+/**
+ * @brief Delete the doble quotes of a string.
+ * @param chaine the string to modify
+ */
 static void supprime_guillemets(char *chaine);
 
-/** passe une chaine de caractères en majuscules */
+
+/**
+ * @brief Convert à String to uppercase.
+ * @param chaine the string to modify
+ */
 static void passe_en_majuscules(char *chaine);
 
 
 /**
- * renvoie le numéro d'une colonne en commençant à 0
- * -1 si la colonne n'est pas trouvée
+ * @brief find the index of a column
+ * @param table the csv file data
+ * @param nomColonne the name of column to look for
+ * @return the index of a column (beginning to zero), or -1 if the column not exist
  */
 static int cherche_colonne(table_csv_t *table, const char *nomColonne){
 
-	int n; /* numéro de colonne */
-	char entete[100]; /* un nom d'entete de colonne */
-	char nomColMaj[100]; /* le nom cherché en majuscules */
+	int n; /**< column number */
+	char entete[100]; /**< a column header */
+	char nomColMaj[100]; /**< the looking for column name in uercase */
 
 	if(table==NULL) return(-1);
 
@@ -60,10 +69,14 @@ static int cherche_colonne(table_csv_t *table, const char *nomColonne){
 
 
 /**
- * lit une ligne dans le fichier et place le résultat dans la valeur renvoyée
- * nbElts est le nb d'éléments qui ont été lus (l'entier doit être pret alloué)
- * nbElts est <0 si il y a eu un problème
- * Les sauts de lignes ou les séparateurs entre guilemets "" ne sont pas pris en compte
+ * @brief Read a line in the given file.
+ *
+ * The lines feed or delimiter between doble quotes are not taken in account.
+ * @param nbElts the function will put here the number of element readed, or a negative error code.
+ * Must be allocated.
+ * @param fichier the input stream
+ * @param separateur the column delimiter
+ * @return the elements of the line
  */
 static char **lit_ligne(int *nbElts, FILE *fichier, char separateur){
 
@@ -899,9 +912,9 @@ int ecrit_csv(char *nomFichier, table_csv_t *table, char separateur){
 
 int tronquer_colonne(table_csv_t *table, char *nom_colonne, int longueur){
 
-	int n; //numéro de la colonne
-	int trouve; // colonne trouvée?
-	int i; // compteur
+	int n; //number of column
+	int trouve; // column found?
+	int i; // counter
 	ligne_csv_t *ligne; // parcourt des lignes
 
 	trouve = 0;
@@ -934,7 +947,7 @@ int tronquer_colonne(table_csv_t *table, char *nom_colonne, int longueur){
 
 
 /************************************************************************/
-/*                        FONCTIONS INTERNES                            */
+/*                        INTERNAL FUNCTIONS                            */
 /************************************************************************/
 
 
