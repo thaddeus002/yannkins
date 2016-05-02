@@ -13,19 +13,19 @@
 
 /** @brief Structur representing one csv line or one serie of data */
 typedef struct ligne_csv_t_ {
-	char **valeurs; /**< fields values */
+	char **valeurs; /**< @brief fields values */
 
-	struct ligne_csv_t_ *next; /**< to make a linked list of csv lines */
+	struct ligne_csv_t_ *next; /**< @brief to make a linked list of csv lines */
 } ligne_csv_t;
 
 
 /** @brief An entire csv file */
 typedef struct {
-	int nbCol; /**< number of colums - Don't directly modify this value */
-	int nbLig; /**< number of lines - Don't directly modify this value */
-	char **entetes; /**< columns' names */
+	int nbCol; /**< @brief number of colums - Don't directly modify this value */
+	int nbLig; /**< @brief number of lines - Don't directly modify this value */
+	char **entetes; /**< @brief columns' names */
 
-	ligne_csv_t *lignes; /**< a linked list of lines */
+	ligne_csv_t *lignes; /**< @brief a linked list of lines */
 } table_csv_t;
 
 
