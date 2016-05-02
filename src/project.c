@@ -10,8 +10,8 @@
 
 yk_project *yk_read_project_file(char *filename){
 
-	FILE *fd;
-	yk_project *project = NULL;
+	FILE *fd; /* file descriptor */
+	yk_project *project = NULL; /* the new project */
 	char ligne[250]; // a line of file
 	char *value; //position after the '=' in ligne
 	int i; // position in string
@@ -19,7 +19,7 @@ yk_project *yk_read_project_file(char *filename){
 	fd = fopen(filename, "r");
 
 	if (fd == NULL) {
-		fprintf(stderr, "Impossible d'ouvrir le fichier %s\n", filename);
+		fprintf(stderr, "Can not open file %s\n", filename);
 	} else {
 
 		project = malloc(sizeof(yk_project));
@@ -61,8 +61,6 @@ yk_project *yk_read_project_file(char *filename){
 			while ((value[strlen(value)-1]=='"') || (value[strlen(value)-1]=='\n') || (value[strlen(value)-1]=='\r')){
 				value[strlen(value)-1]='\0';
 			}
-
-			
 
 			if(!strcmp(ligne, "PROJECT_NAME")){
 				project->project_name=malloc((strlen(value)+1)*sizeof(char));
