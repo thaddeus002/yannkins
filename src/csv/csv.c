@@ -11,7 +11,7 @@
 
 #include "csv.h"
 
-/** Buffer size */
+/** @brief Buffer size */
 #define TAILLE_BUF 10024
 
 
@@ -197,12 +197,11 @@ static char **lit_ligne(int *nbElts, FILE *fichier, char separateur){
 	} // fin de ligne
 
 
-
 	return(retour);
 }
 
 /**
- * @brief find if ther is a delimiter or a \n in the field
+ * @brief find if there is a delimiter or a \n in the field
  * @param field string in which look for delimiter
  * @param delimiter the delimiter character
  * @return 0 is neither delimiter or \n was found. 1 otherwise.
@@ -224,7 +223,30 @@ static int hasDelimiter(char *field, char delimiter) {
 }
 
 
-/* FONCTIONS EXTERNES */
+/**
+ * @brief free the memory occuped by a ligne_csv_t.
+ * @param the pointer to the structur to free
+ * @param nbColonnes the number of allocated value strings
+ */
+static void detruit_ligne_csv(ligne_csv_t *table, int nbColonnes){
+
+	int i; // compteur
+	ligne_csv_t *courant; // pour le parcourt de la table
+	
+	courant=table;
+
+	while(courant!=NULL){
+		if(courant->valeurs!=NULL){
+			for(i=0; i<nbColonnes; i++)
+				if(courant->valeurs[i]!=NULL) free(courant->valeurs[i]);
+			free(courant->valeurs);
+		}
+		courant=courant->next;
+	}
+}
+
+
+/* EXTERNAL FUNCTIONS */
 
 
 table_csv_t *lecture_fichier_csv_entier(char *nomFichier, char separateur){
@@ -325,24 +347,6 @@ table_csv_t *lecture_fichier_csv_entier(char *nomFichier, char separateur){
 	#endif
 
 	return(table);
-}
-
-
-static void detruit_ligne_csv(ligne_csv_t *table, int nbColonnes){
-
-	int i; // compteur
-	ligne_csv_t *courant; // pour le parcourt de la table
-	
-	courant=table;
-
-	while(courant!=NULL){
-		if(courant->valeurs!=NULL){
-			for(i=0; i<nbColonnes; i++)
-				if(courant->valeurs[i]!=NULL) free(courant->valeurs[i]);
-			free(courant->valeurs);
-		}
-		courant=courant->next;
-	}
 }
 
 
@@ -554,8 +558,9 @@ int ajoute_ligne(table_csv_t *table, char **contenu, int nbContenu){
 	if(nbContenu>table->nbCol) return(-3);
 
 	derniere=table->lignes;
-	if((derniere!=NULL) && (derniere->next!=NULL))
+	if(derniere!=NULL) {
 		while(derniere->next!=NULL) derniere=derniere->next;
+	}
 
 	nouvelle=malloc(sizeof(ligne_csv_t));
 	if(nouvelle==NULL) return(-4);
@@ -951,7 +956,10 @@ int tronquer_colonne(table_csv_t *table, char *nom_colonne, int longueur){
 /************************************************************************/
 
 
-/** supprime les guillemets d'une chaine */
+/**
+ * @brief Suppress the doble quotes of a string.
+ * @param chaine the string to modify
+ */
 static void supprime_guillemets(char *chaine){
 	int l; /* length of the string */
 	int i; /* counter */
@@ -968,7 +976,10 @@ static void supprime_guillemets(char *chaine){
 }
 
 
-/** passe une chaine de caractères en majuscules */
+/**
+ * @brief Transform a string in uppercase.
+ * @param chaine the string to modify
+ */
 static void passe_en_majuscules(char *chaine){
 	int i; /* counter */
 

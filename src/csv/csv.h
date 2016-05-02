@@ -11,7 +11,7 @@
 #include <stdio.h>
 
 
-/** Structur representing one csv line or one serie of data */
+/** @brief Structur representing one csv line or one serie of data */
 typedef struct ligne_csv_t_ {
 	char **valeurs; /**< fields values */
 
@@ -19,8 +19,8 @@ typedef struct ligne_csv_t_ {
 } ligne_csv_t;
 
 
-/** An entire csv file */
-typedef struct{
+/** @brief An entire csv file */
+typedef struct {
 	int nbCol; /**< number of colums - Don't directly modify this value */
 	int nbLig; /**< number of lines - Don't directly modify this value */
 	char **entetes; /**< columns' names */
@@ -58,11 +58,11 @@ table_csv_t *selectionne_colonnes(table_csv_t *table, char **elementsCherches, i
 
 
 /**
- * @brief Tronque si nécessaire la longueur des champs d'une colonne.
- * @param table la table à modifier
- * @param nom_colonne le nom de la colonne à traiter
- * @param longueur la longueur maximale à conserver
- * @return 0 en cas de réussite
+ * @brief Cut if necessary the lenght of fields in a given column.
+ * @param table the data to modify
+ * @param nom_colonne the name of the columns to strech
+ * @param longueur the length to keep
+ * @return 0 in case of success
  */
 int tronquer_colonne(table_csv_t *table, char *nom_colonne, int longueur);
 
@@ -161,7 +161,7 @@ int fusionne_tables(table_csv_t *table1, table_csv_t *table2);
 /**
  * @brief write a file with the content of a table_csv_t
  *
- * In case of \r\n or delimiter character in a field, this field will be between
+ * In case of \n or delimiter character in a field, this field will be between
  * doble quotes.
  * @param nomFichier the name of the file to create
  * @param table the data
