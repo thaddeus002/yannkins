@@ -7,20 +7,19 @@
 #define YK_PROJECT_H 1
 
 /**
- * Data of a project
+ * @brief Data of a project
  */
 typedef struct {
-	char *project_name; /**< name of this project */
-	char *svn_depot; /**< svn repository */
-	char *svn_user; /**< login for svn authentification */
-	char *svn_password; /**< password for svn authentification */
-	char *compil_cmd; /**< compilation command*/
-	char *tests_cmd; /**< unit tests command */
+	char *project_name; /**< @brief name of this project */
+	char *svn_depot; /**< @brief svn repository */
+	char *svn_user; /**< @brief login for svn authentification */
+	char *svn_password; /**< @brief password for svn authentification */
+	char *compil_cmd; /**< @brief compilation command*/
+	char *tests_cmd; /**< @brief unit tests command */
 } yk_project;
 
 /**
- * Read the description of a project in a file.
- *
+ * @brief Read the description of a project in a file.
  * @param filename the of the file to read
  * @return a pointer on a project structure
  */
@@ -28,7 +27,7 @@ yk_project *yk_read_project_file(char *filename);
 
 
 /**
- * Free the memory.
+ * @brief Free the memory.
  * @param a struct to free
  */
 void yk_destroy_project(yk_project *project);

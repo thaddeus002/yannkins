@@ -8,9 +8,12 @@
 #include <stdio.h>
 #include "html.h"
 
-/** @deprecated old header of HTML page */
+/**
+ * @brief old header of HTML page
+ * @deprecated use HTML5_HEADER instead
+ */
 #define HTML4_HEADER "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\">"
-/** Header to use in pages */
+/** @brief Header to use in pages */
 #define HTML5_HEADER "<!DOCTYPE html>"
 
 
