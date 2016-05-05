@@ -16,7 +16,7 @@
 
 
 
-/* INTERNAL FUNCTIONS */
+/* INTERNAL FUNCTIONS DECLARATIONS */
 
 /**
  * @brief Delete the doble quotes of a string.
@@ -38,34 +38,7 @@ static void passe_en_majuscules(char *chaine);
  * @param nomColonne the name of column to look for
  * @return the index of a column (beginning to zero), or -1 if the column not exist
  */
-static int cherche_colonne(table_csv_t *table, const char *nomColonne){
-
-	int n; /**< column number */
-	char entete[100]; /**< a column header */
-	char nomColMaj[100]; /**< the looking for column name in uercase */
-
-	if(table==NULL) return(-1);
-
-	if(nomColonne==NULL) return(-2);
-
-	if( (table->nbCol==0) || (table->entetes==NULL) ) return(-3);
-
-	strncpy(nomColMaj, nomColonne, 100-1);
-	nomColMaj[100-1]='\0';
-	passe_en_majuscules(nomColMaj);
-
-	n=0;
-	while(n<table->nbCol){
-		strncpy(entete, table->entetes[n], 100-1);
-		entete[100-1]='\0';
-		passe_en_majuscules(entete);
-		if(!strcmp(entete, nomColMaj)) break;
-		n++;
-	}
-
-	if(n==table->nbCol) return(-1);
-	return(n);
-}
+static int cherche_colonne(table_csv_t *table, const char *nomColonne);
 
 
 /**
@@ -78,127 +51,8 @@ static int cherche_colonne(table_csv_t *table, const char *nomColonne){
  * @param separateur the column delimiter
  * @return the elements of the line
  */
-static char **lit_ligne(int *nbElts, FILE *fichier, char separateur){
+static char **lit_ligne(int *nbElts, FILE *fichier, char separateur);
 
-	char **retour; /* la valeur à renvoyer */
-	int nA; /* nb d'allocations de x char* */
-	char ligne[TAILLE_BUF]; /* une ligne du fichier */
-	int i/*,j*/,k,l,m; /*compteurs */
-	char **tempo; /* tableau de chaines intermédiaire */
-	int finLigne; /* indique que l'on a atteind la fin de la ligne à lire */
-	char elt[100]; /* un element lu sur la ligne */
-	int guillemetsOuverts; /* indique l'ouverture de guillements */
-	char *err; /* retour de la fct fgets() */
-
-
-	*nbElts=0;
-	nA=1;
-	retour=malloc(nA*100*sizeof(char*));
-	if(retour==NULL){
-		*nbElts=-1;
-		return(NULL);
-	}
-
-	/* lecture de la ligne */
-	i=0; /* indice d'élément trouvé */
-	m=0; /* indice de position dans la chaine "elt" */
-	finLigne=0; elt[0]='\0'; guillemetsOuverts=0;
-
-	while(!finLigne){
-
-		err=fgets(ligne, TAILLE_BUF, fichier);
-
-		if(err==NULL) { /* Fin du fichier atteinte ? */
-			if(i==0) {
-				free(retour);
-				return(NULL);
-			}
-			return(retour);
-		}
-
-		//j=0; /* position du début de l'élément sur la ligne */
-		k=0; /* position courante sur la ligne */
-
-		while( (k<TAILLE_BUF) && (ligne[k]!='\0') ){
-
-			if( (!guillemetsOuverts) && (ligne[k]=='\n') ) { //((ligne[k]=='\n') || (ligne[k]=='\r')) ){
-				break;
-			}
-
-			/* Si séparateur trouvé ajout de l'élément */
-			if( (ligne[k]==separateur) && (!guillemetsOuverts) ){
-				elt[m]='\0';
-				/* il peut y avoir des guillemets autour du champs */
-				supprime_guillemets(elt);
-				retour[i]=malloc((strlen(elt)+1)*sizeof(char));
-				if(retour[i]==NULL){
-					*nbElts=-2;
-					return(retour);
-				}
-				strcpy(retour[i], elt);
-				i++;
-				(*nbElts)++;
-				//printf("%03d - %03d : %s\n",i,*nbElts, elt);
-				/* réinitialisation */
-				elt[0]='\0'; m=0;
-
-				/* allocation si necessaire de place supplémentaire */
-				if(i==nA*100){
-					nA++;
-					tempo=malloc(nA*100*sizeof(char*));
-					if(tempo==NULL){
-						*nbElts=-3;
-						return(retour);
-					}
-					for(l=0; l<i; l++) tempo[l]=retour[l];
-					free(retour);
-					retour=tempo;
-				}
-
-			/* Sinon ajout du caractère au nom de l'élément */
-			} else {
-				//printf("%c", ligne[k]);
-				if((m<100-1)&&(ligne[k]!='\r')){
-					elt[m]=ligne[k];
-					m++;
-				}
-				if(ligne[k]=='"')
-					guillemetsOuverts=guillemetsOuverts?0:1;
-			}
-
-			/* passage au caractère suivant */
-			k++;
-
-		} // while ! fin de chaine ou de buffer
-
-		/* Si on a lu tout le buffer, on doit en charger un autre */
-		if(k==TAILLE_BUF) continue;
-
-		if((ligne[k]=='\0')||(ligne[k]=='\n')) {
-			/* ajout du dernier élément */
-			elt[m]='\0';
-			/* il peut y avoir des guillemets autour du champs */
-			supprime_guillemets(elt);
-			retour[i]=malloc((strlen(elt)+1)*sizeof(char));
-			if(retour[i]==NULL){
-				*nbElts=-2;
-				return(retour);
-			}
-			strcpy(retour[i], elt);
-			(*nbElts)++;
-
-			/* FIN de ligne détecté */
-			#ifdef DEBUG
-			fprintf(stdout, "%d éléments trouvés\n", *nbElts);
-			fprintf(stdout, "dernier élément : %s - %s\n", retour[i], elt);
-			#endif
-			finLigne=1;
-		}
-	} // fin de ligne
-
-
-	return(retour);
-}
 
 /**
  * @brief find if there is a delimiter or a \n in the field
@@ -206,21 +60,7 @@ static char **lit_ligne(int *nbElts, FILE *fichier, char separateur){
  * @param delimiter the delimiter character
  * @return 0 is neither delimiter or \n was found. 1 otherwise.
  */
-static int hasDelimiter(char *field, char delimiter) {
-
-	char *current = field;
-
-	while( *current != '\0' ) {
-
-		if( (*current == delimiter) || (*current == '\n') ) {
-			return 1;
-		}
-
-		current++;
-	}
-
-	return 0;
-}
+static int hasDelimiter(char *field, char delimiter);
 
 
 /**
@@ -228,22 +68,7 @@ static int hasDelimiter(char *field, char delimiter) {
  * @param the pointer to the structur to free
  * @param nbColonnes the number of allocated value strings
  */
-static void detruit_ligne_csv(ligne_csv_t *table, int nbColonnes){
-
-	int i; // compteur
-	ligne_csv_t *courant; // pour le parcourt de la table
-	
-	courant=table;
-
-	while(courant!=NULL){
-		if(courant->valeurs!=NULL){
-			for(i=0; i<nbColonnes; i++)
-				if(courant->valeurs[i]!=NULL) free(courant->valeurs[i]);
-			free(courant->valeurs);
-		}
-		courant=courant->next;
-	}
-}
+static void detruit_ligne_csv(ligne_csv_t *table, int nbColonnes);
 
 
 /* EXTERNAL FUNCTIONS */
@@ -952,14 +777,10 @@ int tronquer_colonne(table_csv_t *table, char *nom_colonne, int longueur){
 
 
 /************************************************************************/
-/*                        INTERNAL FUNCTIONS                            */
+/*                INTERNAL FUNCTIONS IMPLEMENATATION                    */
 /************************************************************************/
 
 
-/**
- * @brief Suppress the doble quotes of a string.
- * @param chaine the string to modify
- */
 static void supprime_guillemets(char *chaine){
 	int l; /* length of the string */
 	int i; /* counter */
@@ -976,14 +797,198 @@ static void supprime_guillemets(char *chaine){
 }
 
 
-/**
- * @brief Transform a string in uppercase.
- * @param chaine the string to modify
- */
 static void passe_en_majuscules(char *chaine){
 	int i; /* counter */
 
 	for(i=0;i<strlen(chaine);i++)
 		if((chaine[i]>='a') && (chaine[i]<='z'))
 			chaine[i]=chaine[i]+'A'-'a';
+}
+
+
+static int cherche_colonne(table_csv_t *table, const char *nomColonne){
+
+	int n; /**< column number */
+	char entete[100]; /**< a column header */
+	char nomColMaj[100]; /**< the looking for column name in uercase */
+
+	if(table==NULL) return(-1);
+
+	if(nomColonne==NULL) return(-2);
+
+	if( (table->nbCol==0) || (table->entetes==NULL) ) return(-3);
+
+	strncpy(nomColMaj, nomColonne, 100-1);
+	nomColMaj[100-1]='\0';
+	passe_en_majuscules(nomColMaj);
+
+	n=0;
+	while(n<table->nbCol){
+		strncpy(entete, table->entetes[n], 100-1);
+		entete[100-1]='\0';
+		passe_en_majuscules(entete);
+		if(!strcmp(entete, nomColMaj)) break;
+		n++;
+	}
+
+	if(n==table->nbCol) return(-1);
+	return(n);
+}
+
+
+static char **lit_ligne(int *nbElts, FILE *fichier, char separateur){
+
+	char **retour; /* la valeur à renvoyer */
+	int nA; /* nb d'allocations de x char* */
+	char ligne[TAILLE_BUF]; /* une ligne du fichier */
+	int i/*,j*/,k,l,m; /*compteurs */
+	char **tempo; /* tableau de chaines intermédiaire */
+	int finLigne; /* indique que l'on a atteind la fin de la ligne à lire */
+	char elt[100]; /* un element lu sur la ligne */
+	int guillemetsOuverts; /* indique l'ouverture de guillements */
+	char *err; /* retour de la fct fgets() */
+
+
+	*nbElts=0;
+	nA=1;
+	retour=malloc(nA*100*sizeof(char*));
+	if(retour==NULL){
+		*nbElts=-1;
+		return(NULL);
+	}
+
+	/* lecture de la ligne */
+	i=0; /* indice d'élément trouvé */
+	m=0; /* indice de position dans la chaine "elt" */
+	finLigne=0; elt[0]='\0'; guillemetsOuverts=0;
+
+	while(!finLigne){
+
+		err=fgets(ligne, TAILLE_BUF, fichier);
+
+		if(err==NULL) { /* Fin du fichier atteinte ? */
+			if(i==0) {
+				free(retour);
+				return(NULL);
+			}
+			return(retour);
+		}
+
+		//j=0; /* position du début de l'élément sur la ligne */
+		k=0; /* position courante sur la ligne */
+
+		while( (k<TAILLE_BUF) && (ligne[k]!='\0') ){
+
+			if( (!guillemetsOuverts) && (ligne[k]=='\n') ) { //((ligne[k]=='\n') || (ligne[k]=='\r')) ){
+				break;
+			}
+
+			/* Si séparateur trouvé ajout de l'élément */
+			if( (ligne[k]==separateur) && (!guillemetsOuverts) ){
+				elt[m]='\0';
+				/* il peut y avoir des guillemets autour du champs */
+				supprime_guillemets(elt);
+				retour[i]=malloc((strlen(elt)+1)*sizeof(char));
+				if(retour[i]==NULL){
+					*nbElts=-2;
+					return(retour);
+				}
+				strcpy(retour[i], elt);
+				i++;
+				(*nbElts)++;
+				//printf("%03d - %03d : %s\n",i,*nbElts, elt);
+				/* réinitialisation */
+				elt[0]='\0'; m=0;
+
+				/* allocation si necessaire de place supplémentaire */
+				if(i==nA*100){
+					nA++;
+					tempo=malloc(nA*100*sizeof(char*));
+					if(tempo==NULL){
+						*nbElts=-3;
+						return(retour);
+					}
+					for(l=0; l<i; l++) tempo[l]=retour[l];
+					free(retour);
+					retour=tempo;
+				}
+
+			/* Sinon ajout du caractère au nom de l'élément */
+			} else {
+				//printf("%c", ligne[k]);
+				if((m<100-1)&&(ligne[k]!='\r')){
+					elt[m]=ligne[k];
+					m++;
+				}
+				if(ligne[k]=='"')
+					guillemetsOuverts=guillemetsOuverts?0:1;
+			}
+
+			/* passage au caractère suivant */
+			k++;
+
+		} // while ! fin de chaine ou de buffer
+
+		/* Si on a lu tout le buffer, on doit en charger un autre */
+		if(k==TAILLE_BUF) continue;
+
+		if((ligne[k]=='\0')||(ligne[k]=='\n')) {
+			/* ajout du dernier élément */
+			elt[m]='\0';
+			/* il peut y avoir des guillemets autour du champs */
+			supprime_guillemets(elt);
+			retour[i]=malloc((strlen(elt)+1)*sizeof(char));
+			if(retour[i]==NULL){
+				*nbElts=-2;
+				return(retour);
+			}
+			strcpy(retour[i], elt);
+			(*nbElts)++;
+
+			/* FIN de ligne détecté */
+			#ifdef DEBUG
+			fprintf(stdout, "%d éléments trouvés\n", *nbElts);
+			fprintf(stdout, "dernier élément : %s - %s\n", retour[i], elt);
+			#endif
+			finLigne=1;
+		}
+	} // fin de ligne
+
+
+	return(retour);
+}
+
+
+static int hasDelimiter(char *field, char delimiter) {
+
+	char *current = field;
+
+	while( *current != '\0' ) {
+
+		if( (*current == delimiter) || (*current == '\n') ) {
+			return 1;
+		}
+
+		current++;
+	}
+
+	return 0;
+}
+
+
+static void detruit_ligne_csv(ligne_csv_t *table, int nbColonnes){
+
+	int i; // compteur
+	ligne_csv_t *courant; // pour le parcourt de la table
+	
+	courant=table;
+
+	while(courant!=NULL){
+		if(courant->valeurs!=NULL){
+			for(i=0; i<nbColonnes; i++)
+				if(courant->valeurs[i]!=NULL) free(courant->valeurs[i]);
+			free(courant->valeurs);
+		}
+		courant=courant->next;
+	}
 }
