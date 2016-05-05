@@ -75,25 +75,25 @@ static void detruit_ligne_csv(ligne_csv_t *table, int nbColonnes);
 
 
 table_csv_t *lecture_fichier_csv_entier(char *nomFichier, char separateur){
-	table_csv_t *table; /* la valeur à retourner */
-	FILE *fichier; /* le fichier à lire */
-	char **tabElts; /* contenu d'une ligne sous forme d'un tableau de chaines */
-	int nbElts; /* le nb d'éléments de la ligne */
-	ligne_csv_t *nouvelleLigne; /* ligne d'éléments à ajouter à la table */
-	ligne_csv_t *derniereLigne; /* dernière ligne ajoutée */
-	int i, j; /* compteurs */
+	table_csv_t *table; /* the return value */
+	FILE *fichier; /* the file to read */
+	char **tabElts; /* one line content in a table of strings */
+	int nbElts; /* number of element in the line */
+	ligne_csv_t *nouvelleLigne; /* a line to add in table */
+	ligne_csv_t *derniereLigne; /* the last added line */
+	int i, j; /* counters */
 
 
 	if(nomFichier==NULL) return(NULL);
 
-	/* ouverture du fichier */
+	/* opening file */
 	fichier=fopen(nomFichier,"r");
 	if(!fichier){
-		fprintf(stderr,"Impossible d'ouvrir le fichier %s\n", nomFichier);
+		fprintf(stderr,"Can't open file %s\n", nomFichier);
 		return(NULL);
 	} else {
 		#ifdef DEBUG
-		fprintf(stdout,"Ouverture du fichier %s\n", nomFichier);
+		fprintf(stdout,"File %s opened\n", nomFichier);
 		#endif
 	}
 
@@ -105,26 +105,23 @@ table_csv_t *lecture_fichier_csv_entier(char *nomFichier, char separateur){
 	table->lignes=NULL;
 	derniereLigne=NULL;
 
-	/* lecture de la premiere ligne */
+	/* Reading the first line */
 
 	table->entetes=lit_ligne(&(table->nbCol), fichier, separateur);
 	if((table->nbCol<=0)||(table->entetes==NULL)) {
 		destroy_table_csv(table);
-		fprintf(stderr,"Echec de lecture des entêtes du fichier CSV %s : code %d\n", nomFichier, table->nbCol);
+		fprintf(stderr,"Fail while reading headers of CSV file %s : code %d\n", nomFichier, table->nbCol);
 		return(NULL);
 	}
 	
-	/*fprintf(stdout, "%d entête(s) trouvée(s)\n", table->nbCol);
-	affiche_table(table, stdout);*/
-
-	/* Lecture des lignes de données */
+	/* Reading data lines */
 	tabElts=NULL;
-	j=0; /* nb de lignes lues */ 
+	j=0; /* number of readed lines */ 
 	do {
 		tabElts=lit_ligne(&nbElts, fichier, separateur);
 
 		if(nbElts==0) {
-			/* probablement la fin du fichier */
+			/* probably the end of file */
 			if (tabElts==NULL) break;
 		}
 
@@ -136,13 +133,13 @@ table_csv_t *lecture_fichier_csv_entier(char *nomFichier, char separateur){
 
 		if((nbElts>0)&&(nbElts!=table->nbCol)){
 			fprintf(stderr,"Echec de lecture de la ligne %d du fichier CSV\nNb d'éléments incorrect : %d(!=%d)\n", j+1, nbElts, table->nbCol);
-			/* libération de la mémoire */
+			/* freing memory */
 			if(tabElts!=NULL) for(i=0; i<nbElts; i++){
 				if(tabElts[i]!=NULL) free(tabElts[i]);
 			}
 			free(tabElts);
 			destroy_table_csv(table);
-			/* arrêt */
+			/* stop */
 			return(NULL);
 		}
 
@@ -156,7 +153,7 @@ table_csv_t *lecture_fichier_csv_entier(char *nomFichier, char separateur){
 		nouvelleLigne->valeurs=tabElts;
 		nouvelleLigne->next=NULL;
 
-		/* ajout de la nouvelle ligne */
+		/* adding a new line */
 		if(table->lignes==NULL) table->lignes=nouvelleLigne;
 		else derniereLigne->next=nouvelleLigne;
 		derniereLigne=nouvelleLigne;
@@ -165,7 +162,7 @@ table_csv_t *lecture_fichier_csv_entier(char *nomFichier, char separateur){
 
 	} while (tabElts!=NULL);
 
-	/* fin */
+	/* end */
 	fclose(fichier);
 	#ifdef DEBUG
 	fprintf(stderr,"Fin de lecture du fichier csv %s\n", nomFichier);
@@ -176,7 +173,7 @@ table_csv_t *lecture_fichier_csv_entier(char *nomFichier, char separateur){
 
 
 void destroy_table_csv(table_csv_t *table){
-	int i; /* compteur */
+	int i; /* counter */
 	ligne_csv_t *ligne, *suivante; /* parcourt des lignes */
 
 	if(table==NULL) return;
@@ -210,12 +207,12 @@ table_csv_t *selectionne_lignes(table_csv_t *table, const char *nomColonne, cons
 
 
 table_csv_t *selectionne_lignes_plage(table_csv_t *table, const char *nomColonne, const char *min, const char *max){
-	table_csv_t *retour; /* valeur à retourner */
-	ligne_csv_t *ligne; /* une ligne de la table à parcourrir */
-	ligne_csv_t *nouvelle; /* ligne à ajouter à retour */
-	ligne_csv_t *derniere; /* derniere ligne de retour */
-	int i; /* compteur */
-	int n; /* num de colonne */
+	table_csv_t *retour; /* return value */
+	ligne_csv_t *ligne; /* a line of the table */
+	ligne_csv_t *nouvelle; /* a line to add at the return value */
+	ligne_csv_t *derniere; /* the last line of retour */
+	int i; /* counter */
+	int n; /* numero of column */
 
 	if(table==NULL) return(NULL);
 	if(nomColonne==NULL) return(NULL);
@@ -223,7 +220,7 @@ table_csv_t *selectionne_lignes_plage(table_csv_t *table, const char *nomColonne
 
 	n=cherche_colonne(table, nomColonne);
 	if(n<0){
-		//fprintf(stderr, "Nom de colonne %s non trouvé\n", nomColonne);
+		// column not found
 		return(NULL);
 	}
 
@@ -249,9 +246,7 @@ table_csv_t *selectionne_lignes_plage(table_csv_t *table, const char *nomColonne
 
 	while(ligne!=NULL){
 		if(ligne->valeurs!=NULL) if(ligne->valeurs[n]!=NULL) if((strcmp(ligne->valeurs[n], min)>=0) && (strcmp(ligne->valeurs[n], max)<=0)){
-			/* ajout de la ligne */
-
-			//printf("%s trouvé\n", valeur);
+			/* adding the line */
 
 			nouvelle=malloc(sizeof(ligne_csv_t));
 			if(nouvelle==NULL){
@@ -311,7 +306,6 @@ int cherche_valeur(char valeur[100], table_csv_t *table, char *nomColonne, int n
 
 	i=cherche_colonne(table, nomColonne);
 	if(i<0){
-		//fprintf(stderr, "Nom de colonne %s non trouvé\n", nomColonne);
 		return(-5);
 	}
 
@@ -331,7 +325,6 @@ int cherche_valeur(char valeur[100], table_csv_t *table, char *nomColonne, int n
 
 	return(0);
 }
-
 
 
 table_csv_t *cree_table(char **entetes, int nbCol){
@@ -490,7 +483,6 @@ void affiche_table(table_csv_t *table, FILE *flux){
 }
 
 
-
 int tri_table_decroissant(table_csv_t *table, const char *nomColonne){
 	int n; /* indice de la colonne de tri */
 	int i, j/*, k*/; /* compteurs */
@@ -527,12 +519,10 @@ int tri_table_decroissant(table_csv_t *table, const char *nomColonne){
 
 	/* initialisations */
 	courant=table->lignes;
-	//fprintf(stdout, "nbLig = %d\n", table->nbLig);
 	for(i = 0; i < table->nbLig; i++){
 		liste[i]=courant;
 		tri[i]=NULL;
 		if(courant!=NULL) courant=courant->next;
-		//else fprintf(stdout, "ligne %d ...ALLOOOOO...\n", i+1);
 	}
 
 	/* tri */
@@ -545,7 +535,6 @@ int tri_table_decroissant(table_csv_t *table, const char *nomColonne){
 			/* comparaison */
 			valeur1=liste[i]->valeurs[n];
 			valeur2=tri[j]->valeurs[n];
-			//printf("Comparaison de %d avec %d\n", valeur1, valeur2);
 			if(strcmp(valeur1, valeur2)>0) break;
 		}
 
@@ -874,12 +863,11 @@ static char **lit_ligne(int *nbElts, FILE *fichier, char separateur){
 			return(retour);
 		}
 
-		//j=0; /* position du début de l'élément sur la ligne */
 		k=0; /* position courante sur la ligne */
 
 		while( (k<TAILLE_BUF) && (ligne[k]!='\0') ){
 
-			if( (!guillemetsOuverts) && (ligne[k]=='\n') ) { //((ligne[k]=='\n') || (ligne[k]=='\r')) ){
+			if( (!guillemetsOuverts) && (ligne[k]=='\n') ) {
 				break;
 			}
 
@@ -896,7 +884,6 @@ static char **lit_ligne(int *nbElts, FILE *fichier, char separateur){
 				strcpy(retour[i], elt);
 				i++;
 				(*nbElts)++;
-				//printf("%03d - %03d : %s\n",i,*nbElts, elt);
 				/* réinitialisation */
 				elt[0]='\0'; m=0;
 
@@ -915,7 +902,6 @@ static char **lit_ligne(int *nbElts, FILE *fichier, char separateur){
 
 			/* Sinon ajout du caractère au nom de l'élément */
 			} else {
-				//printf("%c", ligne[k]);
 				if((m<100-1)&&(ligne[k]!='\r')){
 					elt[m]=ligne[k];
 					m++;
