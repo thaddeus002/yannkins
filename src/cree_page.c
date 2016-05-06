@@ -47,14 +47,13 @@
 typedef struct yannkins_line_t_ {
     int result;
     char *name;
-    //time_t date;
     char date[17];
 } yannkins_line_t;
 
 
 
 
-void usage(char *prog){
+static void usage(char *prog){
 	fprintf(stderr, "\nUsage: %s fichier.csv\n\n", prog);
 	exit(1);
 }
@@ -67,7 +66,7 @@ void usage(char *prog){
 void write_yannkins_table(FILE *fd, yannkins_line_t **lines){
 
     yannkins_line_t *line; // current line
-    int i = 0; // compteur
+    int i = 0; // counter
 
     if(lines == NULL){
         return;
@@ -92,7 +91,6 @@ void write_yannkins_table(FILE *fd, yannkins_line_t **lines){
         fprintf(fd, "<tr>\n\t<td><img src=\"%s\" width=\"32\" height=\"32\"/></td>\n", icon);
         fprintf(fd, "\t<td>%s</td>\n", line->name);
         fprintf(fd, "\t<td>");
-        //ecrit_date(fd, line->date);
         fprintf(fd, "%s", line->date);
         fprintf(fd, "</td>\n");
         fprintf(fd, "\t<td><a href=\"log/%s_console\">voir<a/></td>\n</tr>\n", line->name);
@@ -118,7 +116,7 @@ yannkins_line_t *new_entry(char *filename, char *basename){
     ligne_csv_t *ligne; // a line of the file
     ligne_csv_t *last; // last line of the file
 
-    // on ne tient pas compte de . et ..
+    // don't take in account "." and ".."
     if( (!strcmp(basename, ".")) || (!strcmp(basename,"..")) ){
         return NULL;
     }
@@ -163,7 +161,6 @@ yannkins_line_t *new_entry(char *filename, char *basename){
     entry = malloc(sizeof(yannkins_line_t));
 
     entry->result = 0;
-    //entry->date=0;
     strcpy(entry->date, "NC");
     entry->name=malloc((strlen(basename)+1)*sizeof(char));
     strcpy(entry->name, basename);
@@ -394,12 +391,8 @@ int write_yannkins_html(char *project, char *yannkinsRep){
 	html_ecrit_fermeture(fd);
 	fclose(fd);
 
-
     return ERR_OK;
 }
-
-
-
 
 
 int main(int argc, char **argv){
@@ -409,7 +402,7 @@ int main(int argc, char **argv){
 	char *project;
 	char *project_file;
 	char projects_dir[1000];
-	struct dirent *lecture; // une entrée du répertoire
+	struct dirent *lecture; // an entry of projects' directory
     DIR *rep; //directory to cross
     char *logdir; // name of directory
 	
@@ -417,7 +410,7 @@ int main(int argc, char **argv){
 	fd = fopen(HTML_FILE, "w");
 
 	if(fd == NULL){
-		fprintf(stderr, "Ne peut créer le fichier %s : %d\n", HTML_FILE, errno);
+		fprintf(stderr, "Can't create file %s : %d\n", HTML_FILE, errno);
         return ERR_OPEN_FILE;
 	}
 
@@ -427,7 +420,7 @@ int main(int argc, char **argv){
 
 	include_file(fd, "www/bandeau.html");
 
-	html_write_title(fd, 1, "Liste des projets");
+	html_write_title(fd, 1, "Projects list");
 
 	sprintf(projects_dir, "%s/projets", YANNKINS_DIR);
     logdir = malloc(strlen(YANNKINS_DIR)+5);
@@ -449,7 +442,7 @@ int main(int argc, char **argv){
 
 			project=project_struct->project_name;
 
-		    fprintf(stdout, "Traitement du projet %s.\n", project);
+		    fprintf(stdout, "Treatment of project %s.\n", project);
 			write_yannkins_html(project, YANNKINS_DIR);
 
 			project_file=malloc(sizeof(char)*(strlen(project)+6));
@@ -463,13 +456,10 @@ int main(int argc, char **argv){
 
 	fprintf(fd, "</ul>\n");
 
-
-	// fin du fichier
+	// end of file
 	html_close_body(fd);
 	html_ecrit_fermeture(fd);
 	fclose(fd);
 
 	return err;
 }
-
-
