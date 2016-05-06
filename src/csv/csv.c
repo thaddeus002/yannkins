@@ -174,7 +174,7 @@ table_csv_t *lecture_fichier_csv_entier(char *nomFichier, char separateur){
 
 void destroy_table_csv(table_csv_t *table){
 	int i; /* counter */
-	ligne_csv_t *ligne, *suivante; /* parcourt des lignes */
+	ligne_csv_t *ligne, *suivante; /* look throuth the lines */
 
 	if(table==NULL) return;
 
@@ -197,7 +197,6 @@ void destroy_table_csv(table_csv_t *table){
 
 	free(table);
 }
-
 
 
 table_csv_t *selectionne_lignes(table_csv_t *table, const char *nomColonne, const char *valeur){
@@ -293,8 +292,8 @@ table_csv_t *selectionne_lignes_plage(table_csv_t *table, const char *nomColonne
 
 int cherche_valeur(char valeur[100], table_csv_t *table, char *nomColonne, int numLigne){
 
-	int i, j; /* compteurs */
-	ligne_csv_t *ligne; /* la ligne demandée */
+	int i, j; /* counters */
+	ligne_csv_t *ligne; /* the line looked for */
 
 	if(table==NULL) return(-1);
 
@@ -309,7 +308,7 @@ int cherche_valeur(char valeur[100], table_csv_t *table, char *nomColonne, int n
 		return(-5);
 	}
 
-	j=1; /* numéro de ligne */
+	j=1; /* numero of line */
 	ligne=table->lignes;
 
 	if(ligne==NULL) return(-6);
@@ -329,8 +328,8 @@ int cherche_valeur(char valeur[100], table_csv_t *table, char *nomColonne, int n
 
 table_csv_t *cree_table(char **entetes, int nbCol){
 	
-	table_csv_t *table; /*la valeur de retour */
-	int i; /* compteur */
+	table_csv_t *table; /* return value */
+	int i; /* counter */
 
 	if((entetes==NULL)||(nbCol==0)) return(NULL);
 
@@ -368,8 +367,8 @@ table_csv_t *cree_table(char **entetes, int nbCol){
 
 int ajoute_ligne(table_csv_t *table, char **contenu, int nbContenu){
 
-	ligne_csv_t *nouvelle, *derniere; /* lignes de la table */
-	int i; /* compteur */
+	ligne_csv_t *nouvelle, *derniere; /* lines of the table */
+	int i; /* counter */
 
 	if(table==NULL) return(-1);
 	if(contenu==NULL) return(-2);
@@ -415,18 +414,18 @@ void affiche_table(table_csv_t *table, FILE *flux){
 	const char horizontal='|';
 	const int largeurCol=10;
 
-	int i,j; /* compteurs */
-	char contenu[largeurCol-2]; /* contenu de cellule tronqué */
-	char format[20]; /* formatage de chaines */
-	ligne_csv_t *ligne; /* parcourt des lignes */
+	int i,j; /* counters */
+	char contenu[largeurCol-2]; /* trunkated content of a cell */
+	char format[20]; /* format of strings */
+	ligne_csv_t *ligne; /* going througth the lines */
 
 	if(table==NULL){
-		fprintf(stderr, "affiche_table(): Pas de table à afficher\n");
+		fprintf(stderr, "affiche_table(): There's no table to show\n");
 		return;
 	}
 
 
-	/* bordure supérieure */
+	/* superior bordure */
 	fprintf(flux, "%c", horizontal);
 	for(i=0; i<table->nbCol; i++){
 		for(j=0; j<largeurCol; j++)
@@ -435,7 +434,7 @@ void affiche_table(table_csv_t *table, FILE *flux){
 	}
 	fprintf(flux, "\n");
 
-	/* entetes */
+	/* headers */
 	fprintf(flux, "%c", horizontal);
 	for(i=0; i<table->nbCol; i++){
 		strncpy(contenu, table->entetes[i], largeurCol-3);
@@ -454,7 +453,7 @@ void affiche_table(table_csv_t *table, FILE *flux){
 	}
 	fprintf(flux, "\n");
 
-	/* les lignes */
+	/* the lines */
 	ligne=table->lignes;
 	while(ligne!=NULL){
 		fprintf(flux, "%c", horizontal);
@@ -470,7 +469,7 @@ void affiche_table(table_csv_t *table, FILE *flux){
 
 		ligne=ligne->next;
 
-		/* bordure inférieure */
+		/* inferior bordure */
 		fprintf(flux, "%c", horizontal);
 		for(i=0; i<table->nbCol; i++){
 			for(j=0; j<largeurCol; j++)
@@ -478,17 +477,16 @@ void affiche_table(table_csv_t *table, FILE *flux){
 			fprintf(flux, "%c", horizontal);
 		}
 		fprintf(flux, "\n");
-
 	}
 }
 
 
 int tri_table_decroissant(table_csv_t *table, const char *nomColonne){
-	int n; /* indice de la colonne de tri */
-	int i, j/*, k*/; /* compteurs */
-	ligne_csv_t **liste, **tri, **tempo; /* tableaux de pointeurs sur les lignes csv à trier */
-	ligne_csv_t *courant; /* parcourt de la liste chainée */
-	char *valeur1, *valeur2; /* les éléments à comparer */
+	int n; /* index of the sorting column */
+	int i, j; /* counters */
+	ligne_csv_t **liste, **tri, **tempo; /* tables of pointers to the lines to sort */
+	ligne_csv_t *courant; /* crossing of the linked list */
+	char *valeur1, *valeur2; /* elements to compare */
 
 
 	if(table==NULL) return(-1);
@@ -497,10 +495,9 @@ int tri_table_decroissant(table_csv_t *table, const char *nomColonne){
 	n=cherche_colonne(table, nomColonne);
 	if(n<0) return(-3);
 
-	//affiche_table(table, stdout);
 	if(table->nbLig==0) return(-4);
 
-	/* allocation des tableaux */
+	/* allocating the tables */
 	liste=malloc(sizeof(ligne_csv_t *) * table->nbLig);
 	if(liste==NULL) return(-5);
 	
@@ -517,7 +514,7 @@ int tri_table_decroissant(table_csv_t *table, const char *nomColonne){
 		return(-7);
 	}
 
-	/* initialisations */
+	/* initializations */
 	courant=table->lignes;
 	for(i = 0; i < table->nbLig; i++){
 		liste[i]=courant;
@@ -525,12 +522,12 @@ int tri_table_decroissant(table_csv_t *table, const char *nomColonne){
 		if(courant!=NULL) courant=courant->next;
 	}
 
-	/* tri */
+	/* sorting */
 	tri[0]=liste[0];
 
 	for(i=1; i<table->nbLig; i++){
 
-		/* recherche de la position de l'élément */
+		/* looking for the element position */
 		for(j=0; j<i; j++){
 			/* comparaison */
 			valeur1=liste[i]->valeurs[n];
@@ -538,24 +535,24 @@ int tri_table_decroissant(table_csv_t *table, const char *nomColonne){
 			if(strcmp(valeur1, valeur2)>0) break;
 		}
 
-		/* décalage éventuel du bas du tableau */
+		/* prospective shift in the bottom of the table */
 		if(j<i){
 			memcpy(tempo, tri+j, sizeof(ligne_csv_t *)*(table->nbLig-j-1));
 			memcpy(tri+j+1, tempo, sizeof(ligne_csv_t *)*(table->nbLig-j-1));
 		}
 
-		/* placement de l'élément*/
+		/* placement of the element */
 		tri[j]=liste[i];
 	}
 
-	/* reconstruction du chainage */
+	/* correcting the linkage of the list */
 	table->lignes=tri[0];
 	for(i = 0; i < table->nbLig - 1; i++){
 		tri[i]->next=tri[i+1];
 	}
 	tri[table->nbLig - 1]->next=NULL;
 
-	/* liberation de mémoire et fin*/
+	/* freeing memory and end */
 	free(liste);
 	free(tri);
 	free(tempo);
@@ -565,14 +562,14 @@ int tri_table_decroissant(table_csv_t *table, const char *nomColonne){
 
 int fusionne_tables(table_csv_t *table1, table_csv_t *table2){
 	
-	int i; /* compteur */
-	ligne_csv_t *derniereLigne; /* derniere ligne de la table1 */
+	int i; /* counter */
+	ligne_csv_t *derniereLigne; /* the last line of table1 */
 
-	/* vérification des arguments */
+	/* verification of arguments */
 	if(table1==NULL) return(-1);
 	if(table2==NULL) return(0);
 	
-	/* vérification des entêtes des colonnes */
+	/* verification of columns' headers */
 	if(table1->nbCol!=table2->nbCol) return(-1);
 	
 	for(i=0; i<table1->nbCol; i++){
@@ -580,7 +577,7 @@ int fusionne_tables(table_csv_t *table1, table_csv_t *table2){
 	}
 
 	
-	/* fusion */
+	/* merge */
 	derniereLigne=table1->lignes;
 	if(derniereLigne!=NULL)
 		while(derniereLigne->next!=NULL) derniereLigne=derniereLigne->next;
@@ -589,20 +586,20 @@ int fusionne_tables(table_csv_t *table1, table_csv_t *table2){
 	else
 		derniereLigne->next=table2->lignes;
 
-	/* fin */
+	/* end */
 	return(0);
 }
 
 
 table_csv_t *selectionne_colonnes(table_csv_t *table, char **elementsCherches, int nbElementsCherches, int *nbElementsTrouves){
 
-	int i=0; // comptage des colonnes
-	int j; //compteur
+	int i=0; // counting columns
+	int j; //counter
 	char *entete;
 	table_csv_t *selection;
-	int *colonnes; // les colonnes selectionnées
+	int *colonnes; // selected columns
 	char **entetes_trouves;
-	ligne_csv_t *ligne; // parcours des lignes
+	ligne_csv_t *ligne; // crossing the lines
 
 	*nbElementsTrouves=0;
 
@@ -675,19 +672,19 @@ table_csv_t *selectionne_colonnes(table_csv_t *table, char **elementsCherches, i
 
 
 int ecrit_csv(char *nomFichier, table_csv_t *table, char separateur){
-	int i, j; /*compteurs*/
-	ligne_csv_t *courant; /* parcourt des lignes */
-	FILE *fo; /* descripteur de fichier */
+	int i, j; /* counters */
+	ligne_csv_t *courant; /* crossing the lines */
+	FILE *fo; /* file descriptor */
 
 	if(nomFichier==NULL) fo=stdout;
 	else fo=fopen(nomFichier, "w");
 	if(fo==NULL){
-		fprintf(stderr, "Impossible d'ouvrir le fichier %s", nomFichier);
+		fprintf(stderr, "Can't open file %s", nomFichier);
 		return(-1);
 	}
 
 
-	/*entetes*/
+	/* headers */
 	for(j=0; j<table->nbCol; j++) {
 		if(hasDelimiter(table->entetes[j], separateur)) {
 			fprintf(fo, "\"%s\"", table->entetes[j]);
@@ -702,7 +699,7 @@ int ecrit_csv(char *nomFichier, table_csv_t *table, char separateur){
 		}
 	}
 
-	/* lignes*/
+	/* lines*/
 	
 	courant = table->lignes;
 	for(i=0; i<table->nbLig; i++) {
@@ -731,10 +728,10 @@ int ecrit_csv(char *nomFichier, table_csv_t *table, char separateur){
 
 int tronquer_colonne(table_csv_t *table, char *nom_colonne, int longueur){
 
-	int n; //number of column
+	int n; // number of column
 	int trouve; // column found?
 	int i; // counter
-	ligne_csv_t *ligne; // parcourt des lignes
+	ligne_csv_t *ligne; // crossing lines
 
 	trouve = 0;
 
@@ -827,15 +824,15 @@ static int cherche_colonne(table_csv_t *table, const char *nomColonne){
 
 static char **lit_ligne(int *nbElts, FILE *fichier, char separateur){
 
-	char **retour; /* la valeur à renvoyer */
-	int nA; /* nb d'allocations de x char* */
-	char ligne[TAILLE_BUF]; /* une ligne du fichier */
-	int i/*,j*/,k,l,m; /*compteurs */
-	char **tempo; /* tableau de chaines intermédiaire */
-	int finLigne; /* indique que l'on a atteind la fin de la ligne à lire */
-	char elt[100]; /* un element lu sur la ligne */
-	int guillemetsOuverts; /* indique l'ouverture de guillements */
-	char *err; /* retour de la fct fgets() */
+	char **retour; /* return value */
+	int nA; /* number of allocations of X char* */
+	char ligne[TAILLE_BUF]; /* a line of the file */
+	int i,k,l,m; /*counters */
+	char **tempo; /* intermediate table of strings */
+	int finLigne; /* indicate the end of the reading line */
+	char elt[100]; /* an element read on the line */
+	int guillemetsOuverts; /* indicate the opening of quotes */
+	char *err; /* return of fgets() */
 
 
 	*nbElts=0;
@@ -846,16 +843,16 @@ static char **lit_ligne(int *nbElts, FILE *fichier, char separateur){
 		return(NULL);
 	}
 
-	/* lecture de la ligne */
-	i=0; /* indice d'élément trouvé */
-	m=0; /* indice de position dans la chaine "elt" */
+	/* read the line */
+	i=0; /* index of found element */
+	m=0; /* index of position in the string "elt" */
 	finLigne=0; elt[0]='\0'; guillemetsOuverts=0;
 
 	while(!finLigne){
 
 		err=fgets(ligne, TAILLE_BUF, fichier);
 
-		if(err==NULL) { /* Fin du fichier atteinte ? */
+		if(err==NULL) { /* End of file reached ? */
 			if(i==0) {
 				free(retour);
 				return(NULL);
@@ -863,7 +860,7 @@ static char **lit_ligne(int *nbElts, FILE *fichier, char separateur){
 			return(retour);
 		}
 
-		k=0; /* position courante sur la ligne */
+		k=0; /* actual position on the line */
 
 		while( (k<TAILLE_BUF) && (ligne[k]!='\0') ){
 
@@ -871,10 +868,10 @@ static char **lit_ligne(int *nbElts, FILE *fichier, char separateur){
 				break;
 			}
 
-			/* Si séparateur trouvé ajout de l'élément */
+			/* If found delimiter add the element */
 			if( (ligne[k]==separateur) && (!guillemetsOuverts) ){
 				elt[m]='\0';
-				/* il peut y avoir des guillemets autour du champs */
+				/* may be quotes around the field */
 				supprime_guillemets(elt);
 				retour[i]=malloc((strlen(elt)+1)*sizeof(char));
 				if(retour[i]==NULL){
@@ -884,10 +881,10 @@ static char **lit_ligne(int *nbElts, FILE *fichier, char separateur){
 				strcpy(retour[i], elt);
 				i++;
 				(*nbElts)++;
-				/* réinitialisation */
+				/* re-initialization */
 				elt[0]='\0'; m=0;
 
-				/* allocation si necessaire de place supplémentaire */
+				/* allocation of additional memory if necessary */
 				if(i==nA*100){
 					nA++;
 					tempo=malloc(nA*100*sizeof(char*));
@@ -900,7 +897,7 @@ static char **lit_ligne(int *nbElts, FILE *fichier, char separateur){
 					retour=tempo;
 				}
 
-			/* Sinon ajout du caractère au nom de l'élément */
+			/* Otherwise add the character at element name */
 			} else {
 				if((m<100-1)&&(ligne[k]!='\r')){
 					elt[m]=ligne[k];
@@ -910,18 +907,18 @@ static char **lit_ligne(int *nbElts, FILE *fichier, char separateur){
 					guillemetsOuverts=guillemetsOuverts?0:1;
 			}
 
-			/* passage au caractère suivant */
+			/* next character */
 			k++;
 
-		} // while ! fin de chaine ou de buffer
+		} // end of loop : while not end of string or of buffer
 
-		/* Si on a lu tout le buffer, on doit en charger un autre */
+		/* If we have read all the buffer, we must load another */
 		if(k==TAILLE_BUF) continue;
 
 		if((ligne[k]=='\0')||(ligne[k]=='\n')) {
-			/* ajout du dernier élément */
+			/* add the last element */
 			elt[m]='\0';
-			/* il peut y avoir des guillemets autour du champs */
+			/* may be quotes around field */
 			supprime_guillemets(elt);
 			retour[i]=malloc((strlen(elt)+1)*sizeof(char));
 			if(retour[i]==NULL){
@@ -931,15 +928,14 @@ static char **lit_ligne(int *nbElts, FILE *fichier, char separateur){
 			strcpy(retour[i], elt);
 			(*nbElts)++;
 
-			/* FIN de ligne détecté */
+			/* End of line detected */
 			#ifdef DEBUG
-			fprintf(stdout, "%d éléments trouvés\n", *nbElts);
-			fprintf(stdout, "dernier élément : %s - %s\n", retour[i], elt);
+			fprintf(stdout, "%d found elements\n", *nbElts);
+			fprintf(stdout, "last element : %s - %s\n", retour[i], elt);
 			#endif
 			finLigne=1;
 		}
-	} // fin de ligne
-
+	} // end of line
 
 	return(retour);
 }
@@ -964,8 +960,8 @@ static int hasDelimiter(char *field, char delimiter) {
 
 static void detruit_ligne_csv(ligne_csv_t *table, int nbColonnes){
 
-	int i; // compteur
-	ligne_csv_t *courant; // pour le parcourt de la table
+	int i; // counter
+	ligne_csv_t *courant; // for cross the table
 	
 	courant=table;
 
