@@ -15,31 +15,42 @@
 #include <stdlib.h> // free()
 #include <string.h> // strlen()
 #include <errno.h>
+#include <time.h>
 #include "html/html.h"
 #include "csv/csv.h"
 #include "project.h"
 
 
-/** working directory */
+/** @brief default working directory */
 //#define YANNKINS_DIR "/var/yannkins"
 #define YANNKINS_DIR "."
 
-/** title of the html page */
+/** @brief title of the html page */
 #define TITLE "Yannkins' statistics - The best of continuous integration services"
+/** @brief image for failed task */
 #define FAIL_ICON "icons/fail.png"
+/** @brief image for successfull task */
 #define OK_ICON "icons/ok.png"
+/** @brief index html page for report */
 #define HTML_FILE "www/index.html"
 
+// SUFFIXES FOR DIFFERENT TYPES OF TASK
+/** @brief svn checkout tag */
 #define TACHE_SVN "SVN_CHECKOUT"
+/** @brief compilation tag */
 #define TACHE_COMPILATION "COMPILATION"
+/** @brief success of tests tag */
 #define TACHE_TESTS "TESTS"
+/** @brief svn logs tag */
 #define SVNLOG "SVNLOG"
 
- 
-#include <time.h>
-
+// ERROR CODES
+/** @brief Error code opening file */
 #define ERR_OPEN_FILE 1
+/** @brief Error code OK */
 #define ERR_OK 0
+
+// TYPEDEF
 
 /**
  * data for one task
@@ -50,11 +61,16 @@ typedef struct yannkins_line_t_ {
     char date[17];
 } yannkins_line_t;
 
+// FUNCTIONS
 
-
-
+/**
+ * @brief the classic usage function.
+ *
+ * This function will prompt the usage message and quit.
+ * @param prog the name of the program
+ */
 static void usage(char *prog){
-	fprintf(stderr, "\nUsage: %s fichier.csv\n\n", prog);
+	fprintf(stderr, "\nUsage: %s file.csv\n\n", prog);
 	exit(1);
 }
 
@@ -63,7 +79,7 @@ static void usage(char *prog){
  * Write the table
  * @param lines the datas to put in the table, must end with NULL value
  */
-void write_yannkins_table(FILE *fd, yannkins_line_t **lines){
+static void write_yannkins_table(FILE *fd, yannkins_line_t **lines){
 
     yannkins_line_t *line; // current line
     int i = 0; // counter
@@ -75,7 +91,7 @@ void write_yannkins_table(FILE *fd, yannkins_line_t **lines){
     line = lines[0];
 
     // headers line
-    fprintf(fd, "<table>\n\t<thead><tr><th>Dernier résultat</th><th>Tâche</th><th>Date dernière exécution<th>Sortie console</th></tr></thead>\n<tbody>\n");
+    fprintf(fd, "<table>\n\t<thead><tr><th>Last result</th><th>Task</th><th>Last execution date<th>Console output</th></tr></thead>\n<tbody>\n");
 
     while(line != NULL){
 
@@ -93,7 +109,7 @@ void write_yannkins_table(FILE *fd, yannkins_line_t **lines){
         fprintf(fd, "\t<td>");
         fprintf(fd, "%s", line->date);
         fprintf(fd, "</td>\n");
-        fprintf(fd, "\t<td><a href=\"log/%s_console\">voir<a/></td>\n</tr>\n", line->name);
+        fprintf(fd, "\t<td><a href=\"log/%s_console\">see<a/></td>\n</tr>\n", line->name);
 
         i++;
         line = lines[i];
@@ -102,6 +118,7 @@ void write_yannkins_table(FILE *fd, yannkins_line_t **lines){
     // end table
     fprintf(fd, "</tbody>\n</table>\n");
 }
+
 
 /**
  * Create a struct for a line if the file passed in argument is the log file of a task
@@ -141,7 +158,7 @@ yannkins_line_t *new_entry(char *filename, char *basename){
     
 
     if((log->nbCol < 2) || (log->nbLig<1)){
-        fprintf(stderr, "Fichier incorrect : %s\n%d colonne(s), %d ligne(s)\n", basename, log->nbCol, log->nbLig);
+        fprintf(stderr, "Incorrect file: %s\n%d column(s), %d line(s)\n", basename, log->nbCol, log->nbLig);
         affiche_table(log, stderr);
         destroy_table_csv(log);
         return NULL;
@@ -227,7 +244,6 @@ yannkins_line_t **init_lines_rep(char *yannkinsRep){
 }
 
 
-
 /**
  * Initialyze the lines for the table.
  * @param project name of the project
@@ -307,7 +323,6 @@ void include_file(FILE *fd, char *filename){
 }
 
 
-
 /**
  * Write the HTML report page of a project.
  * @param yannkinsRep the directory where Yannkins is installed
@@ -332,7 +347,7 @@ int write_yannkins_html(char *project, char *yannkinsRep){
 	fd = fopen(report, "w");
 
 	if(fd == NULL){
-		fprintf(stderr, "Ne peut créer le fichier %s : %d\n", report, errno);
+		fprintf(stderr, "Can't create file %s : %d\n", report, errno);
         return ERR_OPEN_FILE;
 	}
 	free(report);
@@ -343,8 +358,8 @@ int write_yannkins_html(char *project, char *yannkinsRep){
 	html_open_body(fd);
 	include_file(fd, "www/bandeau.html");
 
-	fprintf(fd, "<h1>Projet %s</h1>\n", project);
-	html_write_title_with_hr(fd, 2, "Résultats de la dernière analyse");
+	fprintf(fd, "<h1>Project %s</h1>\n", project);
+	html_write_title_with_hr(fd, 2, "Results of last analysis");
     
     // ceci est pour tous les projets
     //yannkins_line_t **lines = init_lines_rep(yannkinsRep);
@@ -379,7 +394,7 @@ int write_yannkins_html(char *project, char *yannkinsRep){
 		data_s=selectionne_colonnes(data, elementsCherches, 4, &nb);
 		tronquer_colonne(data_s, elementsCherches[2], 20);
 
-		fprintf(fd, "<h2>Dernières révisions</h2><hr/>\n");
+		fprintf(fd, "<h2>Last revisions</h2><hr/>\n");
 
 		html_write_table(fd, data_s);
 		destroy_table_csv(data_s);
