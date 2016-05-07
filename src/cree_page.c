@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <dirent.h>
-#include <stdlib.h> // free()
+#include <stdlib.h> // free(), getenv()
 #include <string.h> // strlen()
 #include <errno.h>
 #include <time.h>
@@ -22,8 +22,7 @@
 
 
 /** @brief default working directory */
-//#define YANNKINS_DIR "/var/yannkins"
-#define YANNKINS_DIR "."
+#define YANNKINS_DIR "/var/yannkins"
 
 /** @brief title of the html page */
 #define TITLE "Yannkins' statistics - The best of continuous integration services"
@@ -76,7 +75,7 @@ static void usage(char *prog){
 
 
 /**
- * Write the table
+ * @brief Write the table
  * @param lines the datas to put in the table, must end with NULL value
  */
 static void write_yannkins_table(FILE *fd, yannkins_line_t **lines){
@@ -97,9 +96,8 @@ static void write_yannkins_table(FILE *fd, yannkins_line_t **lines){
 
         char *icon;
 
-
         if(line->result) {
-            icon=FAIL_ICON;
+            icon = FAIL_ICON;
         } else {
             icon = OK_ICON;
         }
@@ -420,7 +418,16 @@ int main(int argc, char **argv){
 	struct dirent *lecture; // an entry of projects' directory
     DIR *rep; //directory to cross
     char *logdir; // name of directory
+    char *yannkinsDir; // working directory
 	
+	yannkinsDir = getenv("YANNKINS_HOME");
+
+	if(yannkinsDir==NULL) {
+		fprintf(stderr, "Warning : YANNKINS_HOME environment variable not found\n");
+		// use default
+		yannkinsDir = YANNKINS_DIR;
+	}
+
 
 	fd = fopen(HTML_FILE, "w");
 
@@ -437,9 +444,9 @@ int main(int argc, char **argv){
 
 	html_write_title(fd, 1, "Projects list");
 
-	sprintf(projects_dir, "%s/projets", YANNKINS_DIR);
-    logdir = malloc(strlen(YANNKINS_DIR)+5);
-    sprintf(logdir, "%s/log", YANNKINS_DIR);
+	sprintf(projects_dir, "%s/projets", yannkinsDir);
+    logdir = malloc(strlen(yannkinsDir)+5);
+    sprintf(logdir, "%s/log", yannkinsDir);
 
 	fprintf(fd, "<ul>\n");
 
@@ -458,7 +465,7 @@ int main(int argc, char **argv){
 			project=project_struct->project_name;
 
 		    fprintf(stdout, "Treatment of project %s.\n", project);
-			write_yannkins_html(project, YANNKINS_DIR);
+			write_yannkins_html(project, yannkinsDir);
 
 			project_file=malloc(sizeof(char)*(strlen(project)+6));
 			sprintf(project_file, "%s.html", project);
