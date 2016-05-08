@@ -140,7 +140,7 @@ yannkins_line_t *new_entry(char *filename, char *basename){
 
     fprintf(stdout, "%s - %s\n", filename, basename);
 
-    // un nom valable est un nom qui ne se termine pas par "_console"
+    // don't take in account the names ending with "_console"
     if(strlen(basename)>=8){
         int index; // position in filename
         index=strlen(basename)-8;
@@ -155,7 +155,6 @@ yannkins_line_t *new_entry(char *filename, char *basename){
 	if(log==NULL){
 		return NULL;
 	}
-    
 
     if((log->nbCol < 2) || (log->nbLig<1)){
         fprintf(stderr, "Incorrect file: %s\n%d column(s), %d line(s)\n", basename, log->nbCol, log->nbLig);
@@ -205,7 +204,7 @@ yannkins_line_t *new_entry(char *filename, char *basename){
  */
 yannkins_line_t **init_lines_rep(char *yannkinsRep){
 
-    struct dirent *lecture; // une entrée du répertoire
+    struct dirent *lecture; // a directory entry
     DIR *rep; //directory to cross
     char *logdir; // name of directory
     char *file; // name of a file
@@ -225,7 +224,7 @@ yannkins_line_t **init_lines_rep(char *yannkinsRep){
         entry = new_entry(file, lecture->d_name);
         free(file);
 
-        // ajout de l'entree
+        // add entry
         if(entry!=NULL){
             if(i>=tailleAllouee){
                 tailleAllouee+=20;
@@ -252,8 +251,6 @@ yannkins_line_t **init_lines_rep(char *yannkinsRep){
  */
 yannkins_line_t **init_lines(char *project, char *yannkinsRep){
 
-    //struct dirent *lecture; // une entrée du répertoire
-    //DIR *rep; //directory to cross
     char *logdir; // name of directory
     
     yannkins_line_t **lines = NULL; // allocated table of *line
@@ -284,7 +281,7 @@ yannkins_line_t **init_lines(char *project, char *yannkinsRep){
 		free(basename);
         free(file);
 
-        // ajout de l'entree
+        // add the entry
         if(entry!=NULL){
             if(i>=tailleAllouee){
                 tailleAllouee+=20;
@@ -353,14 +350,14 @@ int write_yannkins_html(char *project, char *yannkinsRep){
 
 	yannkins_line_t **lines = init_lines(project, yannkinsRep);
 
-	char *fichier; // nom du fichier de logs svn
+	char *fichier; // name of svn logs file
 	char *wwwdir; // directory where put the html outputs
 	char *filename; // name of the html file to create (without path)
-	char *report; // nom du fichier rapport "www/${project}.html"
-	table_csv_t *data; // donnees de logs svn
-	table_csv_t *data_s; // logs svn filtres
+	char *report; // name of the html file to create (with path)
+	table_csv_t *data; // svn logs data
+	table_csv_t *data_s; // filtrated svn logs
 	char *elementsCherches[4];
-	int nb; // nb de colonnes OK pour les logs svn
+	int nb; // number of OK columns for svn logs
 	FILE *fd;
 
 	wwwdir = concat_path(yannkinsRep, "www");
@@ -411,7 +408,7 @@ int write_yannkins_html(char *project, char *yannkinsRep){
     }
 
 
-	// tableau  des logs
+	// logs' table
 	fichier=malloc(sizeof(char)*(strlen(yannkinsRep)+strlen(SVNLOG)+strlen(project)+7));
 	sprintf(fichier, "%s/log/%s_%s", yannkinsRep, SVNLOG, project);
 
@@ -431,7 +428,7 @@ int write_yannkins_html(char *project, char *yannkinsRep){
 		destroy_table_csv(data);
 	}
 
-	// fin du fichier
+	// end of file
 	html_close_body(fd);
 	html_ecrit_fermeture(fd);
 	fclose(fd);
