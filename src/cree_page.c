@@ -44,6 +44,8 @@
 #define SVNLOG "SVNLOG"
 
 // ERROR CODES
+/** @brief Error code allocation */
+#define ERR_MEMORY 2
 /** @brief Error code opening file */
 #define ERR_OPEN_FILE 1
 /** @brief Error code OK */
@@ -322,7 +324,28 @@ void include_file(FILE *fd, char *filename){
 
 
 /**
+ * @brief concatenate two directory adding a '/' between the two.
+ * @param beg the beginning string
+ * @param end the ending string
+ * @return a pointer to the concatenated string. Must be freed.
+ */
+static char *concat_path(char *beg, char *end) {
+
+	char *result = malloc(sizeof(char) *(strlen(beg)+strlen(end)+2));
+
+	if(result==NULL){
+		fprintf(stderr, "Allocation error\n");
+		return NULL;
+	}
+
+	sprintf(result, "%s/%s", beg, end);
+	return result;
+}
+
+
+/**
  * Write the HTML report page of a project.
+ * @param project the name of the project
  * @param yannkinsRep the directory where Yannkins is installed
  * @return a error code. Can be ERR_OPEN_FILE if an error occured while opening the file with write flag.
  */
@@ -331,6 +354,8 @@ int write_yannkins_html(char *project, char *yannkinsRep){
 	yannkins_line_t **lines = init_lines(project, yannkinsRep);
 
 	char *fichier; // nom du fichier de logs svn
+	char *wwwdir; // directory where put the html outputs
+	char *filename; // name of the html file to create (without path)
 	char *report; // nom du fichier rapport "www/${project}.html"
 	table_csv_t *data; // donnees de logs svn
 	table_csv_t *data_s; // logs svn filtres
@@ -338,18 +363,29 @@ int write_yannkins_html(char *project, char *yannkinsRep){
 	int nb; // nb de colonnes OK pour les logs svn
 	FILE *fd;
 
-	report=malloc(sizeof(char)*(strlen(project)+10));
+	wwwdir = concat_path(yannkinsRep, "www");
+	if(wwwdir == NULL) {
+		return ERR_MEMORY;
+	}
 
-	sprintf(report, "www/%s.html", project);
+	filename=malloc(sizeof(char)*(strlen(project)+6));
+	sprintf(filename, "%s.html", project);
+	
+	report = concat_path(wwwdir, filename);
+	free(wwwdir);
+	free(filename);
+	
+	if(report == NULL) {
+		return ERR_MEMORY;
+	}
 
 	fd = fopen(report, "w");
+	free(report);
 
 	if(fd == NULL){
 		fprintf(stderr, "Can't create file %s : %d\n", report, errno);
         return ERR_OPEN_FILE;
 	}
-	free(report);
-
 
 	html_ecrit_ouverture(fd);
 	html_ecrit_entete(fd, TITLE);
@@ -359,12 +395,8 @@ int write_yannkins_html(char *project, char *yannkinsRep){
 	fprintf(fd, "<h1>Project %s</h1>\n", project);
 	html_write_title_with_hr(fd, 2, "Results of last analysis");
     
-    // ceci est pour tous les projets
-    //yannkins_line_t **lines = init_lines_rep(yannkinsRep);
-	// pour un seul c'est plutot :
     write_yannkins_table(fd, lines);
   
-
     // freeing memory
     if(lines != NULL){
         int i = 0;
@@ -419,6 +451,7 @@ int main(int argc, char **argv){
     DIR *rep; //directory to cross
     char *logdir; // name of directory
     char *yannkinsDir; // working directory
+    char *htmlFile; // index.html file
 	
 	yannkinsDir = getenv("YANNKINS_HOME");
 
@@ -428,13 +461,21 @@ int main(int argc, char **argv){
 		yannkinsDir = YANNKINS_DIR;
 	}
 
+	htmlFile=concat_path(yannkinsDir, HTML_FILE);
 
-	fd = fopen(HTML_FILE, "w");
+	if(htmlFile==NULL){
+		fprintf(stderr, "Can't allocate memory\n");
+        return ERR_MEMORY;
+	}
+
+	fd = fopen(htmlFile, "w");
 
 	if(fd == NULL){
-		fprintf(stderr, "Can't create file %s : %d\n", HTML_FILE, errno);
+		fprintf(stderr, "Can't create file %s : %d\n", htmlFile, errno);
         return ERR_OPEN_FILE;
 	}
+
+	free(htmlFile);
 
 	html_ecrit_ouverture(fd);
 	html_ecrit_entete(fd, TITLE);
