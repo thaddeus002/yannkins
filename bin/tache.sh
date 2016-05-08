@@ -8,8 +8,6 @@
 
 
 IC="Yannkins"
-#DIR="/var/yannkins"
-#DIR="."
 DIR="${YANNKINS_HOME}"
 LOGDIR="${DIR}/log"
 
@@ -26,7 +24,6 @@ fi
 
 TACHE=$1
 COMMANDE="$2"
-#echo "Commande : ${COMMANDE}"
 DATE=$(date "+%d/%m/%Y %H:%M")
 RESULTAT=0
 
