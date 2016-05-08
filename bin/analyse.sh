@@ -1,9 +1,14 @@
 #!/bin/bash
 # Process the periodic analysis of declared projects
 
+# Default Yannkins' working directory
+DEFAULT_DIR="/var/yannkins"
 
-#YANNKINS_HOME="/var/yannkins"
-#YANNKINS_HOME="."
+if [ ${YANNKINS_HOME}_ == "_" ]; then
+	printf "Warning : Environment variable YANNKINS_HOME not found. Using %s.\n" ${DEFAULT_DIR}
+	export YANNKINS_HOME=${DEFAULT_DIR}
+fi 
+
 PROJECTS_HOME="${YANNKINS_HOME}/projets"
 SVN_HOME="${YANNKINS_HOME}/svn"
 
@@ -37,7 +42,6 @@ for p in ${PROJECTS_HOME}/*; do
         # Compiling project
         printf "Compilation\n"
         COMP=$(echo -n ${COMPIL} | wc -c)
-        #if [ ${COMPIL}_ != _ ]; then
         if [ ${COMP} -gt 0 ]; then 
             cd ${SVN_HOME}/${PROJECT_NAME}
             tache.sh COMPILATION_${PROJECT_NAME} "${COMPIL}"
@@ -47,7 +51,6 @@ for p in ${PROJECTS_HOME}/*; do
         # tests
         printf "Tests\n"
         TESTS=$(echo -n ${TESTS_UNI} | wc -c)
-        #if [ ${TESTS_UNI}_ != _ ]; then
         if [ ${TESTS} -gt 0 ]; then 
             cd ${SVN_HOME}/${PROJECT_NAME}
             tache.sh TESTS_${PROJECT_NAME} "${TESTS_UNI}"
@@ -56,13 +59,11 @@ for p in ${PROJECTS_HOME}/*; do
 
         # Logs SVN
         printf "Checking SVN logs\n"
-        #printf "#;auteur;date;nb lignes;commentaires\n" > svnlogl10.csv
         printf "#;author;date;number of lines;commentaries\n" > svnlogl10.csv
         svn log -l 10 ${SVN_DEPOT}/trunk | tr "|" ";" | tr "\n" "$" | sed -e 's/\$\$/; /g' | sed -e 's/\$--/\n--/g' | sed -re 's/-+\$//g' | sed -e 's/\$/\<br\/\>/g' >> svnlogl10.csv
 
         printf "Creating project's page\n"
         mv svnlogl10.csv ${YANNKINS_HOME}/log/SVNLOG_${PROJECT_NAME}
         cree_page
-        #dillo table.html
     fi
 done
