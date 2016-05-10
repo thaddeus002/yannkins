@@ -9,6 +9,8 @@
 #define _YANNKINS_XML_H__
 
 
+#include <stdio.h>
+
 
 /** @brief a xmlNode is a base XML element/tag */
 typedef struct xmlNode_ xmlNode;
@@ -27,7 +29,7 @@ struct xmlAttribute_ {
     char *value;
     /** a tag may contents many attributes, so they are linked */
     xmlAttribute *next;
-}
+};
 
 
 struct xmlNode_ {
@@ -37,6 +39,8 @@ struct xmlNode_ {
     xmlAttribute *attributes;
     /** the data content of the tag */
     char *text;
+    /** the children nodes */
+    xmlNode *children;
     /** the next brother node (at the same depth) */
     xmlNode *next;
 };
@@ -54,9 +58,10 @@ xmlNode *read_xml_file(char *filename);
  * @brief Write a XML document in a stream
  * @param fd the stream where write
  * @param document the data
+ * @param depth for the indentation
  * @return 0 if the function was successfull
  */
-int write_xml_node(FILE *fd, xmlNode *document);
+int write_xml_node(FILE *fd, xmlNode *document, int depth);
 
 
 /**
