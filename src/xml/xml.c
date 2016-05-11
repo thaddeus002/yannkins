@@ -105,7 +105,7 @@ static xmlNode *init_xmlNode(char *openTag) {
     xmlNode *result = malloc(sizeof(xmlNode));
     char *name = NULL;
     char *key = NULL;
-    char *value =NULL;
+    char *value = NULL;
     int closed = 0; // end reatched
     int pos = 1; // reading position in openTag
     char *tag;
@@ -115,7 +115,6 @@ static xmlNode *init_xmlNode(char *openTag) {
 
     // analyse of openTag
     tag = clean_open_tag(openTag);
-    
     name = tag + 1;
 
     while(!closed) {
@@ -127,7 +126,6 @@ static xmlNode *init_xmlNode(char *openTag) {
         case ' ' :
             tag[pos]='\0';
             if(name!=NULL){
-
                 result->name = malloc(sizeof(char) * (strlen(name) + 1));
                 strcpy(result->name, name);
                 name = NULL;
@@ -137,15 +135,26 @@ static xmlNode *init_xmlNode(char *openTag) {
                 }
             }
 
-            while(isspace(openTag[pos])) { pos++; }
+            pos++;
+            while(isspace(tag[pos])) { pos++; }
             key=tag+pos;
             break;
         case '=' :
             tag[pos]='\0';
             value=tag+pos+1;
+            pos++;
             break;
         case '>' :
             closed = 1;
+            tag[pos]='\0';
+            if(name!=NULL){
+                result->name = malloc(sizeof(char) * (strlen(name) + 1));
+                strcpy(result->name, name);
+            } else {
+                if(key != NULL) {
+                    addAttribute(result, key, value);
+                }
+            }
         }
     }
     free(tag);
