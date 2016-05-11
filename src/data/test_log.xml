@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<log>
+<logentry
+   revision="3278">
+<author>afletdinov</author>
+<date>2016-03-21T01:25:43.949240Z</date>
+<msg>remove unused code: old format support</msg>
+</logentry>
+<logentry
+   revision="3277">
+<author>afletdinov</author>
+<date>2015-04-13T05:25:19.312612Z</date>
+<msg>fiix build tools</msg>
+</logentry>
+<logentry
+   revision="3276">
+<author>afletdinov</author>
+<date>2015-04-13T05:25:02.937045Z</date>
+<msg>updat translation</msg>
+</logentry>
+<logentry
+   revision="3275">
+<author>afletdinov</author>
+<date>2015-02-03T03:45:23.952585Z</date>
+<msg>add lithuanian po file</msg>
+</logentry>
+<logentry
+   revision="3274">
+<author>afletdinov</author>
+<date>2015-01-22T02:30:36.605910Z</date>
+<msg>updat translation</msg>
+</logentry>
+<logentry
+   revision="3273">
+<author>afletdinov</author>
+<date>2015-01-22T01:48:58.267943Z</date>
+<msg>fix: save old format</msg>
+</logentry>
+<logentry
+   revision="3272">
+<author>afletdinov</author>
+<date>2015-01-22T01:07:55.174746Z</date>
+<msg>add Dialog::ArmyJoinFree</msg>
+</logentry>
+<logentry
+   revision="3271">
+<author>afletdinov</author>
+<date>2015-01-22T00:48:13.901554Z</date>
+<msg>fix ai build tavern</msg>
+</logentry>
+<logentry
+   revision="3270">
+<author>afletdinov</author>
+<date>2015-01-22T00:43:24.874377Z</date>
+<msg>fix crash, bug: 1019</msg>
+</logentry>
+<logentry
+   revision="3269">
+<author>afletdinov</author>
+<date>2014-12-03T10:49:20.767705Z</date>
+<msg>new map format only: update object: monster, resource, artifact, fix few bugs</msg>
+</logentry>
+</log>
