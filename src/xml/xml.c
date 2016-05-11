@@ -66,6 +66,37 @@ static int addChild(xmlNode *parent, xmlNode *child){
 
 
 /**
+ * Replace multiples spaces,LF,CR,... by an unique space.
+ */
+static char *clean_open_tag(char *openTag) {
+
+    char *result = malloc(sizeof(char) * (strlen(openTag)+1));
+    int i, j;
+    int space = 0;
+
+    j=0;
+    for(i=0; i<strlen(openTag); i++) {
+
+        if(!isspace(openTag[i])){
+            result[j] = openTag[i];
+            j++;
+            space = 0;
+        } else {
+            if(!space){
+                result[j] = ' ';
+                j++;
+                space = 1;
+            }
+        }
+    }
+
+    result[j] = '\0';
+    return result;
+}
+
+
+
+/**
  * @brief Create a new structure
  * @param openTag a valid node declaration
  * @return a new empty node
@@ -77,21 +108,24 @@ static xmlNode *init_xmlNode(char *openTag) {
     char *value =NULL;
     int closed = 0; // end reatched
     int pos = 1; // reading position in openTag
+    char *tag;
 
     result->name = NULL;
     result->attributes = NULL;
 
     // analyse of openTag
-    name = openTag + 1;
+    tag = clean_open_tag(openTag);
+    
+    name = tag + 1;
 
     while(!closed) {
-        while((openTag[pos] != ' ')&&(openTag[pos] != '=')&&(openTag[pos] != '>')) {
+        while((tag[pos] != ' ')&&(tag[pos] != '=')&&(tag[pos] != '>')) {
             pos++;
         }
 
-        switch(openTag[pos]){
+        switch(tag[pos]){
         case ' ' :
-            openTag[pos]='\0';
+            tag[pos]='\0';
             if(name!=NULL){
 
                 result->name = malloc(sizeof(char) * (strlen(name) + 1));
@@ -104,16 +138,17 @@ static xmlNode *init_xmlNode(char *openTag) {
             }
 
             while(isspace(openTag[pos])) { pos++; }
-            key=openTag+pos;
+            key=tag+pos;
             break;
         case '=' :
-            openTag[pos]='\0';
-            value=openTag+pos+1;
+            tag[pos]='\0';
+            value=tag+pos+1;
             break;
         case '>' :
             closed = 1;
         }
     }
+    free(tag);
     
     result->text = NULL;
     result->children = NULL;
@@ -139,6 +174,9 @@ static char *read_elementary_object(FILE *fd) {
     int end=0; // to quit loop
 
     c=fgetc(fd);
+    // Suppress line feed, carriage return, and spaces before element
+    while(isspace(c)) { c=fgetc(fd); }
+    
     i++;
     while(c!=EOF && !end) {
 
@@ -157,10 +195,11 @@ static char *read_elementary_object(FILE *fd) {
                 end = 1;
                 addChar = 0;
                 ungetc(c, fd);
+                i--;
             }
             break;
         case TAG:
-            if(c=='<') {
+            if(c=='>') {
                 end = 1;
             }
             break;
@@ -266,8 +305,8 @@ static xmlNode *read_xmlNode_in_stream(FILE *fd, char *openTag){
             break;
         }
 
-        if( isContent(object) ) {
-            result->text = malloc(sizeof(char) * (strlen(object + 1)));
+        if(isContent(object)) {
+            result->text = malloc(sizeof(char) * (strlen(object) + 1));
             strcpy(result->text, object);
         } else if(isOpenTag(object)) {
             xmlNode *child = read_xmlNode_in_stream(fd, object);
@@ -278,7 +317,6 @@ static xmlNode *read_xmlNode_in_stream(FILE *fd, char *openTag){
 
         free(object);
     }
-    
     return result;
 }
 
