@@ -7,10 +7,68 @@
 
 #include "data.h"
 #include <string.h>
+#include <stdlib.h>
+
+
 #define REVISION "revision"
 #define AUTHOR "author"
 #define DATE "date"
 #define MSG "msg"
+
+
+
+/**
+ * @return a new string without the doble quotes
+ */
+char *suppress_quotes(char *string){
+    char *result;
+
+    if(string == NULL) { return NULL; }
+
+    result = malloc(sizeof(char) * (strlen(string) + 1));
+
+    if(result == NULL) { return NULL; }
+
+    if ( (string[0]=='"') && (string[strlen(string) - 1]=='"')) {
+        strcpy(result, string + 1);
+        result[strlen(result) - 1]='\0';
+    } else {
+        strcpy(result, string);
+    }
+
+    return result;
+}
+
+
+/**
+ * @brief Remove non significant characters in date string.
+ *
+ * UTC date will be consider as local date.
+ * ex.: "2016-03-21T01:25:43.949240Z" will become "2016-03-21 01:25:43"
+ * @return a new date
+ */
+char *clean_date_format(char *date){
+    char *result;
+
+    if(date == NULL) { return NULL; }
+
+    result = malloc(sizeof(char) * (strlen(date) + 1));
+
+    if(result == NULL) { return NULL; }
+
+    strcpy(result, date);
+
+    if(strlen(result)>=11) {
+        result[10]=' ';
+    }
+
+    if(strlen(result)>=20) {
+        result[19]='\0';
+    }
+    
+    return result;
+}
+
 
 
 
@@ -44,10 +102,10 @@ table_csv_t *present_svn_log(xmlNode *logDocument){
     xmlNode *logentry;
 
     
-    headers[0]=REVISION;
+    headers[0]="#";
     headers[1]=AUTHOR;
     headers[2]=DATE;
-    headers[3]=MSG;
+    headers[3]="commentaries";
 
     table = cree_table(headers, 4);
 
@@ -68,7 +126,7 @@ table_csv_t *present_svn_log(xmlNode *logDocument){
 
             while(attribute!=NULL){
                 if(!strcmp(attribute->key, REVISION)){
-                    content[0] = attribute->value;
+                    content[0] = suppress_quotes(attribute->value);
                     break;
                 }
                 attribute = attribute->next;
@@ -80,7 +138,7 @@ table_csv_t *present_svn_log(xmlNode *logDocument){
                     if(!strcmp(child->name, AUTHOR)){
                         content[1] = child->text;
                     } else if(!strcmp(child->name, DATE)){
-                        content[2] = child->text;
+                        content[2] = clean_date_format(child->text);
                     } else if(!strcmp(child->name, MSG)){
                         content[3] = child->text;
                     }
@@ -90,6 +148,8 @@ table_csv_t *present_svn_log(xmlNode *logDocument){
             }
 
             ajoute_ligne(table, content, 4);
+            free(content[0]);
+            free(content[2]);
         }
 
         logentry = logentry->next;

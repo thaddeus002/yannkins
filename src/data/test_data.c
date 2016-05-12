@@ -6,6 +6,7 @@
 #include "data.h"
 
 #define XML_FILE "test_log.xml"
+#define CSV_FILE "test_log.output.csv"
 
 
 int main(int argc, char **argv) {
@@ -20,6 +21,7 @@ int main(int argc, char **argv) {
     destroy_xmlNode(document);
         
     affiche_table(table, stdout);
+    ecrit_csv(CSV_FILE, table, ';');
 
     destroy_table_csv(table);
     
