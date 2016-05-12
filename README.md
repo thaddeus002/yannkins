@@ -4,7 +4,11 @@ A simple continuous integration program for Linux server. It need cron to launch
 
 ## What is Yannkins ?
 
-Yannkins is a project which aim is to provide easy continuous integration service for Linux. I plan to make it work with cron and a web server, for example Apache httpd.
+Yannkins is a project which aim is to provide easy continuous integration service for Linux. It can manager several projects, presenting a separate page for each project.
+The resume page for a project will show results (build success or failure, tests success or failure, ...) and a table of last revisions or commits.
+
+I plan to make it work with cron and a web server, for example Apache httpd.
+
 Projects will be configured in text files located in directory `${YANNKINS_DIR}/projects/`.
 One cron task will perform projects analysis : svn checkout/update or git clone/pull, compilation, units tests, ... defined in projects' configuration files. After the analysis are executed, an other program will generate HTML reports with the logs of the analysis. 
 
