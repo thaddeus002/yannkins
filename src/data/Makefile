@@ -17,6 +17,9 @@ data.o: data.c data.h
 test_data: test_data.c $(OBJS)
 	$(CC) -Wall -o test_data test_data.c $(OBJS)
 
+convert_log: convert_svn_log_from_xml_to_csv.c $(OBJS)
+	$(CC) -Wall -o convert_log convert_svn_log_from_xml_to_csv.c $(OBJS)
+
 clean:
 	rm -f *.o *~
 

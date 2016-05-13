@@ -5,10 +5,16 @@
 
 #include "data.h"
 
+/** input file */
 #define XML_FILE "test_log.xml"
+/** output file */
 #define CSV_FILE "test_log.output.csv"
 
 
+/**
+ * Test parse svn logs in XML format (command "svn log --xml"),
+ * and write them in a csv file.
+ */
 int main(int argc, char **argv) {
 
     xmlNode *document;
@@ -19,8 +25,7 @@ int main(int argc, char **argv) {
     table = present_svn_log(document);
 
     destroy_xmlNode(document);
-        
-    affiche_table(table, stdout);
+
     ecrit_csv(CSV_FILE, table, ';');
 
     destroy_table_csv(table);

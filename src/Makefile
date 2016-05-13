@@ -22,6 +22,10 @@ html/html.o:
 cree_page: $(OBJS)
 	gcc -o cree_page $(OBJS)
 
+convert_log:
+	make -C data convert_log
+	mv data/convert_log .
+
 clean:
 	rm -f $(OBJS) cree_page.o
 

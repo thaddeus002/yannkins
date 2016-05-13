@@ -59,11 +59,19 @@ for p in ${PROJECTS_HOME}/*; do
 
         # Logs SVN
         printf "Checking SVN logs\n"
-        printf "#;author;date;number of lines;commentaries\n" > svnlogl10.csv
-        svn log -l 10 ${SVN_DEPOT}/trunk | tr "|" ";" | tr "\n" "$" | sed -e 's/\$\$/; /g' | sed -e 's/\$--/\n--/g' | sed -re 's/-+\$//g' | sed -e 's/\$/\<br\/\>/g' >> svnlogl10.csv
 
+        if [ ${SVN_DEPOT}_ != _ ]; then
+            svn log -l 10 --xml ${SVN_DEPOT}/trunk > svnlogl10.xml
+            convert_log -i svnlogl10.xml -o ${YANNKINS_HOME}/log/SVNLOG_${PROJECT_NAME}
+        fi
+
+        if [ ${GIT_DEPOT}_ != _ ]; then
+            printf "#;author;date;commentaries\n" > gitlogl10.csv
+            git log -n 10 --pretty=format:"%h;%an;%ci;%s" >> gitlogl10.csv
+        fi
+
+        # make report
         printf "Creating project's page\n"
-        mv svnlogl10.csv ${YANNKINS_HOME}/log/SVNLOG_${PROJECT_NAME}
         cree_page
     fi
 done
