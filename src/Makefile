@@ -6,7 +6,7 @@
 OBJS=cree_page.o project.o csv/csv.o html/html.o
 CFLAGS="-I$(PREFIX)/include"
 
-all:cree_page
+all:cree_page convert_log
 
 %.c: %.h
 
