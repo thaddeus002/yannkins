@@ -26,15 +26,36 @@ for p in ${PROJECTS_HOME}/*; do
 
         printf "Analysis of project %s\n" "${PROJECT_NAME}"
 
-        # Checkout of the project
-        printf "Checkout of repository\n"
-        if [ ${SVN_DEPOT}_ == _ ]; then
+        # Versionning System : NONE, GIT, or SVN
+        VS="NONE"
+        if [ ${SVN_DEPOT}_ != _ ]; then
+            VS="SVN"
+        else
+            if [ ${GIT_DEPOT}_ != _ ]; then
+                VS="GIT"
+            fi
+        fi
+
+        # Checkout/clone of the project
+
+        if [ ${VS} == "NONE" ]; then
             printf "Repository not specified\n"
             exit 1
         fi
+
+        if [ ${VS} == "SVN" ]; then
+            MSG="Checkout of repository\n"
+            COMMANDE="svn co ${SVN_DEPOT}/trunk ${PROJECT_NAME}"
+        fi
+
+        if [ ${VS} == "GIT" ]; then
+            MSG="Clone of repository\n"
+            COMMANDE="git clone ${GIT_DEPOT} ${PROJECT_NAME}"
+        fi
+
+        printf "${MSG}"
         cd ${SVN_HOME}
         rm -rf ${PROJECT_NAME}
-        COMMANDE="svn co ${SVN_DEPOT}/trunk ${PROJECT_NAME}"
         printf "%s\n" "${COMMANDE}"
         tache.sh "SVN_CHECKOUT_${PROJECT_NAME}" "${COMMANDE}"
         cd ${YANNKINS_HOME}
@@ -60,18 +81,20 @@ for p in ${PROJECTS_HOME}/*; do
         # Logs SVN
         printf "Checking SVN logs\n"
 
-        if [ ${SVN_DEPOT}_ != _ ]; then
+        if [ ${VS} == "SVN" ]; then
             svn log -l 10 --xml ${SVN_DEPOT}/trunk > svnlogl10.xml
             convert_log -i svnlogl10.xml -o ${YANNKINS_HOME}/log/SVNLOG_${PROJECT_NAME}
         fi
 
-        if [ ${GIT_DEPOT}_ != _ ]; then
-            printf "#;author;date;commentaries\n" > gitlogl10.csv
-            git log -n 10 --pretty=format:"%h;%an;%ci;%s" >> gitlogl10.csv
+        if [ ${VS} == "GIT" ]; then
+            cd ${SVN_HOME}/${PROJECT_NAME}
+            printf "#;author;date;commentaries\n" > ${YANNKINS_HOME}/log/SVNLOG_${PROJECT_NAME}
+            git log -n 10 --pretty=format:"%h;%an;%ci;%s" >> ${YANNKINS_HOME}/log/SVNLOG_${PROJECT_NAME}
+            cd -
         fi
-
-        # make report
-        printf "Creating project's page\n"
-        cree_page
     fi
 done
+
+# make report
+printf "Creating projects' pages\n"
+cree_page

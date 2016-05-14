@@ -17,9 +17,7 @@ One cron task will perform projects analysis : svn checkout/update or git clone/
 ## What is already available ?
 
 The project is just beginning, so is not still completed.
-For now there is only the program "cree_page" to create the html report pages. It is not usable lonely because this program needs the logs of the tasks to generate the report.
-In the present version this logs may be generate by scripts shell located in the bin directory on yannkins repository.
-Only SVN is supported, but support for git is in the roadmap.
+Only GIT, and SVN are supported.
 
 ## How to get started ?
 
