@@ -18,6 +18,15 @@ typedef enum obj_type {
     TAG /**< tag ex.: <p> */
 } objType;
 
+
+/** Allocate memory and copy the content of a given string */
+static char *copyString(char *object) {
+    char *copy = malloc(sizeof(char) * (strlen(object) + 1));
+    strcpy(copy, object);
+    return copy;
+}
+
+
 /**
  * Add a new attribute to a node
  * @param node the node to modify
@@ -162,6 +171,7 @@ static xmlNode *init_xmlNode(char *openTag) {
     result->text = NULL;
     result->children = NULL;
     result->next = NULL;
+    result->postText = NULL;
     return result;
 }
 
@@ -292,6 +302,26 @@ static int isContent(char *object) {
     return 1;
 }
 
+
+/**
+ * @return the last child of a node or NULL if the node has no child
+ */
+static xmlNode *lastChild(xmlNode *node){
+
+    xmlNode *last = NULL;
+
+    if(node==NULL) { return NULL; }
+    
+    if(node->children == NULL) { return NULL; }
+
+    last = node->children;
+
+    while(last->next != NULL) { last = last->next; }
+
+    return last;
+}
+
+
 /**
  * @brief Read an XML node in a stream
  * @param fd stream where read
@@ -315,8 +345,12 @@ static xmlNode *read_xmlNode_in_stream(FILE *fd, char *openTag){
         }
 
         if(isContent(object)) {
-            result->text = malloc(sizeof(char) * (strlen(object) + 1));
-            strcpy(result->text, object);
+            xmlNode *child = lastChild(result);
+            if(child == NULL) {
+                result->text = copyString(object);
+            } else {
+                child->postText = copyString(object);
+            }
         } else if(isOpenTag(object)) {
             xmlNode *child = read_xmlNode_in_stream(fd, object);
             addChild(result, child);
@@ -361,7 +395,6 @@ xmlNode *read_xml_file(char *filename) {
     xmlNode *result = NULL;
 
     FILE *fd;
-    int err;
 
     fd = fopen(filename, "r");
 
@@ -409,12 +442,27 @@ int write_xml_node(FILE *fd, xmlNode *document, int depth) {
     }
     
     if(document->text != NULL) {
+        for (i = 0; i < depth+1; i++) {
+            fprintf(fd, "    ");
+        }
         fprintf(fd, "%s", document->text);
     }
     
     err = write_xml_node(fd, document->children, depth+1);
-    
+
+    for (i = 0; i < depth; i++) {
+            fprintf(fd, "    ");
+        }
     fprintf(fd, "</%s>\n", document->name);
+
+    if(document->postText != NULL) {
+        // This could only occur when depth > 0
+        for (i = 0; i < depth; i++) {
+            fprintf(fd, "    ");
+        }
+        fprintf(fd, "%s", document->postText);
+    }
+
 
     if(!err) {
         err = write_xml_node(fd, document->next, depth);
@@ -471,8 +519,12 @@ void destroy_xmlNode(xmlNode *document){
         free(document->text);
     }
 
+    destroy_xmlNode(document->children);
     destroy_xmlNode(document->next);
-    destroy_xmlNode(document->next);
+
+    if(document->postText != NULL) {
+        free(document->postText);
+    }
 
     free(document);
 }
