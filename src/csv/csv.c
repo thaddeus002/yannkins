@@ -10,6 +10,7 @@
 #include <stdlib.h>
 
 #include "csv.h"
+#include "utils.h"
 
 /** @brief Buffer size */
 #define TAILLE_BUF 10024
@@ -17,19 +18,6 @@
 
 
 /* INTERNAL FUNCTIONS DECLARATIONS */
-
-/**
- * @brief Delete the doble quotes of a string.
- * @param chaine the string to modify
- */
-static void supprime_guillemets(char *chaine);
-
-
-/**
- * @brief Convert à String to uppercase.
- * @param chaine the string to modify
- */
-static void passe_en_majuscules(char *chaine);
 
 
 /**
@@ -767,31 +755,6 @@ int tronquer_colonne(table_csv_t *table, char *nom_colonne, int longueur){
 /************************************************************************/
 
 
-static void supprime_guillemets(char *chaine){
-	int l; /* length of the string */
-	int i; /* counter */
-
-	l=strlen(chaine);
-	if(l>=2){
-		if((chaine[0]=='"') && (chaine[l-1]=='"')){
-			for(i=0; i<l-2; i++){
-				chaine[i]=chaine[i+1];
-			}
-			chaine[l-2]='\0';
-		}
-	}
-}
-
-
-static void passe_en_majuscules(char *chaine){
-	int i; /* counter */
-
-	for(i=0;i<strlen(chaine);i++)
-		if((chaine[i]>='a') && (chaine[i]<='z'))
-			chaine[i]=chaine[i]+'A'-'a';
-}
-
-
 static int cherche_colonne(table_csv_t *table, const char *nomColonne){
 
 	int n; /**< column number */
@@ -806,13 +769,13 @@ static int cherche_colonne(table_csv_t *table, const char *nomColonne){
 
 	strncpy(nomColMaj, nomColonne, 100-1);
 	nomColMaj[100-1]='\0';
-	passe_en_majuscules(nomColMaj);
+	to_upper_case(nomColMaj);
 
 	n=0;
 	while(n<table->nbCol){
 		strncpy(entete, table->entetes[n], 100-1);
 		entete[100-1]='\0';
-		passe_en_majuscules(entete);
+		to_upper_case(entete);
 		if(!strcmp(entete, nomColMaj)) break;
 		n++;
 	}
@@ -872,7 +835,7 @@ static char **lit_ligne(int *nbElts, FILE *fichier, char separateur){
 			if( (ligne[k]==separateur) && (!guillemetsOuverts) ){
 				elt[m]='\0';
 				/* may be quotes around the field */
-				supprime_guillemets(elt);
+				suppress_quotes(elt);
 				retour[i]=malloc((strlen(elt)+1)*sizeof(char));
 				if(retour[i]==NULL){
 					*nbElts=-2;
@@ -919,7 +882,7 @@ static char **lit_ligne(int *nbElts, FILE *fichier, char separateur){
 			/* add the last element */
 			elt[m]='\0';
 			/* may be quotes around field */
-			supprime_guillemets(elt);
+			suppress_quotes(elt);
 			retour[i]=malloc((strlen(elt)+1)*sizeof(char));
 			if(retour[i]==NULL){
 				*nbElts=-2;

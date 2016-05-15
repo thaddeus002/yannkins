@@ -3,7 +3,7 @@ ifndef CC
 CC=gcc
 endif
 
-OBJS=data.o ../xml/xml.o ../csv/csv.o
+OBJS=data.o ../xml/xml.o ../csv/csv.o ../csv/utils.o
 
 data.o: data.c data.h
 	$(CC) -Wall -c data.c
@@ -13,6 +13,9 @@ data.o: data.c data.h
 
 ../csv/csv.o:
 	make -C ../csv csv.o
+
+../csv/utils.o:
+	make -C ../csv utils.o
 
 test_data: test_data.c $(OBJS)
 	$(CC) -Wall -o test_data test_data.c $(OBJS)

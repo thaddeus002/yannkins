@@ -6,6 +6,7 @@
 
 
 #include "data.h"
+#include "../csv/utils.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -16,28 +17,6 @@
 #define MSG "msg"
 
 
-
-/**
- * @return a new string without the doble quotes
- */
-char *suppress_quotes(char *string){
-    char *result;
-
-    if(string == NULL) { return NULL; }
-
-    result = malloc(sizeof(char) * (strlen(string) + 1));
-
-    if(result == NULL) { return NULL; }
-
-    if ( (string[0]=='"') && (string[strlen(string) - 1]=='"')) {
-        strcpy(result, string + 1);
-        result[strlen(result) - 1]='\0';
-    } else {
-        strcpy(result, string);
-    }
-
-    return result;
-}
 
 
 /**
@@ -126,7 +105,7 @@ table_csv_t *present_svn_log(xmlNode *logDocument){
 
             while(attribute!=NULL){
                 if(!strcmp(attribute->key, REVISION)){
-                    content[0] = suppress_quotes(attribute->value);
+                    content[0] = suppress_quotes_new_string(attribute->value);
                     break;
                 }
                 attribute = attribute->next;
