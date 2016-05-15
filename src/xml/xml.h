@@ -39,12 +39,17 @@ struct xmlAttribute_ {
  * <li>a text : data content between open and close tags
  * <li>a list of children nodes
  * </ul>
+ *
  * If there are text contents between the children nodes, to take them in account
  * we need to add an element to this struct model.
  * So we add a "postText" to this structure. The postText belong to parent node, and is
  * positionned after the this node.
+ *
+ * The root node of a document may have a header tag as "<?xlm ...>" or "<!Doctype html>"
  */
 struct xmlNode_ {
+    /** only the root node may have a header */
+    char *header;
     /** the tag name */
     char *name;
     /** a linked list of attributes */

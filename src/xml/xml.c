@@ -110,7 +110,7 @@ static char *clean_open_tag(char *openTag) {
  * @param openTag a valid node declaration
  * @return a new empty node
  */
-static xmlNode *init_xmlNode(char *openTag) {
+static xmlNode *init_xmlNode(char *header, char *openTag) {
     xmlNode *result = malloc(sizeof(xmlNode));
     char *name = NULL;
     char *key = NULL;
@@ -119,6 +119,7 @@ static xmlNode *init_xmlNode(char *openTag) {
     int pos = 1; // reading position in openTag
     char *tag;
 
+    result->header = header;
     result->name = NULL;
     result->attributes = NULL;
 
@@ -254,6 +255,26 @@ static char *read_elementary_object(FILE *fd) {
 }
 
 
+/**
+ * @return 1 if the string is the header of a document, 0 otherwise
+ */
+static int isHeader(char *object) {
+
+    int lenght;
+
+    if(object == NULL) { return 0; }
+
+    lenght = strlen(object);
+
+    if(lenght < 3) { return 0; }
+
+    if( (object[0] != '<') || (object[lenght-1] != '>') ) { return 0; }
+
+    if( (object[1] != '?') && (object[1] != '!') ) { return 0; }
+
+    return 1;
+}
+
 
 /**
  * @return 1 if the string is the beginning of a node, 0 otherwise
@@ -268,7 +289,9 @@ static int isOpenTag(char *object) {
 
     if(lenght < 3) { return 0; }
 
-    if( (object[0] != '<') || (object[lenght-1]!='>') || (object[1]=='?') || (object[1]=='/') ) { return 0; }
+    if( (object[0] != '<') || (object[lenght-1] != '>') ) { return 0; }
+
+    if( (object[1] == '?') || (object[1] == '!') || (object[1] == '/') ) { return 0; }
 
     return 1;
 }
@@ -286,7 +309,7 @@ static int isCloseTag(char *object) {
 
     if(lenght < 3) { return 0; }
 
-    if( (object[0] != '<') || (object[lenght-1]!='>') || (object[1]=='?') ) { return 0; }
+    if( (object[0] != '<') || (object[lenght-1]!='>') || (object[1]=='?') || (object[1]=='!') ) { return 0; }
 
     if( (object[1] != '/') && (object[lenght-2]!='/') ) { return 0; }
 
@@ -327,11 +350,12 @@ static xmlNode *lastChild(xmlNode *node){
 /**
  * @brief Read an XML node in a stream
  * @param fd stream where read
+ * @param header the document header
  * @param openTag the declaration tag (already read)
  * @return a pointer to the newly created node
  */
-static xmlNode *read_xmlNode_in_stream(FILE *fd, char *openTag){
-    xmlNode *result = init_xmlNode(openTag);
+static xmlNode *read_xmlNode_in_stream(FILE *fd, char *header, char *openTag){
+    xmlNode *result = init_xmlNode(header, openTag);
     char *object;
     int endOfNode = 0;
 
@@ -354,7 +378,7 @@ static xmlNode *read_xmlNode_in_stream(FILE *fd, char *openTag){
                 child->postText = copyString(object);
             }
         } else if(isOpenTag(object)) {
-            xmlNode *child = read_xmlNode_in_stream(fd, object);
+            xmlNode *child = read_xmlNode_in_stream(fd, NULL, object);
             addChild(result, child);
         } else if (isCloseTag(object)) {
             endOfNode = 1;
@@ -373,16 +397,20 @@ static xmlNode *read_xmlNode_in_stream(FILE *fd, char *openTag){
 static xmlNode *read_xmlDoc_in_stream(FILE *fd){
     xmlNode *result = NULL;
     char *object;
+    char *header = NULL;
 
     object = read_elementary_object(fd);
    
     while( (!isOpenTag(object)) && (object != NULL)){
+        if(isHeader(object)) {
+            header = copyString(object);
+        }
         free(object);
         object = read_elementary_object(fd);
     }
 
     if(object != NULL) {
-        result = read_xmlNode_in_stream(fd, object);
+        result = read_xmlNode_in_stream(fd, header, object);
         free(object);
     }
     
@@ -422,6 +450,10 @@ int write_xml_node(FILE *fd, xmlNode *document, int depth) {
 
     if(document == NULL) {
         return 0;
+    }
+
+    if(document->header != NULL) {
+        fprintf(fd, "%s\n", document->header);
     }
     
     for (i = 0; i < depth; i++) {
@@ -507,6 +539,10 @@ void destroy_xmlNode(xmlNode *document){
 
     if(document == NULL) {
         return;
+    }
+
+    if(document->header != NULL) {
+        free(document->header);
     }
 
     if(document->name != NULL) {
