@@ -248,6 +248,8 @@ static char *read_elementary_object(FILE *fd) {
     }
 
     obj[i]='\0';
+    // Suppress line feed, carriage return, and spaces at the end of the element
+    while(isspace(obj[strlen(obj)-1])) { obj[strlen(obj)-1]='\0'; }
     return obj;
 }
 
@@ -416,6 +418,7 @@ int write_xml_node(FILE *fd, xmlNode *document, int depth) {
     xmlAttribute *attribute;
     int err = 0; // error code
     int i; // counter
+    int lf = 0; // there is a line feed
 
     if(document == NULL) {
         return 0;
@@ -439,20 +442,24 @@ int write_xml_node(FILE *fd, xmlNode *document, int depth) {
     fprintf(fd, ">");
     if(document->children != NULL) {
         fprintf(fd, "\n");
+        lf = 1;
     }
     
     if(document->text != NULL) {
-        for (i = 0; i < depth+1; i++) {
+        if(lf) for (i = 0; i < depth+1; i++) {
             fprintf(fd, "    ");
         }
         fprintf(fd, "%s", document->text);
+        if(lf) {
+            fprintf(fd, "\n");
+        }
     }
     
     err = write_xml_node(fd, document->children, depth+1);
 
-    for (i = 0; i < depth; i++) {
-            fprintf(fd, "    ");
-        }
+    if(lf) for (i = 0; i < depth; i++) {
+        fprintf(fd, "    ");
+    }
     fprintf(fd, "</%s>\n", document->name);
 
     if(document->postText != NULL) {
@@ -460,7 +467,7 @@ int write_xml_node(FILE *fd, xmlNode *document, int depth) {
         for (i = 0; i < depth; i++) {
             fprintf(fd, "    ");
         }
-        fprintf(fd, "%s", document->postText);
+        fprintf(fd, "%s\n", document->postText);
     }
 
 

@@ -1,10 +1,11 @@
 <?xml>
 <test unit="xml.c" completed="yes">
     This is a test input file for xml parser.
-    <tag child="1">
-        Content text
-    </tag> 
+    <tag child="1">Content text</tag>
     Intermediary text
-    <tag child="2">
+    <tag child="2"></tag>
+    <tag child="3">
+        A tag that contents a link
+        <a>a link</a>
     </tag>
 </test>
