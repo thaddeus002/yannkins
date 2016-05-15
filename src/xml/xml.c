@@ -139,8 +139,7 @@ static xmlNode *init_xmlNode(char *header, char *openTag) {
             if(!quotes) {
                 tag[pos]='\0';
                 if(name!=NULL){
-                    result->name = malloc(sizeof(char) * (strlen(name) + 1));
-                    strcpy(result->name, name);
+                    result->name = copyString(name);
                     name = NULL;
                 } else {
                     if(key != NULL) {
@@ -166,8 +165,7 @@ static xmlNode *init_xmlNode(char *header, char *openTag) {
                 closed = 1;
                 tag[pos]='\0';
                 if(name!=NULL){
-                    result->name = malloc(sizeof(char) * (strlen(name) + 1));
-                    strcpy(result->name, name);
+                    result->name = copyString(name);
                 } else {
                     if(key != NULL) {
                         addAttribute(result, key, value);

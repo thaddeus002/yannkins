@@ -29,6 +29,9 @@ convert_log:
 	make -C data convert_log
 	mv data/convert_log .
 
+tests:
+	make -C xml test
+
 clean:
 	rm -f $(OBJS) cree_page.o data/convert_log.o
 

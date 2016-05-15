@@ -18,3 +18,6 @@ install: all
 	install -m 755 bin/*.sh $(PREFIX)/bin/
 	@echo "Installation of Yannkins completed"
 	@echo "Define YANNKINS_HOME environment variable"
+
+tests:
+	make -C src tests

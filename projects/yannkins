@@ -6,5 +6,5 @@ GIT_DEPOT="https://github.com/thaddeus002/yannkins.git"
 GIT_USER=""
 GIT_PASSWD=""
 COMPIL="make"
-TESTS_UNI="ls -l"
+TESTS_UNI="make tests"
 
