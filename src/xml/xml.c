@@ -4,6 +4,7 @@
  */
 
 #include "xml.h"
+#include "../csv/utils.h"
 #include <stdlib.h> // malloc()
 #include <string.h> // strlen(), ...
 #include <ctype.h> // isspace()
@@ -39,10 +40,9 @@ static int addAttribute(xmlNode *node, char *key, char *value){
     xmlAttribute *last = node->attributes;
     xmlAttribute *new = malloc(sizeof(xmlAttribute));
 
-    new->key = malloc(sizeof(char) * (strlen(key)+1));
-    strcpy(new->key, key);
-    new->value = malloc(sizeof(char) * (strlen(value)+1));
-    strcpy(new->value, value);
+    new->key = copyString(key);
+    suppress_quotes(value);
+    new->value = copyString(value);
     new->next = NULL;
 
     if(last==NULL) {
@@ -118,6 +118,7 @@ static xmlNode *init_xmlNode(char *header, char *openTag) {
     int closed = 0; // end reatched
     int pos = 1; // reading position in openTag
     char *tag;
+    int quotes=0; // 1 if quotes where opened
 
     result->header = header;
     result->name = NULL;
@@ -128,44 +129,58 @@ static xmlNode *init_xmlNode(char *header, char *openTag) {
     name = tag + 1;
 
     while(!closed) {
-        while((tag[pos] != ' ')&&(tag[pos] != '=')&&(tag[pos] != '>')) {
+        while((tag[pos] != ' ')&&(tag[pos] != '=')&&(tag[pos] != '>')&&(tag[pos] != '"')) {
             pos++;
         }
 
         switch(tag[pos]){
         case ' ' :
-            tag[pos]='\0';
-            if(name!=NULL){
-                result->name = malloc(sizeof(char) * (strlen(name) + 1));
-                strcpy(result->name, name);
-                name = NULL;
-            } else {
-                if(key != NULL) {
-                    addAttribute(result, key, value);
-                }
-            }
 
-            pos++;
-            while(isspace(tag[pos])) { pos++; }
-            key=tag+pos;
+            if(!quotes) {
+                tag[pos]='\0';
+                if(name!=NULL){
+                    result->name = malloc(sizeof(char) * (strlen(name) + 1));
+                    strcpy(result->name, name);
+                    name = NULL;
+                } else {
+                    if(key != NULL) {
+                        addAttribute(result, key, value);
+                    }
+                }
+                pos++;
+                while(isspace(tag[pos])) { pos++; }
+                key=tag+pos;
+            } else {
+                pos++;
+            }
             break;
         case '=' :
-            tag[pos]='\0';
-            value=tag+pos+1;
+            if(!quotes) {
+                tag[pos]='\0';
+                value=tag+pos+1;
+            }
             pos++;
             break;
         case '>' :
-            closed = 1;
-            tag[pos]='\0';
-            if(name!=NULL){
-                result->name = malloc(sizeof(char) * (strlen(name) + 1));
-                strcpy(result->name, name);
-            } else {
-                if(key != NULL) {
-                    addAttribute(result, key, value);
+            if(!quotes) {
+                closed = 1;
+                tag[pos]='\0';
+                if(name!=NULL){
+                    result->name = malloc(sizeof(char) * (strlen(name) + 1));
+                    strcpy(result->name, name);
+                } else {
+                    if(key != NULL) {
+                        addAttribute(result, key, value);
+                    }
                 }
             }
+            pos++;
+            break;
+        case '"' :
+            quotes = !quotes;
+            pos++;
         }
+            
     }
     free(tag);
     

@@ -8,4 +8,5 @@
         A tag that contents a link
         <a>a link</a>
     </tag>
+    <tag child="4" spaces="Attribute with some spaces"></tag>
 </test>
