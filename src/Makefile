@@ -30,4 +30,4 @@ clean:
 	rm -f $(OBJS) cree_page.o
 
 mrproper: clean
-	rm -f cree_page
+	rm -f cree_page convert_log
