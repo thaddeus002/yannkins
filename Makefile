@@ -21,3 +21,6 @@ install: all
 
 tests:
 	make -C src tests
+
+documentation:
+	doxygen
