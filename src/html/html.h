@@ -16,9 +16,9 @@
 #include "../xml/xml.h"
 
 /** @brief A HTML Document is a XML document */
-typedef htmlDocument xmlNode;
+typedef xmlNode htmlDocument;
 /** @brief Represents an HTML Table */
-typedef htmlTable xmlNode;
+typedef xmlNode htmlTable;
 
 
 /**

@@ -47,4 +47,4 @@ If this process completes succefully, you may want to put the task `/usr/local/b
 ## License
 
 Yannkins is free software under GPL v3 license. Read the file [LICENSE](LICENSE) for more informations.
- 
+
