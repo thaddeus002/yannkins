@@ -664,8 +664,11 @@ int ecrit_csv(char *nomFichier, table_csv_t *table, char separateur){
 	ligne_csv_t *courant; /* crossing the lines */
 	FILE *fo; /* file descriptor */
 
-	if(nomFichier==NULL) fo=stdout;
-	else fo=fopen(nomFichier, "w");
+	if(nomFichier==NULL) {
+        fo=stdout;
+	} else {
+        fo=fopen(nomFichier, "w");
+    }
 	if(fo==NULL){
 		fprintf(stderr, "Can't open file %s", nomFichier);
 		return(-1);
@@ -693,11 +696,13 @@ int ecrit_csv(char *nomFichier, table_csv_t *table, char separateur){
 	for(i=0; i<table->nbLig; i++) {
 		for(j=0; j<table->nbCol; j++) {
 
-			if(hasDelimiter(courant->valeurs[j], separateur)){
-				fprintf(fo, "\"%s\"", courant->valeurs[j]);
-			} else {
-				fprintf(fo, "%s", courant->valeurs[j]);
-			}
+            if(courant->valeurs[j]!=NULL) {
+                if(hasDelimiter(courant->valeurs[j], separateur)){
+                    fprintf(fo, "\"%s\"", courant->valeurs[j]);
+                } else {
+                    fprintf(fo, "%s", courant->valeurs[j]);
+                }
+            }
 			if(j<table->nbCol-1) {
 				fprintf(fo, "%c", separateur);
 			} else {
