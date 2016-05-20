@@ -3,7 +3,7 @@
 	PREFIX=/usr/local
 #endif
 
-OBJS=cree_page.o project.o csv/csv.o csv/utils.o html/html.o
+OBJS=cree_page.o project.o csv/csv.o csv/utils.o xml/xml.o html/html.o
 CFLAGS="-I$(PREFIX)/include"
 
 all:cree_page convert_log
@@ -18,6 +18,9 @@ csv/csv.o:
 
 html/html.o:
 	make -C html
+
+xml/xml.o:
+	make -C xml
 
 %.o: %.c
 	gcc -c $(CFLAGS) $<

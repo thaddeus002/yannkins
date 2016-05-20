@@ -132,7 +132,7 @@ void destroy_html_table(htmlTable *table) {
 
 
 void html_add_table(htmlDocument *document, htmlTable *table) {
-    html_add_data(document, data);
+    html_add_data(document, table);
 }
 
 
@@ -149,12 +149,12 @@ void html_add_title(htmlDocument *document, int level, char *title) {
     htitle = init_xmlNode(NULL, htag);
     htitle->text = copyString(title);
 
-    html_add_data(document, title);
+    html_add_data(document, htitle);
 }
 
 
 void html_add_title_with_hr(htmlDocument *document, int level, char *title) {
-    xmlNode *hr = htitle = init_xmlNode(NULL, "<hr>");
+    xmlNode *hr = init_xmlNode(NULL, "<hr>");
 
     html_add_title(document, level, title);
     html_add_data(document, hr);
