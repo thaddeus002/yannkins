@@ -28,14 +28,8 @@ static char *copyString(char *object) {
 }
 
 
-/**
- * Add a new attribute to a node
- * @param node the node to modify
- * @param key the key of the new attribute
- * @param value the value of the new attribute
- * @return 0 in case of success
- */
-static int addAttribute(xmlNode *node, char *key, char *value){
+
+int addAttribute(xmlNode *node, char *key, char *value){
     
     xmlAttribute *last = node->attributes;
     xmlAttribute *new = malloc(sizeof(xmlAttribute));
@@ -56,10 +50,7 @@ static int addAttribute(xmlNode *node, char *key, char *value){
 }
 
 
-/**
- * @brief Add a child node to parent.
- */
-static int addChild(xmlNode *parent, xmlNode *child){
+int addChild(xmlNode *parent, xmlNode *child){
 
     xmlNode *last = parent->children;
 
@@ -104,13 +95,7 @@ static char *clean_open_tag(char *openTag) {
 }
 
 
-
-/**
- * @brief Create a new structure
- * @param openTag a valid node declaration
- * @return a new empty node
- */
-static xmlNode *init_xmlNode(char *header, char *openTag) {
+xmlNode *init_xmlNode(char *header, char *openTag) {
     xmlNode *result = malloc(sizeof(xmlNode));
     char *name = NULL;
     char *key = NULL;

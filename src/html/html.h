@@ -51,8 +51,9 @@ void html_add_data(htmlDocument *document, xmlNode *data);
  * @brief Create an emty html table.
  * @param nbCol the number of columns of the new table
  * @param nbLines the number of lines of the new table
+ * @param headers columns' headers
  */
-htmlTable *create_html_table(int nbCol, int nbLines);
+htmlTable *create_html_table(int nbCol, int nbLines, char **headers);
 
 /**
  * @brief Free the memory use by a table.

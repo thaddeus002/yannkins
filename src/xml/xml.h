@@ -66,11 +66,38 @@ struct xmlNode_ {
 
 
 /**
+ * @brief Create a new structure
+ * @param openTag a valid node declaration
+ * @return a new empty node
+ */
+xmlNode *init_xmlNode(char *header, char *openTag);
+
+
+/**
  * @brief Read an XML file
  * @param filename the name of file to read
  * @return the data under xmlNode format
  */
 xmlNode *read_xml_file(char *filename);
+
+/**
+ * Add a new attribute to a node
+ * @param node the node to modify
+ * @param key the key of the new attribute
+ * @param value the value of the new attribute
+ * @return 0 in case of success
+ */
+int addAttribute(xmlNode *node, char *key, char *value);
+
+
+/**
+ * @brief Add a child node to parent.
+ * @param parent the node where add
+ * @param child thr node to add
+ * @return 0 on success
+ */
+int addChild(xmlNode *parent, xmlNode *child);
+
 
 
 /**
