@@ -216,18 +216,18 @@ void html_add_title_with_hr(htmlDocument *document, int level, char *title) {
 
 
 void html_add_link(htmlDocument *document, char *text, char *link){
-    xmlNode *link = init_xmlNode(NULL, "<a>");
+    xmlNode *hlink = init_xmlNode(NULL, "<a>");
 
-    addAttribute(link, "href", link);
-    link->text=copyString(text);
-    html_add_data(document, link);
+    addAttribute(hlink, "href", link);
+    hlink->text=copyString(text);
+    html_add_data(document, hlink);
 }
 
 
 void html_add_image(htmlDocument *document, char *image) {
     xmlNode *img = init_xmlNode(NULL, "<img>");
 
-    addAttribute(link, "src", image);
+    addAttribute(img, "src", image);
     html_add_data(document, img);
 }
 
@@ -268,27 +268,27 @@ static xmlNode *find_table_cell(htmlTable *table, int col, int line){
 
 
 void html_add_link_in_table(htmlTable *table, char *text, char *link, int col, int line){
-    xmlNode *link;
+    xmlNode *hlink;
     xmlNode *td;
 
     td = find_table_cell(table, col, line);
 
     if(td != NULL) {
-        link = init_xmlNode(NULL, "<a>");
-        addAttribute(link, "href", link);
-        link->text=copyString(text);
-        addChild(td, link);
+        hlink = init_xmlNode(NULL, "<a>");
+        addAttribute(hlink, "href", link);
+        hlink->text=copyString(text);
+        addChild(td, hlink);
     }
 }
 
 
 void html_add_link_in_node(xmlNode *node, char *text, char *link){
-    xmlNode *link;
+    xmlNode *hlink;
 
-    link = init_xmlNode(NULL, "<a>");
-    addAttribute(link, "href", link);
-    link->text=copyString(text);
-    addChild(node, link);
+    hlink = init_xmlNode(NULL, "<a>");
+    addAttribute(hlink, "href", link);
+    hlink->text=copyString(text);
+    addChild(node, hlink);
 }
 
 
@@ -300,7 +300,8 @@ char *html_write_date(time_t date) {
     char *sdate;
 
     sdate = malloc(sizeof(char) * 17);
-	sprintf(sdate, "%02d/%02d/%04d %02d:%02d", time.tm_mday, time.tm_mon + 1, time.tm_year + 1900, time.tm_hour, time.tm_min); 
+	sprintf(sdate, "%02d/%02d/%04d %02d:%02d", time.tm_mday, time.tm_mon + 1, time.tm_year + 1900, time.tm_hour, time.tm_min);
+    return sdate;
 }
 
 
@@ -342,14 +343,17 @@ void html_add_image_in_table(htmlTable *table, char *image, int col, int line){
 void html_add_image_with_size_in_table(htmlTable *table, char *image, int width, int height,  int col, int line){
     xmlNode *img;
     xmlNode *td;
+    char attribute[100];
 
     td = find_table_cell(table, col, line);
 
     if(td != NULL) {
         img = init_xmlNode(NULL, "<img>");
         addAttribute(img, "src", image);
-        addAttribute(img, "width", width);
-        addAttribute(img, "height", height);
+        sprintf(attribute, "%d", width);
+        addAttribute(img, "width", attribute);
+        sprintf(attribute, "%d", height);
+        addAttribute(img, "height", attribute);
         addChild(td, img);
     }
 }

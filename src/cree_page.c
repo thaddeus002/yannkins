@@ -17,6 +17,7 @@
 #include <errno.h>
 #include <time.h>
 #include "html/html.h"
+#include "xml/xml.h"
 #include "csv/csv.h"
 #include "project.h"
 
@@ -64,39 +65,37 @@ typedef struct yannkins_line_t_ {
 
 // FUNCTIONS
 
-/**
- * @brief the classic usage function.
- *
- * This function will prompt the usage message and quit.
- * @param prog the name of the program
- */
-static void usage(char *prog){
-	fprintf(stderr, "\nUsage: %s file.csv\n\n", prog);
-	exit(1);
-}
-
 
 /**
  * @brief Write the table
  * @param lines the datas to put in the table, must end with NULL value
  */
-static void write_yannkins_table(FILE *fd, yannkins_line_t **lines){
+static void write_yannkins_table(xmlNode *document, yannkins_line_t **lines){
 
     yannkins_line_t *line; // current line
     int i = 0; // counter
+    htmlTable *table;
+    char *headers[4] = { "Last result" , "Task", "Last execution date", "Console output" };
+    int nbLines;
 
     if(lines == NULL){
         return;
     }
 
+    nbLines = 0;
     line = lines[0];
+    while(line != NULL) {
+        nbLines++;
+        line = lines[nbLines];
+    }
 
-    // headers line
-    fprintf(fd, "<table>\n\t<thead><tr><th>Last result</th><th>Task</th><th>Last execution date<th>Console output</th></tr></thead>\n<tbody>\n");
+    table = create_html_table(4, nbLines, headers);
 
+    line = lines[0];
     while(line != NULL){
 
         char *icon;
+        char *consoleOutputPath;
 
         if(line->result) {
             icon = FAIL_ICON;
@@ -104,19 +103,22 @@ static void write_yannkins_table(FILE *fd, yannkins_line_t **lines){
             icon = OK_ICON;
         }
 
-        fprintf(fd, "<tr>\n\t<td><img src=\"%s\" width=\"32\" height=\"32\"/></td>\n", icon);
-        fprintf(fd, "\t<td>%s</td>\n", line->name);
-        fprintf(fd, "\t<td>");
-        fprintf(fd, "%s", line->date);
-        fprintf(fd, "</td>\n");
-        fprintf(fd, "\t<td><a href=\"log/%s_console\">see<a/></td>\n</tr>\n", line->name);
+        html_add_image_with_size_in_table(table, icon, 32, 32, 0, i);
+
+        html_set_text_in_table(table, line->name, 1, i);
+        
+        html_set_text_in_table(table, line->date, 2, i);
+
+        consoleOutputPath = malloc(sizeof(char) * (strlen(line->name) + 13));
+        sprintf(consoleOutputPath, "log/%s_console", line->name);
+        html_add_link_in_table(table, "see", consoleOutputPath, 3, i);
+        free(consoleOutputPath);
 
         i++;
         line = lines[i];
     }
 
-    // end table
-    fprintf(fd, "</tbody>\n</table>\n");
+    html_add_table(document, table);
 }
 
 
@@ -300,27 +302,6 @@ yannkins_line_t **init_lines(char *project, char *yannkinsRep){
 
 
 /**
- * @brief Add the content of a file in a stream.
- * @param fd the output stream
- * @param filename the name of file to add
- */
-void include_file(FILE *fd, char *filename){
-
-	FILE *in;
-	char line[250];
-
-	in = fopen(filename, "r");
-	if(in != NULL) {
-
-		while(fgets(line, 250, in)!=NULL){
-			fprintf(fd, "%s", line);
-		}
-		fclose(in);
-	}
-}
-
-
-/**
  * @brief concatenate two directory adding a '/' between the two.
  * @param beg the beginning string
  * @param end the ending string
@@ -358,41 +339,26 @@ int write_yannkins_html(char *project, char *yannkinsRep){
 	table_csv_t *data_s; // filtrated svn logs
 	char *elementsCherches[4];
 	int nb; // number of OK columns for svn logs
-	FILE *fd;
+    htmlDocument *page;
+    xmlNode *bandeau;
+    char *content;
 
-	wwwdir = concat_path(yannkinsRep, "www");
-	if(wwwdir == NULL) {
-		return ERR_MEMORY;
-	}
 
-	filename=malloc(sizeof(char)*(strlen(project)+6));
-	sprintf(filename, "%s.html", project);
-	
-	report = concat_path(wwwdir, filename);
-	free(wwwdir);
-	free(filename);
-	
-	if(report == NULL) {
-		return ERR_MEMORY;
-	}
 
-	fd = fopen(report, "w");
-	free(report);
+    page = create_html_document(TITLE);
 
-	if(fd == NULL){
-		fprintf(stderr, "Can't create file %s : %d\n", report, errno);
-        return ERR_OPEN_FILE;
-	}
+    bandeau = read_xml_file("www/bandeau.html");
+    html_add_data(page, bandeau);
 
-	html_ecrit_ouverture(fd);
-	html_ecrit_entete(fd, TITLE);
-	html_open_body(fd);
-	include_file(fd, "www/bandeau.html");
+    content = malloc(sizeof(char) * (strlen(project) + 9));
+    sprintf(content, "Project %s", project);
+    html_add_title(page, 1, content);
+    free(content);
 
-	fprintf(fd, "<h1>Project %s</h1>\n", project);
-	html_write_title_with_hr(fd, 2, "Results of last analysis");
-    
-    write_yannkins_table(fd, lines);
+    html_add_title_with_hr(page, 2, "Results of last analysis");
+
+    write_yannkins_table(page, lines);
+
   
     // freeing memory
     if(lines != NULL){
@@ -421,17 +387,34 @@ int write_yannkins_html(char *project, char *yannkinsRep){
 		data_s=selectionne_colonnes(data, elementsCherches, 4, &nb);
 		tronquer_colonne(data_s, elementsCherches[2], 20);
 
-		fprintf(fd, "<h2>Last revisions</h2><hr/>\n");
+        html_add_title_with_hr(page, 2, "Last revisions");
 
-		html_write_table(fd, data_s);
+        html_add_table_from_data(page, data_s);
+        
 		destroy_table_csv(data_s);
 		destroy_table_csv(data);
 	}
 
-	// end of file
-	html_close_body(fd);
-	html_ecrit_fermeture(fd);
-	fclose(fd);
+    // write file
+	wwwdir = concat_path(yannkinsRep, "www");
+	if(wwwdir == NULL) {
+		return ERR_MEMORY;
+	}
+
+	filename=malloc(sizeof(char)*(strlen(project)+6));
+	sprintf(filename, "%s.html", project);
+	
+	report = concat_path(wwwdir, filename);
+	free(wwwdir);
+	free(filename);
+	
+	if(report == NULL) {
+		return ERR_MEMORY;
+	}
+
+    html_write_to_file(page, report);
+    destroy_html_document(page);
+	free(report);
 
     return ERR_OK;
 }
@@ -439,8 +422,6 @@ int write_yannkins_html(char *project, char *yannkinsRep){
 
 int main(int argc, char **argv){
 
-	FILE *fd;
-	int err;
 	char *project;
 	char *project_file;
 	char projects_dir[1000];
@@ -449,8 +430,13 @@ int main(int argc, char **argv){
     char *logdir; // name of directory
     char *yannkinsDir; // working directory
     char *htmlFile; // index.html file
-	
-	yannkinsDir = getenv("YANNKINS_HOME");
+	htmlDocument *page;
+    xmlNode *bandeau;
+    htmlList *list;
+    xmlNode *listItem;
+
+
+    yannkinsDir = getenv("YANNKINS_HOME");
 
 	if(yannkinsDir==NULL) {
 		fprintf(stderr, "Warning : YANNKINS_HOME environment variable not found\n");
@@ -458,35 +444,18 @@ int main(int argc, char **argv){
 		yannkinsDir = YANNKINS_DIR;
 	}
 
-	htmlFile=concat_path(yannkinsDir, HTML_FILE);
+    page = create_html_document(TITLE);
 
-	if(htmlFile==NULL){
-		fprintf(stderr, "Can't allocate memory\n");
-        return ERR_MEMORY;
-	}
+    bandeau = read_xml_file("www/bandeau.html");
+    html_add_data(page, bandeau);
 
-	fd = fopen(htmlFile, "w");
-
-	if(fd == NULL){
-		fprintf(stderr, "Can't create file %s : %d\n", htmlFile, errno);
-        return ERR_OPEN_FILE;
-	}
-
-	free(htmlFile);
-
-	html_ecrit_ouverture(fd);
-	html_ecrit_entete(fd, TITLE);
-	html_open_body(fd);
-
-	include_file(fd, "www/bandeau.html");
-
-	html_write_title(fd, 1, "Projects list");
+    html_add_title(page, 1, "Projects list");
 
 	sprintf(projects_dir, "%s/projets", yannkinsDir);
     logdir = malloc(strlen(yannkinsDir)+5);
     sprintf(logdir, "%s/log", yannkinsDir);
 
-	fprintf(fd, "<ul>\n");
+    list = html_add_list(page);
 
     rep = opendir(projects_dir);
     while ((lecture = readdir(rep))) {
@@ -507,19 +476,28 @@ int main(int argc, char **argv){
 
 			project_file=malloc(sizeof(char)*(strlen(project)+6));
 			sprintf(project_file, "%s.html", project);
-			fprintf(fd, "<li>"); html_write_link(fd, project, project_file);
+
+            listItem = html_add_list_item(list, NULL);
+            html_add_link_in_node(listItem, project, project_file);
 
 			yk_destroy_project(project_struct);
 		}
 	}
 	closedir(rep);
 
-	fprintf(fd, "</ul>\n");
 
-	// end of file
-	html_close_body(fd);
-	html_ecrit_fermeture(fd);
-	fclose(fd);
+    // write file
 
-	return err;
+	htmlFile=concat_path(yannkinsDir, HTML_FILE);
+
+	if(htmlFile==NULL){
+		fprintf(stderr, "Can't allocate memory\n");
+        return ERR_MEMORY;
+	}
+
+    html_write_to_file(page, htmlFile);
+	free(htmlFile);
+    destroy_html_document(page);
+
+	return 0;
 }
