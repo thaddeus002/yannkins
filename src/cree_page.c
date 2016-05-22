@@ -345,6 +345,7 @@ int write_yannkins_html(char *project, char *yannkinsRep){
 
 
     page = create_html_document(TITLE);
+    html_add_css(page, "style/style.css");
 
     bandeau = read_xml_file("www/bandeau.html");
     html_add_data(page, bandeau);
@@ -444,6 +445,7 @@ int main(int argc, char **argv){
 	}
 
     page = create_html_document(TITLE);
+    html_add_css(page, "style/style.css");
 
     bandeau = read_xml_file("www/bandeau.html");
     html_add_data(page, bandeau);
