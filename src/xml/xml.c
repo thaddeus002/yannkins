@@ -22,6 +22,8 @@ typedef enum obj_type {
 
 /** Allocate memory and copy the content of a given string */
 static char *copyString(char *object) {
+    if(object == NULL) { return NULL; }
+    
     char *copy = malloc(sizeof(char) * (strlen(object) + 1));
     strcpy(copy, object);
     return copy;
@@ -105,7 +107,7 @@ xmlNode *init_xmlNode(char *header, char *openTag) {
     char *tag;
     int quotes=0; // 1 if quotes where opened
 
-    result->header = header;
+    result->header = copyString(header);
     result->name = NULL;
     result->attributes = NULL;
 

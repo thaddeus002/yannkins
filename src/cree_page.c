@@ -344,7 +344,6 @@ int write_yannkins_html(char *project, char *yannkinsRep){
     char *content;
 
 
-
     page = create_html_document(TITLE);
 
     bandeau = read_xml_file("www/bandeau.html");

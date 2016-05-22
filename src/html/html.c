@@ -21,7 +21,10 @@
 
 /** Allocate memory and copy the content of a given string */
 static char *copyString(char *object) {
-    char *copy = malloc(sizeof(char) * (strlen(object) + 1));
+    char *copy;
+
+    if(object == NULL) { return NULL; }
+    copy = malloc(sizeof(char) * (strlen(object) + 1));
     strcpy(copy, object);
     return copy;
 }
@@ -136,11 +139,6 @@ htmlTable *create_html_table(int nbCol, int nbLines, char **headers){
     }
 
     return table;
-}
-
-
-void destroy_html_table(htmlTable *table) {
-    destroy_xmlNode(table);
 }
 
 
@@ -362,117 +360,3 @@ void html_add_image_with_size_in_table(htmlTable *table, char *image, int width,
 int html_write_to_file(htmlDocument *document, char *filename) {
     return write_xml_node_in_file(filename, document);
 }
-
-
-
-
-// Implementation of deprecated API
-
-
-void html_ecrit_ouverture(FILE *fd){
-	fprintf(fd, "%s\n", HTML5_HEADER);
-	fprintf(fd, "<html>\n");
-}
-
-
-void html_ecrit_fermeture(FILE *fd){
-	fprintf(fd, "</html>\n");
-}
-
-
-void html_ecrit_entete(FILE *fd, char *title){
-	fprintf(fd, "<head>\n");
-	fprintf(fd, "\t<title>%s</title>\n\t<link rel=\"stylesheet\" href=\"style/style.css\">\n", title);
-	fprintf(fd, "\t<meta charset=\"utf-8\">\n</head>\n");
-}
-
-
-void html_open_body(FILE *fd){
-	fprintf(fd, "<body>\n");
-}
-
-
-void html_close_body(FILE *fd){
-	fprintf(fd, "</body>\n");
-}
-
-// internal function
-static void html_write_title_with_hr_or_not(FILE *fd, int level, char *title, int with_hr){
-	fprintf(fd, "<h%d>%s</h%d>", level, title, level);
-	if(with_hr){
-		fprintf(fd, "<hr/>");
-	}
-	fprintf(fd, "\n");
-}
-
-
-void html_write_title(FILE *fd, int level, char *title){
-	html_write_title_with_hr_or_not(fd, level, title, 0);
-}
-
-
-void html_write_title_with_hr(FILE *fd, int level, char *title){
-	html_write_title_with_hr_or_not(fd, level, title, 1);
-}
-
-
-void html_write_link(FILE *fd, char *text, char *link){
-	fprintf(fd, "<a href=%s>%s</a>\n", link, text);
-}
-
-
-void html_ecrit_date(FILE *fd, time_t date){
-
-	struct tm time;
-
-	localtime_r(&date, &time);
-
-	fprintf(fd, "%02d/%02d/%04d %02d:%02d", time.tm_mday, time.tm_mon + 1, time.tm_year + 1900, time.tm_hour, time.tm_min); 
-}
-
-
-void html_write_table(FILE *fd, table_csv_t *data){
-
-	int i, j; // counters
-	char *value; // string to write in output stream
-	ligne_csv_t *ligne; // a line of data
-
-	// headers line
-	fprintf(fd, "<table>\n\t<thead>\n\t\t<tr>\n");
-
-	i=0;
-	value = data->entetes[0];
-
-	while ( ( i < data->nbCol ) && ( value != NULL ) ) {
-		fprintf(fd, "\t\t\t<th>%s</th>\n", value);
-		i++;
-		value=data->entetes[i];
-	}
-
-	fprintf(fd, "</tr>\n\t</thead>\n\t<tbody>\n");
-
-	i=0;
-	ligne=data->lignes;
-	while ((i<data->nbLig) && (ligne!=NULL)){
-		
-		fprintf(fd, "\t\t<tr>\n");
-
-		j=0;
-		value = ligne->valeurs[0];
-
-		while ((j < data->nbCol)&&(value!=NULL)){
-			fprintf(fd, "\t\t\t<td>%s</td>\n", value);
-
-			j++;
-			value=ligne->valeurs[j];
-		}
-		fprintf(fd, "\t\t</tr>\n");
-
-		i++;
-		ligne=ligne->next;
-	}
-
-	// ends table
-	fprintf(fd, "\t</tbody>\n</table>\n");
-}
-
