@@ -19,7 +19,8 @@
 typedef xmlNode htmlDocument;
 /** @brief Represents an HTML Table */
 typedef xmlNode htmlTable;
-
+/** @brief Represents an HTML List (<ul>) */
+typedef xmlNode htmlList;
 
 /**
  * @brief Create a new HTML page.
@@ -46,6 +47,20 @@ void html_add_css(htmlDocument *document, char *cssFile);
  * @param data the data to add
  */
 void html_add_data(htmlDocument *document, xmlNode *data);
+
+/**
+ * @brief add a list at the end of document's body.
+ * @param document the document to modify
+ * @return the added element
+ */
+htmlList *html_add_list(htmlDocument *document);
+
+/**
+ * @brief add a item to a list
+ * @param list the list to modify
+ * @param item the content of the new item
+ */
+xmlNode *html_add_list_item(htmlList *list, char *item);
 
 /**
  * @brief Create an emty html table.
@@ -124,6 +139,16 @@ void html_add_image(htmlDocument *document, char *image);
  */
 void html_add_link_in_table(htmlTable *table, char *text, char *link, int col, int line);
 
+
+/**
+ * @brief Write a text with a hyperlink.
+ * @param node where append the link
+ * @param text appearing text
+ * @param link url to point in the link
+ */
+void html_add_link_in_node(xmlNode *node, char *text, char *link);
+
+ 
 /**
  * @brief Write the date in human readable form.
  * @param document where append the date
@@ -134,6 +159,16 @@ void html_add_link_in_table(htmlTable *table, char *text, char *link, int col, i
 void html_add_date_in_table(htmlTable *table, time_t date, int col, int line);
 
 /**
+ * @brief Write a text in a table's cell.
+ * @param document where append the date
+ * @param text the data to write
+ * @param col the column index
+ * @param line the line index
+ */
+void html_set_text_in_table(htmlTable *table, char *text, int col, int line);
+
+
+/**
  * @brief Append an image to the HTML document
  * @param document the document to modify
  * @param image the image's url
@@ -141,6 +176,19 @@ void html_add_date_in_table(htmlTable *table, time_t date, int col, int line);
  * @param line the line index
  */
 void html_add_image_in_table(htmlTable *table, char *image, int col, int line);
+
+
+/**
+ * @brief Append an image to the HTML document
+ * @param document the document to modify
+ * @param image the image's url
+ * @param width width of image
+ * @param height height of image
+ * @param col the column index
+ * @param line the line index
+ */
+void html_add_image_with_size_in_table(htmlTable *table, char *image, int width, int height,  int col, int line);
+
 
 /**
  * @brief Write the HTML document in a file.

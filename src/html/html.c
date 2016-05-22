@@ -86,6 +86,26 @@ void html_add_data(htmlDocument *document, xmlNode *data){
 }
 
 
+htmlList *html_add_list(htmlDocument *document) {
+    htmlList *list = init_xmlNode(NULL, "<ul>");
+
+    html_add_data(document, list);
+    return list;
+}
+
+/**
+ * @brief add a item to a list
+ * @param list the list to modify
+ * @param item the content of the new item
+ */
+xmlNode *html_add_list_item(htmlList *list, char *item){
+    xmlNode *hitem = init_xmlNode(NULL, "<li>");
+    hitem->text = copyString(item);
+    addChild(list, hitem);
+    return hitem;
+}
+
+
 htmlTable *create_html_table(int nbCol, int nbLines, char **headers){
     xmlNode *table = init_xmlNode(NULL, "<table>");
     int i, j;
@@ -123,12 +143,46 @@ void destroy_html_table(htmlTable *table) {
     destroy_xmlNode(table);
 }
 
-/**
- * @brief Append a table at the end of the document.
- * @param document where append the chapter title
- * @param data the data to add
- */
- void html_add_table_from_data(htmlDocument *document, table_csv_t *data);
+
+ void html_add_table_from_data(htmlDocument *document, table_csv_t *data) {
+
+    int nbCol, nbLines;
+    int i, j;
+    htmlTable *table;
+    xmlNode *tbody;
+    xmlNode *tr, *td;
+    ligne_csv_t *csvLine;
+
+    nbCol = data->nbCol;
+    nbLines = data->nbLig;
+
+    table = create_html_table(nbCol, nbLines, data->entetes);
+
+    tbody = table->children;
+    while( (tbody!=NULL) && (strcmp(tbody->name,"tbody")) ) {
+        tbody = tbody->next;
+    }
+
+    if(tbody == NULL) {
+        // this may not append
+        fprintf(stderr, "Warning: Unexpected null pointer in function html_add_table_from_data()\n");
+        return;
+    }
+
+    tr=tbody->children;
+    csvLine=data->lignes;
+    for(i=1; i<=nbLines; i++) {
+        td=tr->children;
+        for(j=1; j<=nbCol; j++) {
+            td->text = copyString(csvLine->valeurs[j-1]);
+            td=td->next;
+        }
+        tr=tr->next;
+        csvLine=csvLine->next;
+    }
+
+    html_add_table(document, table);
+}
 
 
 void html_add_table(htmlDocument *document, htmlTable *table) {
@@ -160,57 +214,147 @@ void html_add_title_with_hr(htmlDocument *document, int level, char *title) {
     html_add_data(document, hr);
 }
 
-/**
- * @brief Write a text with a hyperlink.
- * @param document where append the link
- * @param text appearing text
- * @param link url to point in the link
- */
-void html_add_link(htmlDocument *document, char *text, char *link);
 
-/**
- * @brief Write the date in human readable form.
- * @param document where append the date
- * @param date the data to write
- */
-void html_add_date(htmlDocument *document, time_t date);
+void html_add_link(htmlDocument *document, char *text, char *link){
+    xmlNode *link = init_xmlNode(NULL, "<a>");
 
-/**
- * @brief Append an image to the HTML document
- * @param document the document to modify
- * @param image the image's url
- */
-void html_add_image(htmlDocument *document, char *image);
-
-/**
- * @brief Write a text with a hyperlink.
- * @param document where append the link
- * @param text appearing text
- * @param link url to point in the link
- * @param col the column index
- * @param line the line index
- */
-void html_add_link_in_table(htmlTable *table, char *text, char *link, int col, int line);
-
-/**
- * @brief Write the date in human readable form.
- * @param document where append the date
- * @param date the data to write
- * @param col the column index
- * @param line the line index
- */
-void html_add_date_in_table(htmlTable *table, time_t date, int col, int line);
-
-/**
- * @brief Append an image to the HTML document
- * @param document the document to modify
- * @param image the image's url
- * @param col the column index
- * @param line the line index
- */
-void html_add_image_in_table(htmlTable *table, char *image, int col, int line);
+    addAttribute(link, "href", link);
+    link->text=copyString(text);
+    html_add_data(document, link);
+}
 
 
+void html_add_image(htmlDocument *document, char *image) {
+    xmlNode *img = init_xmlNode(NULL, "<img>");
+
+    addAttribute(link, "src", image);
+    html_add_data(document, img);
+}
+
+
+/** Find a table cell */
+static xmlNode *find_table_cell(htmlTable *table, int col, int line){
+    int i;
+    xmlNode *tbody;
+    xmlNode *tr, *td;
+
+    tbody = table->children;
+    while( (tbody!=NULL) && (strcmp(tbody->name,"tbody")) ) {
+        tbody = tbody->next;
+    }
+
+    if(tbody == NULL) {
+        // this may not append
+        fprintf(stderr, "Warning: Unexpected null pointer in function html_add_table_from_data()\n");
+        return NULL;
+    }
+
+    tr = tbody->children;
+    for(i=0; i<line; i++) {
+        if(tr == NULL) { break; }
+        tr=tr->next;
+    }
+
+    if(tr==NULL) { return NULL; }
+
+    td = tr->children;
+    for(i=0; i<col; i++) {
+        if(td == NULL) { break; }
+        td=td->next;
+    }
+
+    return td;
+}
+
+
+void html_add_link_in_table(htmlTable *table, char *text, char *link, int col, int line){
+    xmlNode *link;
+    xmlNode *td;
+
+    td = find_table_cell(table, col, line);
+
+    if(td != NULL) {
+        link = init_xmlNode(NULL, "<a>");
+        addAttribute(link, "href", link);
+        link->text=copyString(text);
+        addChild(td, link);
+    }
+}
+
+
+void html_add_link_in_node(xmlNode *node, char *text, char *link){
+    xmlNode *link;
+
+    link = init_xmlNode(NULL, "<a>");
+    addAttribute(link, "href", link);
+    link->text=copyString(text);
+    addChild(node, link);
+}
+
+
+/** format a date in human readable string */
+char *html_write_date(time_t date) {
+
+	struct tm time;
+	localtime_r(&date, &time);
+    char *sdate;
+
+    sdate = malloc(sizeof(char) * 17);
+	sprintf(sdate, "%02d/%02d/%04d %02d:%02d", time.tm_mday, time.tm_mon + 1, time.tm_year + 1900, time.tm_hour, time.tm_min); 
+}
+
+
+void html_add_date_in_table(htmlTable *table, time_t date, int col, int line){
+    xmlNode *td;
+
+    td = find_table_cell(table, col, line);
+
+    if(td != NULL) {
+        td->text=html_write_date(date);
+    }
+}
+
+
+void html_set_text_in_table(htmlTable *table, char *text, int col, int line) {
+    xmlNode *td;
+
+    td = find_table_cell(table, col, line);
+
+    if(td != NULL) {
+        td->text=copyString(text);
+    }
+}
+
+
+void html_add_image_in_table(htmlTable *table, char *image, int col, int line){
+    xmlNode *img;
+    xmlNode *td;
+
+    td = find_table_cell(table, col, line);
+
+    if(td != NULL) {
+        img = init_xmlNode(NULL, "<img>");
+        addAttribute(img, "src", image);
+        addChild(td, img);
+    }
+}
+
+void html_add_image_with_size_in_table(htmlTable *table, char *image, int width, int height,  int col, int line){
+    xmlNode *img;
+    xmlNode *td;
+
+    td = find_table_cell(table, col, line);
+
+    if(td != NULL) {
+        img = init_xmlNode(NULL, "<img>");
+        addAttribute(img, "src", image);
+        addAttribute(img, "width", width);
+        addAttribute(img, "height", height);
+        addChild(td, img);
+    }
+}
+
+    
 int html_write_to_file(htmlDocument *document, char *filename) {
     return write_xml_node_in_file(filename, document);
 }
