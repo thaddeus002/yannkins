@@ -153,14 +153,14 @@ yannkins_line_t *new_entry(char *filename, char *basename){
     }
 
     // reading last line of file
-    log = lecture_fichier_csv_entier(filename, ';');
+    log = read_csv_file(filename, ';');
 	if(log==NULL){
 		return NULL;
 	}
 
     if((log->nbCol < 2) || (log->nbLig<1)){
         fprintf(stderr, "Incorrect file: %s\n%d column(s), %d line(s)\n", basename, log->nbCol, log->nbLig);
-        affiche_table(log, stderr);
+        show_table(log, stderr);
         destroy_table_csv(log);
         return NULL;
     }
@@ -378,14 +378,14 @@ int write_yannkins_html(char *project, char *yannkinsRep){
 	fichier=malloc(sizeof(char)*(strlen(yannkinsRep)+strlen(SVNLOG)+strlen(project)+7));
 	sprintf(fichier, "%s/log/%s_%s", yannkinsRep, SVNLOG, project);
 
-	data=lecture_fichier_csv_entier(fichier, ';');
+	data=read_csv_file(fichier, ';');
 	if(data!=NULL) {
 		elementsCherches[0]="#";
 		elementsCherches[1]="author";
 		elementsCherches[2]="date";
 		elementsCherches[3]="commentaries";
-		data_s=selectionne_colonnes(data, elementsCherches, 4, &nb);
-		tronquer_colonne(data_s, elementsCherches[2], 20);
+		data_s=select_columns(data, elementsCherches, 4, &nb);
+		truncate_column(data_s, elementsCherches[2], 20);
 
         html_add_title_with_hr(page, 2, "Last revisions");
 

@@ -62,7 +62,7 @@ static void detruit_ligne_csv(ligne_csv_t *table, int nbColonnes);
 /* EXTERNAL FUNCTIONS */
 
 
-table_csv_t *lecture_fichier_csv_entier(char *nomFichier, char separateur){
+table_csv_t *read_csv_file(char *nomFichier, char separateur){
 	table_csv_t *table; /* the return value */
 	FILE *fichier; /* the file to read */
 	char **tabElts; /* one line content in a table of strings */
@@ -187,13 +187,13 @@ void destroy_table_csv(table_csv_t *table){
 }
 
 
-table_csv_t *selectionne_lignes(table_csv_t *table, const char *nomColonne, const char *valeur){
+table_csv_t *csv_select_lines(table_csv_t *table, const char *nomColonne, const char *valeur){
 
-	return(selectionne_lignes_plage(table, nomColonne, valeur, valeur));
+	return(csv_select_lines_range(table, nomColonne, valeur, valeur));
 }
 
 
-table_csv_t *selectionne_lignes_plage(table_csv_t *table, const char *nomColonne, const char *min, const char *max){
+table_csv_t *csv_select_lines_range(table_csv_t *table, const char *nomColonne, const char *min, const char *max){
 	table_csv_t *retour; /* return value */
 	ligne_csv_t *ligne; /* a line of the table */
 	ligne_csv_t *nouvelle; /* a line to add at the return value */
@@ -278,7 +278,7 @@ table_csv_t *selectionne_lignes_plage(table_csv_t *table, const char *nomColonne
 }
 
 
-int cherche_valeur(char valeur[100], table_csv_t *table, char *nomColonne, int numLigne){
+int csv_find_value(char valeur[100], table_csv_t *table, char *nomColonne, int numLigne){
 
 	int i, j; /* counters */
 	ligne_csv_t *ligne; /* the line looked for */
@@ -314,7 +314,7 @@ int cherche_valeur(char valeur[100], table_csv_t *table, char *nomColonne, int n
 }
 
 
-table_csv_t *cree_table(char **entetes, int nbCol){
+table_csv_t *csv_create_table(char **entetes, int nbCol){
 	
 	table_csv_t *table; /* return value */
 	int i; /* counter */
@@ -353,7 +353,7 @@ table_csv_t *cree_table(char **entetes, int nbCol){
 }
 
 
-int ajoute_ligne(table_csv_t *table, char **contenu, int nbContenu){
+int csv_add_line(table_csv_t *table, char **contenu, int nbContenu){
 
 	ligne_csv_t *nouvelle, *derniere; /* lines of the table */
 	int i; /* counter */
@@ -396,7 +396,7 @@ int ajoute_ligne(table_csv_t *table, char **contenu, int nbContenu){
 }
 
 
-void affiche_table(table_csv_t *table, FILE *flux){
+void show_table(table_csv_t *table, FILE *flux){
 
 	const char vertical='-';
 	const char horizontal='|';
@@ -408,7 +408,7 @@ void affiche_table(table_csv_t *table, FILE *flux){
 	ligne_csv_t *ligne; /* going througth the lines */
 
 	if(table==NULL){
-		fprintf(stderr, "affiche_table(): There's no table to show\n");
+		fprintf(stderr, "show_table(): There's no table to show\n");
 		return;
 	}
 
@@ -469,7 +469,7 @@ void affiche_table(table_csv_t *table, FILE *flux){
 }
 
 
-int tri_table_decroissant(table_csv_t *table, const char *nomColonne){
+int sort_table_decreasing(table_csv_t *table, const char *nomColonne){
 	int n; /* index of the sorting column */
 	int i, j; /* counters */
 	ligne_csv_t **liste, **tri, **tempo; /* tables of pointers to the lines to sort */
@@ -548,7 +548,7 @@ int tri_table_decroissant(table_csv_t *table, const char *nomColonne){
 }
 
 
-int fusionne_tables(table_csv_t *table1, table_csv_t *table2){
+int merge_tables(table_csv_t *table1, table_csv_t *table2){
 	
 	int i; /* counter */
 	ligne_csv_t *derniereLigne; /* the last line of table1 */
@@ -579,7 +579,7 @@ int fusionne_tables(table_csv_t *table1, table_csv_t *table2){
 }
 
 
-table_csv_t *selectionne_colonnes(table_csv_t *table, char **elementsCherches, int nbElementsCherches, int *nbElementsTrouves){
+table_csv_t *select_columns(table_csv_t *table, char **elementsCherches, int nbElementsCherches, int *nbElementsTrouves){
 
 	int i=0; // counting columns
 	int j; //counter
@@ -630,7 +630,7 @@ table_csv_t *selectionne_colonnes(table_csv_t *table, char **elementsCherches, i
 	}
 	
 
-	selection = cree_table(entetes_trouves, *nbElementsTrouves);
+	selection = csv_create_table(entetes_trouves, *nbElementsTrouves);
 
 	ligne = table->lignes;
 
@@ -638,16 +638,14 @@ table_csv_t *selectionne_colonnes(table_csv_t *table, char **elementsCherches, i
 
 		char **contenu = malloc (sizeof(char*) * *nbElementsTrouves);
 
-
 		for(j=0; j<*nbElementsTrouves; j++){
 
 			char *valeur = ligne->valeurs[colonnes[j]];
 			contenu[j]=malloc(sizeof(char)*(strlen(valeur)+1));
 			strcpy(contenu[j], valeur);
 		}
-		
 
-		ajoute_ligne(selection, contenu, *nbElementsTrouves);
+		csv_add_line(selection, contenu, *nbElementsTrouves);
 		
 		ligne=ligne->next;
 	}
@@ -659,7 +657,7 @@ table_csv_t *selectionne_colonnes(table_csv_t *table, char **elementsCherches, i
 }
 
 
-int ecrit_csv(char *nomFichier, table_csv_t *table, char separateur){
+int write_csv_file(char *nomFichier, table_csv_t *table, char separateur){
 	int i, j; /* counters */
 	ligne_csv_t *courant; /* crossing the lines */
 	FILE *fo; /* file descriptor */
@@ -719,7 +717,7 @@ int ecrit_csv(char *nomFichier, table_csv_t *table, char separateur){
 }
 
 
-int tronquer_colonne(table_csv_t *table, char *nom_colonne, int longueur){
+int truncate_column(table_csv_t *table, char *nom_colonne, int longueur){
 
 	int n; // number of column
 	int trouve; // column found?

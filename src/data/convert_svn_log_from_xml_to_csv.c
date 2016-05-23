@@ -57,7 +57,7 @@ int main(int argc, char **argv) {
 
     destroy_xmlNode(document);
 
-    if(ecrit_csv(outputFile, table, ';')) {
+    if(write_csv_file(outputFile, table, ';')) {
         fprintf(stderr, "Warning : Output file not created.\n");
     }
 

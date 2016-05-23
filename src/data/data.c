@@ -86,7 +86,7 @@ table_csv_t *present_svn_log(xmlNode *logDocument){
     headers[2]=DATE;
     headers[3]="commentaries";
 
-    table = cree_table(headers, 4);
+    table = csv_create_table(headers, 4);
 
     logentry = logDocument->children;
 
@@ -126,7 +126,7 @@ table_csv_t *present_svn_log(xmlNode *logDocument){
                 child = child->next;
             }
 
-            ajoute_ligne(table, content, 4);
+            csv_add_line(table, content, 4);
             free(content[0]);
             free(content[2]);
         }

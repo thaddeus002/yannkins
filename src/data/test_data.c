@@ -26,7 +26,7 @@ int main(int argc, char **argv) {
 
     destroy_xmlNode(document);
 
-    ecrit_csv(CSV_FILE, table, ';');
+    write_csv_file(CSV_FILE, table, ';');
 
     destroy_table_csv(table);
     

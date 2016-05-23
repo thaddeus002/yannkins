@@ -43,7 +43,7 @@ typedef struct {
  * @param separateur the split character
  * @return NULL if the file can not be read
  */
-table_csv_t *lecture_fichier_csv_entier(char *nomFichier, char separateur);
+table_csv_t *read_csv_file(char *nomFichier, char separateur);
 
 
 /**
@@ -54,7 +54,7 @@ table_csv_t *lecture_fichier_csv_entier(char *nomFichier, char separateur);
  * @param nbElementsTrouves the function will plce here  the number of columns found 
  * @return the new table
  */
-table_csv_t *selectionne_colonnes(table_csv_t *table, char **elementsCherches, int nbElementsCherches, int *nbElementsTrouves);
+table_csv_t *select_columns(table_csv_t *table, char **elementsCherches, int nbElementsCherches, int *nbElementsTrouves);
 
 
 /**
@@ -64,7 +64,7 @@ table_csv_t *selectionne_colonnes(table_csv_t *table, char **elementsCherches, i
  * @param longueur the length to keep
  * @return 0 in case of success
  */
-int tronquer_colonne(table_csv_t *table, char *nom_colonne, int longueur);
+int truncate_column(table_csv_t *table, char *nom_colonne, int longueur);
 
 
 /**
@@ -81,7 +81,7 @@ void destroy_table_csv(table_csv_t *table);
  * @param valeur value to find in the column
  * @return the new table with only the selected lines
  */
-table_csv_t *selectionne_lignes(table_csv_t *table, const char *nomColonne, const char *valeur);
+table_csv_t *csv_select_lines(table_csv_t *table, const char *nomColonne, const char *valeur);
 
 
 /**
@@ -92,7 +92,7 @@ table_csv_t *selectionne_lignes(table_csv_t *table, const char *nomColonne, cons
  * @param max the maximun value for the column
  * @return the new table with only the selected lines
  */
-table_csv_t *selectionne_lignes_plage(table_csv_t *table, const char *nomColonne, const char *min, const char *max);
+table_csv_t *csv_select_lines_range(table_csv_t *table, const char *nomColonne, const char *min, const char *max);
 
 
 /**
@@ -103,7 +103,7 @@ table_csv_t *selectionne_lignes_plage(table_csv_t *table, const char *nomColonne
  * @param numLigne line number (beginning at 1) to look for
  * @return a non null code if un error occured
  */
-int cherche_valeur(char valeur[100], table_csv_t *table, char *nomColonne, int numLigne); 
+int csv_find_value(char valeur[100], table_csv_t *table, char *nomColonne, int numLigne); 
 
 
 /**
@@ -112,7 +112,7 @@ int cherche_valeur(char valeur[100], table_csv_t *table, char *nomColonne, int n
  * @param nbCol number of columns 
  * @return the newly created table
  */
-table_csv_t *cree_table(char **entetes, int nbCol);
+table_csv_t *csv_create_table(char **entetes, int nbCol);
 
 
 /**
@@ -126,7 +126,7 @@ table_csv_t *cree_table(char **entetes, int nbCol);
  * @param nbContenu to number of elements in contenu
  * @return a non null code if un error occured
  */
-int ajoute_ligne(table_csv_t *table, char **contenu, int nbContenu);
+int csv_add_line(table_csv_t *table, char **contenu, int nbContenu);
 
 
 /**
@@ -134,7 +134,7 @@ int ajoute_ligne(table_csv_t *table, char **contenu, int nbContenu);
  * @param table the data to print
  * @param flux the stream where print the data
  */
-void affiche_table(table_csv_t *table, FILE *flux);
+void show_table(table_csv_t *table, FILE *flux);
 
 
 /**
@@ -143,7 +143,7 @@ void affiche_table(table_csv_t *table, FILE *flux);
  * @param nomColonne the name of the column to sort by
  * @return a non null code if un error occured
  */
-int tri_table_decroissant(table_csv_t *table, const char *nomColonne);
+int sort_table_decreasing(table_csv_t *table, const char *nomColonne);
 
 
 /**
@@ -155,7 +155,7 @@ int tri_table_decroissant(table_csv_t *table, const char *nomColonne);
  * @param table2 the second table
  * @return a non null code if un error occured
  */
-int fusionne_tables(table_csv_t *table1, table_csv_t *table2);
+int merge_tables(table_csv_t *table1, table_csv_t *table2);
 
 
 /**
@@ -168,7 +168,7 @@ int fusionne_tables(table_csv_t *table1, table_csv_t *table2);
  * @param separateur fields delimiter
  * @return a non null code if un error occured
  */
-int ecrit_csv(char *nomFichier, table_csv_t *table, char separateur);
+int write_csv_file(char *nomFichier, table_csv_t *table, char separateur);
 
 
 #endif
