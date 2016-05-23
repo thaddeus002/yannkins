@@ -20,17 +20,6 @@ typedef enum obj_type {
 } objType;
 
 
-/** Allocate memory and copy the content of a given string */
-static char *copyString(char *object) {
-    if(object == NULL) { return NULL; }
-    
-    char *copy = malloc(sizeof(char) * (strlen(object) + 1));
-    strcpy(copy, object);
-    return copy;
-}
-
-
-
 int addAttribute(xmlNode *node, char *key, char *value){
     
     xmlAttribute *last = node->attributes;

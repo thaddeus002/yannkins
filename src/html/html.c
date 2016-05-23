@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "html.h"
+#include "../csv/utils.h"
 
 /**
  * @brief old header of HTML page
@@ -18,16 +19,6 @@
 /** @brief Header to use in pages */
 #define HTML5_HEADER "<!DOCTYPE html>"
 
-
-/** Allocate memory and copy the content of a given string */
-static char *copyString(char *object) {
-    char *copy;
-
-    if(object == NULL) { return NULL; }
-    copy = malloc(sizeof(char) * (strlen(object) + 1));
-    strcpy(copy, object);
-    return copy;
-}
 
 
 htmlDocument *create_html_document(char *title){

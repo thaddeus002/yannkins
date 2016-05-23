@@ -51,3 +51,13 @@ void to_upper_case(char *chaine){
 			chaine[i]=chaine[i]+'A'-'a';
 }
 
+
+char *copyString(char *object) {
+    char *copy;
+    
+    if(object == NULL) { return NULL; }
+    copy = malloc(sizeof(char) * (strlen(object) + 1));
+    strcpy(copy, object);
+    return copy;
+}
+
