@@ -1,6 +1,6 @@
 # yannkins
 
-A simple continuous integration program for Linux server. It can launch basics tasks and create a nice html page to show results.
+A simple continuous integration program for Linux. It launch configured tasks and create a nice html page to show results. Several projects can be managed.
 
 ## What is Yannkins ?
 
