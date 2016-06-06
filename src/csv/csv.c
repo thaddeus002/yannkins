@@ -1,7 +1,7 @@
 /**
  * @file csv.c
  * @brief Utilitaries functions and types to manipulates data. These data
- * can be read from or write in csv files with ';' delimiter.
+ * can be read from or write in csv files.
  * @author Yannick Garcia
  */
 
@@ -23,23 +23,23 @@
 /**
  * @brief find the index of a column
  * @param table the csv file data
- * @param nomColonne the name of column to look for
+ * @param columnName the name of column to look for
  * @return the index of a column (beginning to zero), or -1 if the column not exist
  */
-static int cherche_colonne(table_csv_t *table, const char *nomColonne);
+static int csv_find_column(table_csv_t *table, const char *columnName);
 
 
 /**
- * @brief Read a line in the given file.
+ * @brief Read a line in the given stream.
  *
  * The lines feed or delimiter between doble quotes are not taken in account.
- * @param nbElts the function will put here the number of element readed, or a negative error code.
+ * @param nbElts the function will put here the number of elements readed, or a negative error code.
  * Must be allocated.
  * @param fichier the input stream
  * @param separateur the column delimiter
  * @return the elements of the line
  */
-static char **lit_ligne(int *nbElts, FILE *fichier, char separateur);
+static char **csv_read_line(int *nbElts, FILE *fichier, char separateur);
 
 
 /**
@@ -52,11 +52,11 @@ static int hasDelimiter(char *field, char delimiter);
 
 
 /**
- * @brief free the memory occuped by a ligne_csv_t.
+ * @brief free the memory occuped by an unique ligne_csv_t with nbColumns values.
  * @param the pointer to the structur to free
- * @param nbColonnes the number of allocated value strings
+ * @param nbColumns the number of allocated value strings
  */
-static void detruit_ligne_csv(ligne_csv_t *table, int nbColonnes);
+static void csv_destroy_line(ligne_csv_t *table, int nbColumns);
 
 
 /* EXTERNAL FUNCTIONS */
@@ -95,7 +95,7 @@ table_csv_t *read_csv_file(char *nomFichier, char separateur){
 
     /* Reading the first line */
 
-    table->entetes=lit_ligne(&(table->nbCol), fichier, separateur);
+    table->entetes=csv_read_line(&(table->nbCol), fichier, separateur);
     if((table->nbCol<=0)||(table->entetes==NULL)) {
         destroy_table_csv(table);
         fprintf(stderr,"Fail while reading headers of CSV file %s : code %d\n", nomFichier, table->nbCol);
@@ -106,7 +106,7 @@ table_csv_t *read_csv_file(char *nomFichier, char separateur){
     tabElts=NULL;
     j=0; /* number of readed lines */
     do {
-        tabElts=lit_ligne(&nbElts, fichier, separateur);
+        tabElts=csv_read_line(&nbElts, fichier, separateur);
 
         if(nbElts==0) {
             /* probably the end of file */
@@ -212,7 +212,7 @@ table_csv_t *csv_select_lines_range(table_csv_t *table, const char *nomColonne, 
     if(nomColonne==NULL) return(NULL);
     if(table->nbCol==0) return(NULL);
 
-    n=cherche_colonne(table, nomColonne);
+    n=csv_find_column(table, nomColonne);
     if(n<0){
         // column not found
         return(NULL);
@@ -298,7 +298,7 @@ int csv_find_value(char valeur[100], table_csv_t *table, char *nomColonne, int n
 
     if( (table->nbCol==0) || (table->entetes==NULL) ) return(-4);
 
-    i=cherche_colonne(table, nomColonne);
+    i=csv_find_column(table, nomColonne);
     if(i<0){
         return(-5);
     }
@@ -388,7 +388,7 @@ int csv_add_line(table_csv_t *table, char **contenu, int nbContenu){
         if((i<nbContenu)&&(contenu[i]!=NULL)){
             nouvelle->valeurs[i]=malloc((strlen(contenu[i])+1)*sizeof(char));
             if(nouvelle->valeurs[i]==NULL){
-                detruit_ligne_csv(nouvelle, i);
+                csv_destroy_line(nouvelle, i);
                 return(-6);
             }
             strcpy(nouvelle->valeurs[i], contenu[i]);
@@ -487,7 +487,7 @@ int sort_table_decreasing(table_csv_t *table, const char *nomColonne){
     if(table==NULL) return(-1);
     if(nomColonne==NULL) return(-2);
 
-    n=cherche_colonne(table, nomColonne);
+    n=csv_find_column(table, nomColonne);
     if(n<0) return(-3);
 
     if(table->nbLig==0) return(-4);
@@ -765,7 +765,7 @@ int truncate_column(table_csv_t *table, char *nom_colonne, int longueur){
 /************************************************************************/
 
 
-static int cherche_colonne(table_csv_t *table, const char *nomColonne){
+static int csv_find_column(table_csv_t *table, const char *columnName){
 
     int n; /**< column number */
     char entete[100]; /**< a column header */
@@ -773,11 +773,11 @@ static int cherche_colonne(table_csv_t *table, const char *nomColonne){
 
     if(table==NULL) return(-1);
 
-    if(nomColonne==NULL) return(-2);
+    if(columnName==NULL) return(-2);
 
     if( (table->nbCol==0) || (table->entetes==NULL) ) return(-3);
 
-    strncpy(nomColMaj, nomColonne, 100-1);
+    strncpy(nomColMaj, columnName, 100-1);
     nomColMaj[100-1]='\0';
     to_upper_case(nomColMaj);
 
@@ -795,7 +795,7 @@ static int cherche_colonne(table_csv_t *table, const char *nomColonne){
 }
 
 
-static char **lit_ligne(int *nbElts, FILE *fichier, char separateur){
+static char **csv_read_line(int *nbElts, FILE *fichier, char separateur){
 
     char **retour; /* return value */
     int nA; /* number of allocations of X char* */
@@ -935,19 +935,16 @@ static int hasDelimiter(char *field, char delimiter) {
 }
 
 
-static void detruit_ligne_csv(ligne_csv_t *table, int nbColonnes){
+static void csv_destroy_line(ligne_csv_t *line, int nbColumns){
 
     int i; // counter
-    ligne_csv_t *courant; // for cross the table
 
-    courant=table;
+    if(line == NULL) return;
 
-    while(courant!=NULL){
-        if(courant->valeurs!=NULL){
-            for(i=0; i<nbColonnes; i++)
-                if(courant->valeurs[i]!=NULL) free(courant->valeurs[i]);
-            free(courant->valeurs);
-        }
-        courant=courant->next;
+    if(line->valeurs!=NULL){
+        for(i=0; i<nbColumns; i++)
+            if(line->valeurs[i]!=NULL) free(line->valeurs[i]);
+        free(line->valeurs);
     }
+    free(line);
 }
