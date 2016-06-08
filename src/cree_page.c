@@ -153,15 +153,15 @@ yannkins_line_t *new_entry(char *filename, char *basename){
     }
 
     // reading last line of file
-    log = read_csv_file(filename, ';');
+    log = csv_read_file(filename, ';');
 	if(log==NULL){
 		return NULL;
 	}
 
     if((log->nbCol < 2) || (log->nbLig<1)){
         fprintf(stderr, "Incorrect file: %s\n%d column(s), %d line(s)\n", basename, log->nbCol, log->nbLig);
-        show_table(log, stderr);
-        destroy_table_csv(log);
+        csv_show_table(log, stderr);
+        csv_destroy_table(log);
         return NULL;
     }
 
@@ -192,7 +192,7 @@ yannkins_line_t *new_entry(char *filename, char *basename){
         entry->result = 1;
     }
 
-    destroy_table_csv(log);
+    csv_destroy_table(log);
 
     return entry;
 }
@@ -378,21 +378,21 @@ int write_yannkins_html(char *project, char *yannkinsRep){
 	fichier=malloc(sizeof(char)*(strlen(yannkinsRep)+strlen(SVNLOG)+strlen(project)+7));
 	sprintf(fichier, "%s/log/%s_%s", yannkinsRep, SVNLOG, project);
 
-	data=read_csv_file(fichier, ';');
+	data=csv_read_file(fichier, ';');
 	if(data!=NULL) {
 		elementsCherches[0]="#";
 		elementsCherches[1]="author";
 		elementsCherches[2]="date";
 		elementsCherches[3]="commentaries";
-		data_s=select_columns(data, elementsCherches, 4, &nb);
-		truncate_column(data_s, elementsCherches[2], 20);
+		data_s=csv_select_columns(data, elementsCherches, 4, &nb);
+		csv_truncate_column(data_s, elementsCherches[2], 20);
 
         html_add_title_with_hr(page, 2, "Last revisions");
 
         html_add_table_from_data(page, data_s);
         
-		destroy_table_csv(data_s);
-		destroy_table_csv(data);
+		csv_destroy_table(data_s);
+		csv_destroy_table(data);
 	}
 
     // write file

@@ -39,11 +39,11 @@ typedef struct {
  * @brief read a csv file.
  *
  * The quotes between fields are removed.
- * @param nomFichier the name of csv file
- * @param separateur the split character
+ * @param filename the name of csv file
+ * @param delimiter the split character
  * @return NULL if the file can not be read
  */
-table_csv_t *read_csv_file(char *nomFichier, char separateur);
+table_csv_t *csv_read_file(char *filename, char delimiter);
 
 
 /**
@@ -54,7 +54,7 @@ table_csv_t *read_csv_file(char *nomFichier, char separateur);
  * @param nbElementsTrouves the function will plce here  the number of columns found 
  * @return the new table
  */
-table_csv_t *select_columns(table_csv_t *table, char **elementsCherches, int nbElementsCherches, int *nbElementsTrouves);
+table_csv_t *csv_select_columns(table_csv_t *table, char **elementsCherches, int nbElementsCherches, int *nbElementsTrouves);
 
 
 /**
@@ -64,14 +64,14 @@ table_csv_t *select_columns(table_csv_t *table, char **elementsCherches, int nbE
  * @param longueur the length to keep
  * @return 0 in case of success
  */
-int truncate_column(table_csv_t *table, char *nom_colonne, int longueur);
+int csv_truncate_column(table_csv_t *table, char *nom_colonne, int longueur);
 
 
 /**
  * @brief free memory occuped by a table_csv_t
  * @param table the struct to free
  */
-void destroy_table_csv(table_csv_t *table);
+void csv_destroy_table(table_csv_t *table);
 
 
 /**
@@ -134,7 +134,7 @@ int csv_add_line(table_csv_t *table, char **contenu, int nbContenu);
  * @param table the data to print
  * @param flux the stream where print the data
  */
-void show_table(table_csv_t *table, FILE *flux);
+void csv_show_table(table_csv_t *table, FILE *flux);
 
 
 /**
@@ -143,7 +143,7 @@ void show_table(table_csv_t *table, FILE *flux);
  * @param nomColonne the name of the column to sort by
  * @return a non null code if un error occured
  */
-int sort_table_decreasing(table_csv_t *table, const char *nomColonne);
+int csv_sort_table_decreasing(table_csv_t *table, const char *nomColonne);
 
 
 /**
@@ -155,7 +155,7 @@ int sort_table_decreasing(table_csv_t *table, const char *nomColonne);
  * @param table2 the second table
  * @return a non null code if un error occured
  */
-int merge_tables(table_csv_t *table1, table_csv_t *table2);
+int csv_merge_tables(table_csv_t *table1, table_csv_t *table2);
 
 
 /**
@@ -163,12 +163,12 @@ int merge_tables(table_csv_t *table1, table_csv_t *table2);
  *
  * In case of \n or delimiter character in a field, this field will be between
  * doble quotes.
- * @param nomFichier the name of the file to create
+ * @param filename the name of the file to create
  * @param table the data
- * @param separateur fields delimiter
+ * @param delimiter fields delimiter
  * @return a non null code if un error occured
  */
-int write_csv_file(char *nomFichier, table_csv_t *table, char separateur);
+int csv_write_file(char *filename, table_csv_t *table, char delimiter);
 
 
 #endif

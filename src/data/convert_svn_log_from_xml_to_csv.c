@@ -57,11 +57,11 @@ int main(int argc, char **argv) {
 
     destroy_xmlNode(document);
 
-    if(write_csv_file(outputFile, table, ';')) {
+    if(csv_write_file(outputFile, table, ';')) {
         fprintf(stderr, "Warning : Output file not created.\n");
     }
 
-    destroy_table_csv(table);
+    csv_destroy_table(table);
     
     return 0;
 }

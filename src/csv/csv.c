@@ -35,11 +35,11 @@ static int csv_find_column(table_csv_t *table, const char *columnName);
  * The lines feed or delimiter between doble quotes are not taken in account.
  * @param nbElts the function will put here the number of elements readed, or a negative error code.
  * Must be allocated.
- * @param fichier the input stream
- * @param separateur the column delimiter
+ * @param stream the input stream
+ * @param delimiter the column delimiter
  * @return the elements of the line
  */
-static char **csv_read_line(int *nbElts, FILE *fichier, char separateur);
+static char **csv_read_line(int *nbElts, FILE *stream, char delimiter);
 
 
 /**
@@ -62,7 +62,7 @@ static void csv_destroy_line(ligne_csv_t *table, int nbColumns);
 /* EXTERNAL FUNCTIONS */
 
 
-table_csv_t *read_csv_file(char *nomFichier, char separateur){
+table_csv_t *csv_read_file(char *filename, char delimiter){
     table_csv_t *table; /* the return value */
     FILE *fichier; /* the file to read */
     char **tabElts; /* one line content in a table of strings */
@@ -72,16 +72,16 @@ table_csv_t *read_csv_file(char *nomFichier, char separateur){
     int i, j; /* counters */
 
 
-    if(nomFichier==NULL) return(NULL);
+    if(filename==NULL) return(NULL);
 
     /* opening file */
-    fichier=fopen(nomFichier,"r");
+    fichier=fopen(filename,"r");
     if(!fichier){
-        fprintf(stderr,"Can't open file %s\n", nomFichier);
+        fprintf(stderr,"Can't open file %s\n", filename);
         return(NULL);
     } else {
         #ifdef DEBUG
-        fprintf(stdout,"File %s opened\n", nomFichier);
+        fprintf(stdout,"File %s opened\n", filename);
         #endif
     }
 
@@ -95,10 +95,10 @@ table_csv_t *read_csv_file(char *nomFichier, char separateur){
 
     /* Reading the first line */
 
-    table->entetes=csv_read_line(&(table->nbCol), fichier, separateur);
+    table->entetes=csv_read_line(&(table->nbCol), fichier, delimiter);
     if((table->nbCol<=0)||(table->entetes==NULL)) {
-        destroy_table_csv(table);
-        fprintf(stderr,"Fail while reading headers of CSV file %s : code %d\n", nomFichier, table->nbCol);
+        csv_destroy_table(table);
+        fprintf(stderr,"Fail while reading headers of CSV file %s : code %d\n", filename, table->nbCol);
         return(NULL);
     }
 
@@ -106,7 +106,7 @@ table_csv_t *read_csv_file(char *nomFichier, char separateur){
     tabElts=NULL;
     j=0; /* number of readed lines */
     do {
-        tabElts=csv_read_line(&nbElts, fichier, separateur);
+        tabElts=csv_read_line(&nbElts, fichier, delimiter);
 
         if(nbElts==0) {
             /* probably the end of file */
@@ -114,8 +114,8 @@ table_csv_t *read_csv_file(char *nomFichier, char separateur){
         }
 
         if(nbElts<=0){
-            fprintf(stderr,"Echec de lecture de la ligne %d du fichier CSV %s : code %d\n", j+1, nomFichier, nbElts);
-            destroy_table_csv(table);
+            fprintf(stderr,"Echec de lecture de la ligne %d du fichier CSV %s : code %d\n", j+1, filename, nbElts);
+            csv_destroy_table(table);
             return(NULL);
         }
 
@@ -139,7 +139,7 @@ table_csv_t *read_csv_file(char *nomFichier, char separateur){
                 if(tabElts[i]!=NULL) free(tabElts[i]);
             }
             free(tabElts);
-            destroy_table_csv(table);
+            csv_destroy_table(table);
             return(NULL);
         }
 
@@ -160,14 +160,14 @@ table_csv_t *read_csv_file(char *nomFichier, char separateur){
     /* end */
     fclose(fichier);
     #ifdef DEBUG
-    fprintf(stderr,"Fin de lecture du fichier csv %s\n", nomFichier);
+    fprintf(stderr,"Fin de lecture du fichier csv %s\n", filename);
     #endif
 
     return(table);
 }
 
 
-void destroy_table_csv(table_csv_t *table){
+void csv_destroy_table(table_csv_t *table){
     int i; /* counter */
     ligne_csv_t *ligne, *suivante; /* look throuth the lines */
 
@@ -228,7 +228,7 @@ table_csv_t *csv_select_lines_range(table_csv_t *table, const char *nomColonne, 
     for(i=0; i<table->nbCol; i++){
         retour->entetes[i]=malloc(sizeof(char)*(strlen(table->entetes[i])+1));
         if(retour->entetes[i]==NULL){
-            destroy_table_csv(retour);
+            csv_destroy_table(retour);
             return(NULL);
         }
         strcpy(retour->entetes[i], table->entetes[i]);
@@ -244,13 +244,13 @@ table_csv_t *csv_select_lines_range(table_csv_t *table, const char *nomColonne, 
 
             nouvelle=malloc(sizeof(ligne_csv_t));
             if(nouvelle==NULL){
-                destroy_table_csv(retour);
+                csv_destroy_table(retour);
                 return(NULL);
             }
 
             nouvelle->valeurs=(char **) malloc(table->nbCol * sizeof(char *));
             if(nouvelle->valeurs==NULL){
-                destroy_table_csv(retour);
+                csv_destroy_table(retour);
                 free(nouvelle);
                 return(NULL);
             }
@@ -269,7 +269,7 @@ table_csv_t *csv_select_lines_range(table_csv_t *table, const char *nomColonne, 
                     nouvelle->valeurs[i]=NULL;
                     nouvelle->valeurs[i] = (char *) malloc( sizeof(char) * (strlen(ligne->valeurs[i])+1) );
                     if(nouvelle->valeurs[i]==NULL){
-                        destroy_table_csv(retour);
+                        csv_destroy_table(retour);
                         return(NULL);
                     }
                     strcpy(nouvelle->valeurs[i], ligne->valeurs[i]);
@@ -336,7 +336,7 @@ table_csv_t *csv_create_table(char **entetes, int nbCol){
 
     table->entetes=malloc(nbCol*sizeof(char*));
     if(table->entetes==NULL){
-        destroy_table_csv(table);
+        csv_destroy_table(table);
         return(NULL);
     }
 
@@ -346,7 +346,7 @@ table_csv_t *csv_create_table(char **entetes, int nbCol){
             table->entetes[i]=malloc((strlen(entetes[i])+1)*sizeof(char));
 
             if(table->entetes[i]==NULL){
-                destroy_table_csv(table);
+                csv_destroy_table(table);
                 return(NULL);
             }
 
@@ -403,7 +403,7 @@ int csv_add_line(table_csv_t *table, char **contenu, int nbContenu){
 }
 
 
-void show_table(table_csv_t *table, FILE *flux){
+void csv_show_table(table_csv_t *table, FILE *flux){
 
     const char vertical='-';
     const char horizontal='|';
@@ -476,7 +476,7 @@ void show_table(table_csv_t *table, FILE *flux){
 }
 
 
-int sort_table_decreasing(table_csv_t *table, const char *nomColonne){
+int csv_sort_table_decreasing(table_csv_t *table, const char *nomColonne){
     int n; /* index of the sorting column */
     int i, j; /* counters */
     ligne_csv_t **liste, **tri, **tempo; /* tables of pointers to the lines to sort */
@@ -555,7 +555,7 @@ int sort_table_decreasing(table_csv_t *table, const char *nomColonne){
 }
 
 
-int merge_tables(table_csv_t *table1, table_csv_t *table2){
+int csv_merge_tables(table_csv_t *table1, table_csv_t *table2){
 
     int i; /* counter */
     ligne_csv_t *derniereLigne; /* the last line of table1 */
@@ -586,7 +586,7 @@ int merge_tables(table_csv_t *table1, table_csv_t *table2){
 }
 
 
-table_csv_t *select_columns(table_csv_t *table, char **elementsCherches, int nbElementsCherches, int *nbElementsTrouves){
+table_csv_t *csv_select_columns(table_csv_t *table, char **elementsCherches, int nbElementsCherches, int *nbElementsTrouves){
 
     int i=0; // counting columns
     int j; //counter
@@ -664,32 +664,32 @@ table_csv_t *select_columns(table_csv_t *table, char **elementsCherches, int nbE
 }
 
 
-int write_csv_file(char *nomFichier, table_csv_t *table, char separateur){
+int csv_write_file(char *filename, table_csv_t *table, char delimiter){
     int i, j; /* counters */
     ligne_csv_t *courant; /* crossing the lines */
     FILE *fo; /* file descriptor */
 
-    if(nomFichier==NULL) {
+    if(filename==NULL) {
         fo=stdout;
     } else {
-        fo=fopen(nomFichier, "w");
+        fo=fopen(filename, "w");
     }
     if(fo==NULL){
-        fprintf(stderr, "Can't open file %s", nomFichier);
+        fprintf(stderr, "Can't open file %s", filename);
         return(-1);
     }
 
 
     /* headers */
     for(j=0; j<table->nbCol; j++) {
-        if(hasDelimiter(table->entetes[j], separateur)) {
+        if(hasDelimiter(table->entetes[j], delimiter)) {
             fprintf(fo, "\"%s\"", table->entetes[j]);
         } else {
             fprintf(fo, "%s", table->entetes[j]);
         }
 
         if(j<table->nbCol-1) {
-            fprintf(fo, "%c", separateur);
+            fprintf(fo, "%c", delimiter);
         } else {
             fprintf(fo, "\n");
         }
@@ -702,14 +702,14 @@ int write_csv_file(char *nomFichier, table_csv_t *table, char separateur){
         for(j=0; j<table->nbCol; j++) {
 
             if(courant->valeurs[j]!=NULL) {
-                if(hasDelimiter(courant->valeurs[j], separateur)){
+                if(hasDelimiter(courant->valeurs[j], delimiter)){
                     fprintf(fo, "\"%s\"", courant->valeurs[j]);
                 } else {
                     fprintf(fo, "%s", courant->valeurs[j]);
                 }
             }
             if(j<table->nbCol-1) {
-                fprintf(fo, "%c", separateur);
+                fprintf(fo, "%c", delimiter);
             } else {
                 fprintf(fo, "\n");
             }
@@ -719,12 +719,12 @@ int write_csv_file(char *nomFichier, table_csv_t *table, char separateur){
     }
 
 
-    if(nomFichier!=NULL) fclose(fo);
+    if(filename!=NULL) fclose(fo);
     return(0);
 }
 
 
-int truncate_column(table_csv_t *table, char *nom_colonne, int longueur){
+int csv_truncate_column(table_csv_t *table, char *nom_colonne, int longueur){
 
     int n; // number of column
     int trouve; // column found?
@@ -795,7 +795,7 @@ static int csv_find_column(table_csv_t *table, const char *columnName){
 }
 
 
-static char **csv_read_line(int *nbElts, FILE *fichier, char separateur){
+static char **csv_read_line(int *nbElts, FILE *stream, char delimiter){
 
     char **retour; /* return value */
     int nA; /* number of allocations of X char* */
@@ -823,7 +823,7 @@ static char **csv_read_line(int *nbElts, FILE *fichier, char separateur){
 
     while(!finLigne){
 
-        err=fgets(ligne, TAILLE_BUF, fichier);
+        err=fgets(ligne, TAILLE_BUF, stream);
 
         if(err==NULL) { /* End of file reached ? */
             if(i==0) {
@@ -842,7 +842,7 @@ static char **csv_read_line(int *nbElts, FILE *fichier, char separateur){
             }
 
             /* If found delimiter add the element */
-            if( (ligne[k]==separateur) && (!guillemetsOuverts) ){
+            if( (ligne[k]==delimiter) && (!guillemetsOuverts) ){
                 elt[m]='\0';
                 /* may be quotes around the field */
                 suppress_quotes(elt);
