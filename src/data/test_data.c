@@ -26,9 +26,9 @@ int main(int argc, char **argv) {
 
     destroy_xmlNode(document);
 
-    write_csv_file(CSV_FILE, table, ';');
+    csv_write_file(CSV_FILE, table, ';');
 
-    destroy_table_csv(table);
+    csv_destroy_table(table);
     
     return 0;
 }
