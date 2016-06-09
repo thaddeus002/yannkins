@@ -194,13 +194,13 @@ void csv_destroy_table(table_csv_t *table){
 }
 
 
-table_csv_t *csv_select_lines(table_csv_t *table, const char *nomColonne, const char *valeur){
+table_csv_t *csv_select_lines(table_csv_t *table, const char *columnsName, const char *value){
 
-    return(csv_select_lines_range(table, nomColonne, valeur, valeur));
+    return(csv_select_lines_range(table, columnsName, value, value));
 }
 
 
-table_csv_t *csv_select_lines_range(table_csv_t *table, const char *nomColonne, const char *min, const char *max){
+table_csv_t *csv_select_lines_range(table_csv_t *table, const char *columnsName, const char *min, const char *max){
     table_csv_t *retour; /* return value */
     ligne_csv_t *ligne; /* a line of the table */
     ligne_csv_t *nouvelle; /* a line to add at the return value */
@@ -209,10 +209,10 @@ table_csv_t *csv_select_lines_range(table_csv_t *table, const char *nomColonne, 
     int n; /* numero of column */
 
     if(table==NULL) return(NULL);
-    if(nomColonne==NULL) return(NULL);
+    if(columnsName==NULL) return(NULL);
     if(table->nbCol==0) return(NULL);
 
-    n=csv_find_column(table, nomColonne);
+    n=csv_find_column(table, columnsName);
     if(n<0){
         // column not found
         return(NULL);
@@ -285,20 +285,20 @@ table_csv_t *csv_select_lines_range(table_csv_t *table, const char *nomColonne, 
 }
 
 
-int csv_find_value(char valeur[100], table_csv_t *table, char *nomColonne, int numLigne){
+int csv_find_value(char value[100], table_csv_t *table, char *columnsName, int line){
 
     int i, j; /* counters */
     ligne_csv_t *ligne; /* the line looked for */
 
     if(table==NULL) return(-1);
 
-    if(nomColonne==NULL) return(-2);
+    if(columnsName==NULL) return(-2);
 
-    if(numLigne<=0) return(-3);
+    if(line<=0) return(-3);
 
     if( (table->nbCol==0) || (table->entetes==NULL) ) return(-4);
 
-    i=csv_find_column(table, nomColonne);
+    i=csv_find_column(table, columnsName);
     if(i<0){
         return(-5);
     }
@@ -308,25 +308,25 @@ int csv_find_value(char valeur[100], table_csv_t *table, char *nomColonne, int n
 
     if(ligne==NULL) return(-6);
 
-    while(j<numLigne){
+    while(j<line){
         ligne=ligne->next;
         if(ligne==NULL) return(-6);
         j++;
     }
 
-    strncpy(valeur, ligne->valeurs[i], 100-1);
-    valeur[100-1]='\0';
+    strncpy(value, ligne->valeurs[i], 100-1);
+    value[100-1]='\0';
 
     return(0);
 }
 
 
-table_csv_t *csv_create_table(char **entetes, int nbCol){
+table_csv_t *csv_create_table(char **headers, int nbCol){
 
     table_csv_t *table; /* return value */
     int i; /* counter */
 
-    if((entetes==NULL)||(nbCol==0)) return(NULL);
+    if((headers==NULL)||(nbCol==0)) return(NULL);
 
     table = malloc(sizeof(table_csv_t));
     if(table==NULL) return(NULL);
@@ -341,16 +341,16 @@ table_csv_t *csv_create_table(char **entetes, int nbCol){
     }
 
     for(i=0; i<nbCol; i++){
-        if(entetes[i]==NULL) table->entetes[i]=NULL;
+        if(headers[i]==NULL) table->entetes[i]=NULL;
         else {
-            table->entetes[i]=malloc((strlen(entetes[i])+1)*sizeof(char));
+            table->entetes[i]=malloc((strlen(headers[i])+1)*sizeof(char));
 
             if(table->entetes[i]==NULL){
                 csv_destroy_table(table);
                 return(NULL);
             }
 
-            strcpy(table->entetes[i], entetes[i]);
+            strcpy(table->entetes[i], headers[i]);
         }
     }
 
@@ -360,14 +360,14 @@ table_csv_t *csv_create_table(char **entetes, int nbCol){
 }
 
 
-int csv_add_line(table_csv_t *table, char **contenu, int nbContenu){
+int csv_add_line(table_csv_t *table, char **content, int contentLength){
 
     ligne_csv_t *nouvelle, *derniere; /* lines of the table */
     int i; /* counter */
 
     if(table==NULL) return(-1);
-    if(contenu==NULL) return(-2);
-    if(nbContenu>table->nbCol) return(-3);
+    if(content==NULL) return(-2);
+    if(contentLength>table->nbCol) return(-3);
 
     derniere=table->lignes;
     if(derniere!=NULL) {
@@ -385,13 +385,13 @@ int csv_add_line(table_csv_t *table, char **contenu, int nbContenu){
     }
 
     for(i=0; i<table->nbCol; i++){
-        if((i<nbContenu)&&(contenu[i]!=NULL)){
-            nouvelle->valeurs[i]=malloc((strlen(contenu[i])+1)*sizeof(char));
+        if((i<contentLength)&&(content[i]!=NULL)){
+            nouvelle->valeurs[i]=malloc((strlen(content[i])+1)*sizeof(char));
             if(nouvelle->valeurs[i]==NULL){
                 csv_destroy_line(nouvelle, i);
                 return(-6);
             }
-            strcpy(nouvelle->valeurs[i], contenu[i]);
+            strcpy(nouvelle->valeurs[i], content[i]);
 
         } else nouvelle->valeurs[i]=NULL;
     }
@@ -403,7 +403,7 @@ int csv_add_line(table_csv_t *table, char **contenu, int nbContenu){
 }
 
 
-void csv_show_table(table_csv_t *table, FILE *flux){
+void csv_show_table(table_csv_t *table, FILE *output){
 
     const char vertical='-';
     const char horizontal='|';
@@ -421,73 +421,73 @@ void csv_show_table(table_csv_t *table, FILE *flux){
 
 
     /* superior bordure */
-    fprintf(flux, "%c", horizontal);
+    fprintf(output, "%c", horizontal);
     for(i=0; i<table->nbCol; i++){
         for(j=0; j<largeurCol; j++)
-            fprintf(flux, "%c", vertical);
-        fprintf(flux, "%c", horizontal);
+            fprintf(output, "%c", vertical);
+        fprintf(output, "%c", horizontal);
     }
-    fprintf(flux, "\n");
+    fprintf(output, "\n");
 
     /* headers */
-    fprintf(flux, "%c", horizontal);
+    fprintf(output, "%c", horizontal);
     for(i=0; i<table->nbCol; i++){
         strncpy(contenu, table->entetes[i], largeurCol-3);
         contenu[largeurCol-3]='\0';
         sprintf(format, " %%%ds %%c", largeurCol-2);
-        fprintf(flux, format, contenu, horizontal);
+        fprintf(output, format, contenu, horizontal);
     }
-    fprintf(flux, "\n");
+    fprintf(output, "\n");
 
     /* bordure 2 */
-    fprintf(flux, "%c", horizontal);
+    fprintf(output, "%c", horizontal);
     for(i=0; i<table->nbCol; i++){
         for(j=0; j<largeurCol; j++)
-            fprintf(flux, "%c", vertical);
-        fprintf(flux, "%c", horizontal);
+            fprintf(output, "%c", vertical);
+        fprintf(output, "%c", horizontal);
     }
-    fprintf(flux, "\n");
+    fprintf(output, "\n");
 
     /* the lines */
     ligne=table->lignes;
     while(ligne!=NULL){
-        fprintf(flux, "%c", horizontal);
+        fprintf(output, "%c", horizontal);
         for(i=0; i<table->nbCol; i++){
             if(ligne->valeurs[i]!=NULL){
                 strncpy(contenu, ligne->valeurs[i], largeurCol-3);
                 contenu[largeurCol-3]='\0';
             } else contenu[0]='\0';
             sprintf(format, " %%%ds %%c", largeurCol-2);
-            fprintf(flux, format, contenu, horizontal);
+            fprintf(output, format, contenu, horizontal);
         }
-        fprintf(flux, "\n");
+        fprintf(output, "\n");
 
         ligne=ligne->next;
 
         /* inferior bordure */
-        fprintf(flux, "%c", horizontal);
+        fprintf(output, "%c", horizontal);
         for(i=0; i<table->nbCol; i++){
             for(j=0; j<largeurCol; j++)
-                fprintf(flux, "%c", vertical);
-            fprintf(flux, "%c", horizontal);
+                fprintf(output, "%c", vertical);
+            fprintf(output, "%c", horizontal);
         }
-        fprintf(flux, "\n");
+        fprintf(output, "\n");
     }
 }
 
 
-int csv_sort_table_decreasing(table_csv_t *table, const char *nomColonne){
+int csv_sort_table_decreasing(table_csv_t *table, const char *columnsName){
     int n; /* index of the sorting column */
     int i, j; /* counters */
     ligne_csv_t **liste, **tri, **tempo; /* tables of pointers to the lines to sort */
     ligne_csv_t *courant; /* crossing of the linked list */
-    char *valeur1, *valeur2; /* elements to compare */
+    char *value1, *value2; /* elements to compare */
 
 
     if(table==NULL) return(-1);
-    if(nomColonne==NULL) return(-2);
+    if(columnsName==NULL) return(-2);
 
-    n=csv_find_column(table, nomColonne);
+    n=csv_find_column(table, columnsName);
     if(n<0) return(-3);
 
     if(table->nbLig==0) return(-4);
@@ -525,9 +525,9 @@ int csv_sort_table_decreasing(table_csv_t *table, const char *nomColonne){
         /* looking for the element position */
         for(j=0; j<i; j++){
             /* comparaison */
-            valeur1=liste[i]->valeurs[n];
-            valeur2=tri[j]->valeurs[n];
-            if(strcmp(valeur1, valeur2)>0) break;
+            value1=liste[i]->valeurs[n];
+            value2=tri[j]->valeurs[n];
+            if(strcmp(value1, value2)>0) break;
         }
 
         /* prospective shift in the bottom of the table */
@@ -586,7 +586,7 @@ int csv_merge_tables(table_csv_t *table1, table_csv_t *table2){
 }
 
 
-table_csv_t *csv_select_columns(table_csv_t *table, char **elementsCherches, int nbElementsCherches, int *nbElementsTrouves){
+table_csv_t *csv_select_columns(table_csv_t *table, char **searchedElts, int nbSearchedElts, int *nbFoundElts){
 
     int i=0; // counting columns
     int j; //counter
@@ -596,14 +596,14 @@ table_csv_t *csv_select_columns(table_csv_t *table, char **elementsCherches, int
     char **entetes_trouves;
     ligne_csv_t *ligne; // crossing the lines
 
-    *nbElementsTrouves=0;
+    *nbFoundElts=0;
 
     if(table->entetes==NULL) {
         return NULL;
     }
 
-    entetes_trouves=malloc(sizeof(char *)*nbElementsCherches);
-    colonnes=malloc(sizeof(int)*nbElementsCherches);
+    entetes_trouves=malloc(sizeof(char *)*nbSearchedElts);
+    colonnes=malloc(sizeof(int)*nbSearchedElts);
 
     entete=table->entetes[i];
 
@@ -611,20 +611,20 @@ table_csv_t *csv_select_columns(table_csv_t *table, char **elementsCherches, int
 
         int trouve = 0;
 
-        for(j=0; j<nbElementsCherches; j++){
-            if(!strcmp(entete, elementsCherches[j])) {
+        for(j=0; j<nbSearchedElts; j++){
+            if(!strcmp(entete, searchedElts[j])) {
                 trouve = 1;
                 break;
             }
         }
 
         if(trouve) {
-            colonnes[*nbElementsTrouves]=i;
-            entetes_trouves[*nbElementsTrouves]=entete;
-            (*nbElementsTrouves)++;
+            colonnes[*nbFoundElts]=i;
+            entetes_trouves[*nbFoundElts]=entete;
+            (*nbFoundElts)++;
         }
 
-        if(*nbElementsTrouves==nbElementsCherches){
+        if(*nbFoundElts==nbSearchedElts){
             break;
         }
 
@@ -637,22 +637,22 @@ table_csv_t *csv_select_columns(table_csv_t *table, char **elementsCherches, int
     }
 
 
-    selection = csv_create_table(entetes_trouves, *nbElementsTrouves);
+    selection = csv_create_table(entetes_trouves, *nbFoundElts);
 
     ligne = table->lignes;
 
     while (ligne!=NULL){
 
-        char **contenu = malloc (sizeof(char*) * *nbElementsTrouves);
+        char **contenu = malloc (sizeof(char*) * *nbFoundElts);
 
-        for(j=0; j<*nbElementsTrouves; j++){
+        for(j=0; j<*nbFoundElts; j++){
 
-            char *valeur = ligne->valeurs[colonnes[j]];
-            contenu[j]=malloc(sizeof(char)*(strlen(valeur)+1));
-            strcpy(contenu[j], valeur);
+            char *value = ligne->valeurs[colonnes[j]];
+            contenu[j]=malloc(sizeof(char)*(strlen(value)+1));
+            strcpy(contenu[j], value);
         }
 
-        csv_add_line(selection, contenu, *nbElementsTrouves);
+        csv_add_line(selection, contenu, *nbFoundElts);
 
         ligne=ligne->next;
     }
@@ -724,7 +724,7 @@ int csv_write_file(char *filename, table_csv_t *table, char delimiter){
 }
 
 
-int csv_truncate_column(table_csv_t *table, char *nom_colonne, int longueur){
+int csv_truncate_column(table_csv_t *table, char *columnsName, int ltk){
 
     int n; // number of column
     int trouve; // column found?
@@ -734,7 +734,7 @@ int csv_truncate_column(table_csv_t *table, char *nom_colonne, int longueur){
     trouve = 0;
 
     for(i=0; i<table->nbCol; i++){
-        if(!strcmp(nom_colonne, table->entetes[i])){
+        if(!strcmp(columnsName, table->entetes[i])){
             n=i;
             trouve=1;
             break;
@@ -747,8 +747,8 @@ int csv_truncate_column(table_csv_t *table, char *nom_colonne, int longueur){
 
     ligne = table->lignes;
     while(ligne!=NULL){
-        if(strlen(ligne->valeurs[n]) > longueur){
-            ligne->valeurs[n][longueur]='\0';
+        if(strlen(ligne->valeurs[n]) > ltk){
+            ligne->valeurs[n][ltk]='\0';
         }
 
         ligne=ligne->next;

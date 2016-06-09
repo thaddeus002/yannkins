@@ -49,22 +49,22 @@ table_csv_t *csv_read_file(char *filename, char delimiter);
 /**
  * @brief Create a new table with less columns.
  * @param table the origin table
- * @param elementsCherches table of columns names to look for
- * @param nbElementsCherches number of elements in elementsCherches
- * @param nbElementsTrouves the function will plce here  the number of columns found 
+ * @param searchedElts table of columns names to look for
+ * @param nbSearchedElts number of elements in searchedElts
+ * @param nbFoundElts the function will plce here  the number of columns found 
  * @return the new table
  */
-table_csv_t *csv_select_columns(table_csv_t *table, char **elementsCherches, int nbElementsCherches, int *nbElementsTrouves);
+table_csv_t *csv_select_columns(table_csv_t *table, char **searchedElts, int nbSearchedElts, int *nbFoundElts);
 
 
 /**
  * @brief Cut if necessary the lenght of fields in a given column.
  * @param table the data to modify
- * @param nom_colonne the name of the columns to strech
- * @param longueur the length to keep
+ * @param columnsName the name of the columns to strech
+ * @param ltk the length to keep
  * @return 0 in case of success
  */
-int csv_truncate_column(table_csv_t *table, char *nom_colonne, int longueur);
+int csv_truncate_column(table_csv_t *table, char *columnsName, int ltk);
 
 
 /**
@@ -77,42 +77,42 @@ void csv_destroy_table(table_csv_t *table);
 /**
  * @brief select the lines with property name=value.
  * @param table the table where look for data
- * @param nomColonne name of column
- * @param valeur value to find in the column
+ * @param columnsName name of column
+ * @param value value to find in the column
  * @return the new table with only the selected lines
  */
-table_csv_t *csv_select_lines(table_csv_t *table, const char *nomColonne, const char *valeur);
+table_csv_t *csv_select_lines(table_csv_t *table, const char *columnsName, const char *value);
 
 
 /**
  * @brief select the lines with property min<=value<=max.
  * @param table the table where look for data
- * @param nomColonne name of column
+ * @param columnsName name of column
  * @param min the minimun value for the column
  * @param max the maximun value for the column
  * @return the new table with only the selected lines
  */
-table_csv_t *csv_select_lines_range(table_csv_t *table, const char *nomColonne, const char *min, const char *max);
+table_csv_t *csv_select_lines_range(table_csv_t *table, const char *columnsName, const char *min, const char *max);
 
 
 /**
  * @brief find the value at a given position.
- * @param valeur the function will put here the result - must be allocated
+ * @param value the function will put here the result - must be allocated
  * @param table the data
- * @param nomColonne column name to look for
- * @param numLigne line number (beginning at 1) to look for
+ * @param columnsName column name to look for
+ * @param line line number (beginning at 1) to look for
  * @return a non null code if un error occured
  */
-int csv_find_value(char valeur[100], table_csv_t *table, char *nomColonne, int numLigne); 
+int csv_find_value(char value[100], table_csv_t *table, char *columnsName, int line); 
 
 
 /**
  * @brief create an empty data table
- * @param entetes headers of columns
+ * @param headers headers of columns
  * @param nbCol number of columns 
  * @return the newly created table
  */
-table_csv_t *csv_create_table(char **entetes, int nbCol);
+table_csv_t *csv_create_table(char **headers, int nbCol);
 
 
 /**
@@ -122,28 +122,28 @@ table_csv_t *csv_create_table(char **entetes, int nbCol);
  * will be complete with NULL. If there are more element an error code
  * will be reurned.
  * @param table the csv table
- * @param contenu the data to add
- * @param nbContenu to number of elements in contenu
+ * @param content the data to add
+ * @param contentLength to number of elements in content
  * @return a non null code if un error occured
  */
-int csv_add_line(table_csv_t *table, char **contenu, int nbContenu);
+int csv_add_line(table_csv_t *table, char **content, int contentLength);
 
 
 /**
  * @brief Show the table.
  * @param table the data to print
- * @param flux the stream where print the data
+ * @param output the stream where print the data
  */
-void csv_show_table(table_csv_t *table, FILE *flux);
+void csv_show_table(table_csv_t *table, FILE *output);
 
 
 /**
  * @brief sort the table in decreasing order for a given column
  * @param table the table to sort
- * @param nomColonne the name of the column to sort by
+ * @param columnsName the name of the column to sort by
  * @return a non null code if un error occured
  */
-int csv_sort_table_decreasing(table_csv_t *table, const char *nomColonne);
+int csv_sort_table_decreasing(table_csv_t *table, const char *columnsName);
 
 
 /**
