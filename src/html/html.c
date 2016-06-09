@@ -87,11 +87,7 @@ htmlList *html_add_list(htmlDocument *document) {
     return list;
 }
 
-/**
- * @brief add a item to a list
- * @param list the list to modify
- * @param item the content of the new item
- */
+
 xmlNode *html_add_list_item(htmlList *list, char *item){
     xmlNode *hitem = init_xmlNode(NULL, "<li>");
     hitem->text = copyString(item);
@@ -133,7 +129,7 @@ htmlTable *create_html_table(int nbCol, int nbLines, char **headers){
 }
 
 
- void html_add_table_from_data(htmlDocument *document, table_csv_t *data) {
+htmlTable *html_add_table_from_data(htmlDocument *document, table_csv_t *data) {
 
     int nbCol, nbLines;
     int i, j;
@@ -155,7 +151,8 @@ htmlTable *create_html_table(int nbCol, int nbLines, char **headers){
     if(tbody == NULL) {
         // this may not append
         fprintf(stderr, "Warning: Unexpected null pointer in function html_add_table_from_data()\n");
-        return;
+        destroy_xmlNode(table);
+        return NULL;
     }
 
     tr=tbody->children;
@@ -171,6 +168,7 @@ htmlTable *create_html_table(int nbCol, int nbLines, char **headers){
     }
 
     html_add_table(document, table);
+    return table;
 }
 
 
@@ -179,7 +177,7 @@ void html_add_table(htmlDocument *document, htmlTable *table) {
 }
 
 
-void html_add_title(htmlDocument *document, int level, char *title) {
+xmlNode *html_add_title(htmlDocument *document, int level, char *title) {
     xmlNode *htitle;
     char htag[5];
     int l = level;
@@ -193,31 +191,38 @@ void html_add_title(htmlDocument *document, int level, char *title) {
     htitle->text = copyString(title);
 
     html_add_data(document, htitle);
+
+    return htitle;
 }
 
 
-void html_add_title_with_hr(htmlDocument *document, int level, char *title) {
+xmlNode *html_add_title_with_hr(htmlDocument *document, int level, char *title) {
     xmlNode *hr = init_xmlNode(NULL, "<hr>");
 
-    html_add_title(document, level, title);
+    xmlNode *htitle = html_add_title(document, level, title);
     html_add_data(document, hr);
+
+    return htitle;
 }
 
 
-void html_add_link(htmlDocument *document, char *text, char *link){
+xmlNode *html_add_link(htmlDocument *document, char *text, char *link){
     xmlNode *hlink = init_xmlNode(NULL, "<a>");
 
     addAttribute(hlink, "href", link);
     hlink->text=copyString(text);
     html_add_data(document, hlink);
+
+    return hlink;
 }
 
 
-void html_add_image(htmlDocument *document, char *image) {
+xmlNode *html_add_image(htmlDocument *document, char *image) {
     xmlNode *img = init_xmlNode(NULL, "<img>");
 
     addAttribute(img, "src", image);
     html_add_data(document, img);
+    return img;
 }
 
 
@@ -256,7 +261,7 @@ static xmlNode *find_table_cell(htmlTable *table, int col, int line){
 }
 
 
-void html_add_link_in_table(htmlTable *table, char *text, char *link, int col, int line){
+xmlNode *html_add_link_in_table(htmlTable *table, char *text, char *link, int col, int line){
     xmlNode *hlink;
     xmlNode *td;
 
@@ -268,16 +273,20 @@ void html_add_link_in_table(htmlTable *table, char *text, char *link, int col, i
         hlink->text=copyString(text);
         addChild(td, hlink);
     }
+
+    return hlink;
 }
 
 
-void html_add_link_in_node(xmlNode *node, char *text, char *link){
+xmlNode *html_add_link_in_node(xmlNode *node, char *text, char *link){
     xmlNode *hlink;
 
     hlink = init_xmlNode(NULL, "<a>");
     addAttribute(hlink, "href", link);
     hlink->text=copyString(text);
     addChild(node, hlink);
+
+    return hlink;
 }
 
 
@@ -316,8 +325,8 @@ void html_set_text_in_table(htmlTable *table, char *text, int col, int line) {
 }
 
 
-void html_add_image_in_table(htmlTable *table, char *image, int col, int line){
-    xmlNode *img;
+xmlNode *html_add_image_in_table(htmlTable *table, char *image, int col, int line){
+    xmlNode *img = NULL;
     xmlNode *td;
 
     td = find_table_cell(table, col, line);
@@ -327,10 +336,13 @@ void html_add_image_in_table(htmlTable *table, char *image, int col, int line){
         addAttribute(img, "src", image);
         addChild(td, img);
     }
+
+    return img;
 }
 
-void html_add_image_with_size_in_table(htmlTable *table, char *image, int width, int height,  int col, int line){
-    xmlNode *img;
+
+xmlNode *html_add_image_with_size_in_table(htmlTable *table, char *image, int width, int height,  int col, int line){
+    xmlNode *img = NULL;
     xmlNode *td;
     char attribute[100];
 
@@ -345,6 +357,8 @@ void html_add_image_with_size_in_table(htmlTable *table, char *image, int width,
         addAttribute(img, "height", attribute);
         addChild(td, img);
     }
+
+    return img;
 }
 
     

@@ -14,6 +14,7 @@
 
 /** @brief a xmlNode is a base XML element/tag */
 typedef struct xmlNode_ xmlNode;
+
 /**
  * @brief a xmlAttribute is define in the tag between '<' and '>'
  *
@@ -93,7 +94,7 @@ int addAttribute(xmlNode *node, char *key, char *value);
 /**
  * @brief Add a child node to parent.
  * @param parent the node where add
- * @param child thr node to add
+ * @param child the node to add
  * @return 0 on success
  */
 int addChild(xmlNode *parent, xmlNode *child);
