@@ -34,6 +34,7 @@ convert_log:
 
 tests:
 	make -C xml test
+	make -C data test
 
 clean:
 	rm -f $(OBJS) cree_page.o data/convert_log.o

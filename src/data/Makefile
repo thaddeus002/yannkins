@@ -20,6 +20,11 @@ data.o: data.c data.h
 test_data: test_data.c $(OBJS)
 	$(CC) -Wall -o test_data test_data.c $(OBJS)
 
+test: test_data
+	# Are there error while analyse data?
+	./test_data
+	rm test_log.output.csv
+
 convert_log: convert_svn_log_from_xml_to_csv.c $(OBJS)
 	$(CC) -Wall -o convert_log convert_svn_log_from_xml_to_csv.c $(OBJS)
 
@@ -27,4 +32,4 @@ clean:
 	rm -f *.o *~
 
 mrproper: clean
-	rm -f test_data
+	rm -f test_data convert_log
