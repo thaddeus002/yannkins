@@ -24,6 +24,8 @@
 
 /** @brief default working directory */
 #define YANNKINS_DIR "/var/yannkins"
+/** @brief where are the projects defined */
+#define PROJECTS_DIR "projects"
 
 /** @brief title of the html page */
 #define TITLE "Yannkins' statistics - The best of continuous integration services"
@@ -439,7 +441,7 @@ int main(int argc, char **argv){
     yannkinsDir = getenv("YANNKINS_HOME");
 
 	if(yannkinsDir==NULL) {
-		fprintf(stderr, "Warning : YANNKINS_HOME environment variable not found\n");
+		fprintf(stderr, "Warning : YANNKINS_HOME environment variable not found, using \"%s\"\n", YANNKINS_DIR);
 		// use default
 		yannkinsDir = YANNKINS_DIR;
 	}
@@ -452,18 +454,23 @@ int main(int argc, char **argv){
 
     html_add_title(page, 1, "Projects list");
 
-	sprintf(projects_dir, "%s/projets", yannkinsDir);
+	sprintf(projects_dir, "%s/%s", yannkinsDir, PROJECTS_DIR);
     logdir = malloc(strlen(yannkinsDir)+5);
     sprintf(logdir, "%s/log", yannkinsDir);
 
     list = html_add_list(page);
-
+    
     rep = opendir(projects_dir);
+    if(rep == NULL) {
+        fprintf(stderr, "Error: can't open directory %s\n", projects_dir);
+        return 1;
+    }
+
     while ((lecture = readdir(rep))) {
 
 		if(lecture->d_type==DT_REG){
 
-			char *project_def = malloc( (strlen(projects_dir)+strlen(lecture->d_name)+1) * sizeof(char) );
+			char *project_def = malloc( (strlen(projects_dir)+strlen(lecture->d_name)+2) * sizeof(char) );
 			yk_project *project_struct;
 
 			sprintf(project_def, "%s/%s", projects_dir, lecture->d_name);

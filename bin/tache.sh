@@ -1,10 +1,10 @@
 #!/bin/bash
 # this script is a task to be executed by yannkins
 # you need put in parameters the name of the task and the command
-# One line will be added in the log file ${LOGDIR}/${TACHE} :
+# One line will be added in the log file ${LOGDIR}/${TASK} :
 #     ${date};FAIL (in case of failure)
 #     ${date};OK   (in case of success)
-# The file ${LOGDIR}/${TACHE}_console will content the last console output
+# The file ${LOGDIR}/${TASK}_console will content the last console output
 
 
 IC="Yannkins"
@@ -13,7 +13,7 @@ LOGDIR="${DIR}/log"
 
 function usage() {
     printf "Execute a %s task\n" ${IC}
-    printf "Usage : %s <NOM_TACHE> <COMMANDE>\n" $0
+    printf "Usage : %s <TASK_NAME> <COMMAND>\n" $0
     exit 1
 }
 

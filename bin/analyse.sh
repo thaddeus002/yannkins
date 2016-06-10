@@ -9,8 +9,11 @@ if [ ${YANNKINS_HOME}_ == "_" ]; then
 	export YANNKINS_HOME=${DEFAULT_DIR}
 fi 
 
-PROJECTS_HOME="${YANNKINS_HOME}/projets"
-SVN_HOME="${YANNKINS_HOME}/svn"
+# Where projects are defined
+PROJECTS_HOME="${YANNKINS_HOME}/projects"
+
+# Where are the repos local copy
+REPOS_HOME="${YANNKINS_HOME}/repos"
 
 
 #parcourt des projets
@@ -54,7 +57,8 @@ for p in ${PROJECTS_HOME}/*; do
         fi
 
         printf "${MSG}"
-        cd ${SVN_HOME}
+        [ ! -d ${REPOS_HOME} ] && mkdir -p ${REPOS_HOME}
+        cd ${REPOS_HOME}
         rm -rf ${PROJECT_NAME}
         printf "%s\n" "${COMMANDE}"
         tache.sh "SVN_CHECKOUT_${PROJECT_NAME}" "${COMMANDE}"
@@ -64,7 +68,7 @@ for p in ${PROJECTS_HOME}/*; do
         printf "Compilation\n"
         COMP=$(echo -n ${COMPIL} | wc -c)
         if [ ${COMP} -gt 0 ]; then 
-            cd ${SVN_HOME}/${PROJECT_NAME}
+            cd ${REPOS_HOME}/${PROJECT_NAME}
             tache.sh COMPILATION_${PROJECT_NAME} "${COMPIL}"
             cd -
         fi
@@ -73,7 +77,7 @@ for p in ${PROJECTS_HOME}/*; do
         printf "Tests\n"
         TESTS=$(echo -n ${TESTS_UNI} | wc -c)
         if [ ${TESTS} -gt 0 ]; then 
-            cd ${SVN_HOME}/${PROJECT_NAME}
+            cd ${REPOS_HOME}/${PROJECT_NAME}
             tache.sh TESTS_${PROJECT_NAME} "${TESTS_UNI}"
             cd -
         fi
@@ -87,7 +91,7 @@ for p in ${PROJECTS_HOME}/*; do
         fi
 
         if [ ${VS} == "GIT" ]; then
-            cd ${SVN_HOME}/${PROJECT_NAME}
+            cd ${REPOS_HOME}/${PROJECT_NAME}
             printf "#;author;date;commentaries\n" > ${YANNKINS_HOME}/log/SVNLOG_${PROJECT_NAME}
             git log -n 10 --pretty=format:"%h;%an;%ci;%s" >> ${YANNKINS_HOME}/log/SVNLOG_${PROJECT_NAME}
             cd -
