@@ -46,20 +46,35 @@ for p in ${PROJECTS_HOME}/*; do
             exit 1
         fi
 
+        PRES=0
         if [ ${VS} == "SVN" ]; then
-            MSG="Checkout of repository\n"
-            COMMANDE="svn co ${SVN_DEPOT}/trunk ${PROJECT_NAME}"
+            if [ ! -d ${REPOS_HOME}/${PROJECT_NAME} ]; then
+	        MSG="Checkout of repository\n"
+                COMMANDE="svn co ${SVN_DEPOT}/trunk ${PROJECT_NAME}"
+            else
+                PRES=1
+                MSG="Udpate repository\n"
+                COMMANDE="svn update"
+            fi
         fi
 
         if [ ${VS} == "GIT" ]; then
-            MSG="Clone of repository\n"
-            COMMANDE="git clone ${GIT_DEPOT} ${PROJECT_NAME}"
+            if [ ! -d ${REPOS_HOME}/${PROJECT_NAME} ]; then
+                MSG="Clone of repository\n"
+                COMMANDE="git clone ${GIT_DEPOT} ${PROJECT_NAME}"
+            else
+                PRES=1
+                MSG="Pull repository\n"
+                COMMANDE="git pull"
+            fi
         fi
 
         printf "${MSG}"
         [ ! -d ${REPOS_HOME} ] && mkdir -p ${REPOS_HOME}
         cd ${REPOS_HOME}
-        rm -rf ${PROJECT_NAME}
+        if [ $PRES -eq 1 ]; then
+            cd ${PROJECT_NAME}
+        fi
         printf "%s\n" "${COMMANDE}"
         tache.sh "SVN_CHECKOUT_${PROJECT_NAME}" "${COMMANDE}"
         cd ${YANNKINS_HOME}
