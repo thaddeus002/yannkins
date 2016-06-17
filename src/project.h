@@ -6,14 +6,26 @@
 #ifndef YK_PROJECT_H
 #define YK_PROJECT_H 1
 
+
+/**
+ * @brief The type of versioning system
+ */
+typedef enum {
+    NONE, /**< @brief type is undefined */
+    GIT, /**< @brief Git repository */
+    SVN /**< @brief Subversion repository */
+} repository_t;
+
+
 /**
  * @brief Data of a project
  */
 typedef struct {
 	char *project_name; /**< @brief name of this project */
-	char *svn_depot; /**< @brief svn repository */
-	char *svn_user; /**< @brief login for svn authentification */
-	char *svn_password; /**< @brief password for svn authentification */
+    repository_t versioning_type; /**< @brief which versionning system is used */
+	char *repository; /**< @brief repository's url */
+	char *repos_user; /**< @brief login for svn authentification */
+	char *repos_password; /**< @brief password for svn authentification */
 	char *compil_cmd; /**< @brief compilation command*/
 	char *tests_cmd; /**< @brief unit tests command */
 } yk_project;

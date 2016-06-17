@@ -107,8 +107,8 @@ for p in ${PROJECTS_HOME}/*; do
 
         if [ ${VS} == "GIT" ]; then
             cd ${REPOS_HOME}/${PROJECT_NAME}
-            printf "#;author;date;commentaries\n" > ${YANNKINS_HOME}/log/SVNLOG_${PROJECT_NAME}
-            git log -n 10 --pretty=format:"%h;%an;%ci;%s" >> ${YANNKINS_HOME}/log/SVNLOG_${PROJECT_NAME}
+            printf "#;author;date;commentaries\n" > ${YANNKINS_HOME}/log/GITLOG_${PROJECT_NAME}
+            git log -n 10 --pretty=format:"%h;%an;%ci;%s" >> ${YANNKINS_HOME}/log/GITLOG_${PROJECT_NAME}
             cd -
         fi
     fi

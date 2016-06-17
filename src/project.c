@@ -25,9 +25,10 @@ yk_project *yk_read_project_file(char *filename){
 		project = malloc(sizeof(yk_project));
 
 		project->project_name=NULL;
-		project->svn_depot=NULL;
-		project->svn_user=NULL;
-		project->svn_password=NULL;
+        project->versioning_type=NONE;
+		project->repository=NULL;
+		project->repos_user=NULL;
+		project->repos_password=NULL;
 		project->compil_cmd=NULL;
 		project->tests_cmd=NULL;
 	
@@ -66,14 +67,19 @@ yk_project *yk_read_project_file(char *filename){
 				project->project_name=malloc((strlen(value)+1)*sizeof(char));
 				strcpy(project->project_name, value);
 			} else if(!strcmp(ligne, "SVN_DEPOT")){
-				project->svn_depot=malloc((strlen(value)+1)*sizeof(char));
-				strcpy(project->svn_depot, value);
-			} else if(!strcmp(ligne, "SVN_USER")){
-				project->svn_user=malloc((strlen(value)+1)*sizeof(char));
-				strcpy(project->svn_user, value);
-			} else if(!strcmp(ligne, "SVN_PASSWD")){
-				project->svn_password=malloc((strlen(value)+1)*sizeof(char));
-				strcpy(project->svn_password, value);
+                project->versioning_type=SVN;
+				project->repository=malloc((strlen(value)+1)*sizeof(char));
+				strcpy(project->repository, value);
+            } else if(!strcmp(ligne, "GIT_DEPOT")){
+                project->versioning_type=GIT;
+				project->repository=malloc((strlen(value)+1)*sizeof(char));
+				strcpy(project->repository, value);
+			} else if(!strcmp(ligne, "SVN_USER") || !strcmp(ligne, "GIT_USER")){
+				project->repos_user=malloc((strlen(value)+1)*sizeof(char));
+				strcpy(project->repos_user, value);
+			} else if(!strcmp(ligne, "SVN_PASSWD") || !strcmp(ligne, "GIT_PASSWD")){
+				project->repos_password=malloc((strlen(value)+1)*sizeof(char));
+				strcpy(project->repos_password, value);
 			} else if(!strcmp(ligne, "COMPIL")){
 				project->compil_cmd=malloc((strlen(value)+1)*sizeof(char));
 				strcpy(project->compil_cmd, value);
@@ -107,14 +113,14 @@ void yk_destroy_project(yk_project *project){
 	if(project->project_name != NULL){
 		free(project->project_name);
 	}
-	if(project->svn_depot != NULL){
-		free(project->svn_depot);
+	if(project->repository != NULL){
+		free(project->repository);
 	}
-	if(project->svn_user != NULL){
-		free(project->svn_user);
+	if(project->repos_user != NULL){
+		free(project->repos_user);
 	}
-	if(project->svn_password != NULL){
-		free(project->svn_password);
+	if(project->repos_password != NULL){
+		free(project->repos_password);
 	}
 	if(project->compil_cmd != NULL){
 		free(project->compil_cmd);

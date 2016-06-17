@@ -45,6 +45,9 @@
 #define TACHE_TESTS "TESTS"
 /** @brief svn logs tag */
 #define SVNLOG "SVNLOG"
+/** @brief git logs tag */
+#define GITLOG "GITLOG"
+
 
 // ERROR CODES
 /** @brief Error code allocation */
@@ -325,15 +328,15 @@ static char *concat_path(char *beg, char *end) {
 
 /**
  * Write the HTML report page of a project.
- * @param project the name of the project
+ * @param project the project definition
  * @param yannkinsRep the directory where Yannkins is installed
  * @return a error code. Can be ERR_OPEN_FILE if an error occured while opening the file with write flag.
  */
-int write_yannkins_html(char *project, char *yannkinsRep){
+static int write_yannkins_html(yk_project *project, char *yannkinsRep){
 
-	yannkins_line_t **lines = init_lines(project, yannkinsRep);
+	yannkins_line_t **lines = init_lines(project->project_name, yannkinsRep);
 
-	char *fichier; // name of svn logs file
+	char *fichier = NULL; // name of svn logs file
 	char *wwwdir; // directory where put the html outputs
 	char *filename; // name of the html file to create (without path)
 	char *report; // name of the html file to create (with path)
@@ -352,8 +355,8 @@ int write_yannkins_html(char *project, char *yannkinsRep){
     bandeau = read_xml_file("www/bandeau.html");
     html_add_data(page, bandeau);
 
-    content = malloc(sizeof(char) * (strlen(project) + 9));
-    sprintf(content, "Project %s", project);
+    content = malloc(sizeof(char) * (strlen(project->project_name) + 9));
+    sprintf(content, "Project %s", project->project_name);
     html_add_title(page, 1, content);
     free(content);
 
@@ -377,10 +380,18 @@ int write_yannkins_html(char *project, char *yannkinsRep){
 
 
 	// logs' table
-	fichier=malloc(sizeof(char)*(strlen(yannkinsRep)+strlen(SVNLOG)+strlen(project)+7));
-	sprintf(fichier, "%s/log/%s_%s", yannkinsRep, SVNLOG, project);
+    if(project->versioning_type == SVN) {
+        fichier=malloc(sizeof(char)*(strlen(yannkinsRep)+strlen(SVNLOG)+strlen(project->project_name)+7));
+        sprintf(fichier, "%s/log/%s_%s", yannkinsRep, SVNLOG, project->project_name);
+    } else if(project->versioning_type == GIT) {
+        fichier=malloc(sizeof(char)*(strlen(yannkinsRep)+strlen(GITLOG)+strlen(project->project_name)+7));
+        sprintf(fichier, "%s/log/%s_%s", yannkinsRep, GITLOG, project->project_name);
+    }
 
-	data=csv_read_file(fichier, ';');
+    if(fichier != NULL) {
+        data=csv_read_file(fichier, ';');
+    }
+
 	if(data!=NULL) {
 		elementsCherches[0]="#";
 		elementsCherches[1]="author";
@@ -403,8 +414,8 @@ int write_yannkins_html(char *project, char *yannkinsRep){
 		return ERR_MEMORY;
 	}
 
-	filename=malloc(sizeof(char)*(strlen(project)+6));
-	sprintf(filename, "%s.html", project);
+	filename=malloc(sizeof(char)*(strlen(project->project_name)+6));
+	sprintf(filename, "%s.html", project->project_name);
 	
 	report = concat_path(wwwdir, filename);
 	free(wwwdir);
@@ -479,8 +490,8 @@ int main(int argc, char **argv){
 
 			project=project_struct->project_name;
 
-		    fprintf(stdout, "Treatment of project %s.\n", project);
-			write_yannkins_html(project, yannkinsDir);
+		    fprintf(stdout, "Treatment of project %s.\n", project_struct->project_name);
+			write_yannkins_html(project_struct, yannkinsDir);
 
 			project_file=malloc(sizeof(char)*(strlen(project)+6));
 			sprintf(project_file, "%s.html", project);
