@@ -16,7 +16,7 @@ PROJECTS_HOME="${YANNKINS_HOME}/projects"
 REPOS_HOME="${YANNKINS_HOME}/repos"
 
 
-#parcourt des projets
+# crossing projects
 for p in ${PROJECTS_HOME}/*; do
     if [ $p != "${PROJECTS_HOME}/*" ]; then
 
@@ -24,7 +24,7 @@ for p in ${PROJECTS_HOME}/*; do
 
         if [ ${PROJECT_NAME}_ == _ ]; then
             printf "File %s : Project name missing\n" "$p"
-            exit 1
+            continue
         fi
 
         printf "Analysis of project %s\n" "${PROJECT_NAME}"
@@ -42,30 +42,30 @@ for p in ${PROJECTS_HOME}/*; do
         # Checkout/clone of the project
 
         if [ ${VS} == "NONE" ]; then
-            printf "Repository not specified\n"
-            exit 1
+            printf "Project %s : Repository not specified\n" "$PROJECT_NAME"
+            continue
         fi
 
         PRES=0
         if [ ${VS} == "SVN" ]; then
             if [ ! -d ${REPOS_HOME}/${PROJECT_NAME} ]; then
 	        MSG="Checkout of repository\n"
-                COMMANDE="svn co ${SVN_DEPOT}/trunk ${PROJECT_NAME}"
+                COMMAND="svn co ${SVN_DEPOT}/trunk ${PROJECT_NAME}"
             else
                 PRES=1
                 MSG="Udpate repository\n"
-                COMMANDE="svn update"
+                COMMAND="svn update"
             fi
         fi
 
         if [ ${VS} == "GIT" ]; then
             if [ ! -d ${REPOS_HOME}/${PROJECT_NAME} ]; then
                 MSG="Clone of repository\n"
-                COMMANDE="git clone ${GIT_DEPOT} ${PROJECT_NAME}"
+                COMMAND="git clone ${GIT_DEPOT} ${PROJECT_NAME}"
             else
                 PRES=1
                 MSG="Pull repository\n"
-                COMMANDE="git pull"
+                COMMAND="git pull"
             fi
         fi
 
@@ -75,8 +75,8 @@ for p in ${PROJECTS_HOME}/*; do
         if [ $PRES -eq 1 ]; then
             cd ${PROJECT_NAME}
         fi
-        printf "%s\n" "${COMMANDE}"
-        tache.sh "SVN_CHECKOUT_${PROJECT_NAME}" "${COMMANDE}"
+        printf "%s\n" "${COMMAND}"
+        tache.sh "SVN_CHECKOUT_${PROJECT_NAME}" "${COMMAND}"
         cd ${YANNKINS_HOME}
 
         # Compiling project
@@ -98,7 +98,7 @@ for p in ${PROJECTS_HOME}/*; do
         fi
 
         # Logs SVN
-        printf "Checking SVN logs\n"
+        printf "Checking repository logs\n"
 
         if [ ${VS} == "SVN" ]; then
             svn log -l 10 --xml ${SVN_DEPOT}/trunk > svnlogl10.xml
