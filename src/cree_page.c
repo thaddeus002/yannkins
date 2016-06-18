@@ -60,19 +60,25 @@
 // TYPEDEF
 
 /**
- * data for one task
+ * Data to show for one task. This is one line in a project's resume table.
  */
 typedef struct yannkins_line_t_ {
-    int result;
-    char *name;
-    char date[17];
+    int result; /**< this is "ok" or "fail" */ 
+    char *name; /**< the task's name */
+    char date[17]; /**< the last execution date */
+    // TODO : add the last success date
 } yannkins_line_t;
 
 // FUNCTIONS
 
 
 /**
- * @brief Write the table
+ * @brief Write the project's resume table at the end of a HTML document.
+ *
+ * The created table will contains a line by executed task to show the results
+ * such as "success", "execution date", "last success date", ...
+ * The last column will present a link to see the last console output. 
+ * @param document the HTML page where append the table
  * @param lines the datas to put in the table, must end with NULL value
  */
 static void write_yannkins_table(xmlNode *document, yannkins_line_t **lines){
@@ -128,7 +134,7 @@ static void write_yannkins_table(xmlNode *document, yannkins_line_t **lines){
 
 
 /**
- * Create a struct for a line if the file passed in argument is the log file of a task
+ * @brief Create a struct for a line if the file passed in argument is the log file of a task.
  * @param filename complete name
  * @param basename name of file without path
  * @return NULL if filename is not the name of a task log
@@ -145,8 +151,6 @@ static yannkins_line_t *new_entry(char *filename, char *basename){
         return NULL;
     }
 
-    fprintf(stdout, "%s - %s\n", filename, basename);
-
     // don't take in account the names ending with "_console"
     if(strlen(basename)>=8){
         int index; // position in filename
@@ -154,22 +158,22 @@ static yannkins_line_t *new_entry(char *filename, char *basename){
         if(!strcmp(basename+index, "_console")){
             return NULL;
         }
-
     }
 
-    // reading last line of file
+    // reading log file
     log = csv_read_file(filename, ';');
 	if(log==NULL){
 		return NULL;
 	}
 
-    if((log->nbCol < 2) || (log->nbLig<1)){
+    if((log->nbCol < 2) || (log->nbLig < 1)){
         fprintf(stderr, "Incorrect file: %s\n%d column(s), %d line(s)\n", basename, log->nbCol, log->nbLig);
         csv_show_table(log, stderr);
         csv_destroy_table(log);
         return NULL;
     }
 
+    // view last log line
     ligne=log->lignes;
     last=NULL;
     while(ligne!=NULL){
@@ -181,6 +185,7 @@ static yannkins_line_t *new_entry(char *filename, char *basename){
         return NULL;
     }
 
+    // result
     entry = malloc(sizeof(yannkins_line_t));
 
     entry->result = 0;
@@ -197,11 +202,11 @@ static yannkins_line_t *new_entry(char *filename, char *basename){
         entry->result = 1;
     }
 
+    // end
     csv_destroy_table(log);
 
     return entry;
 }
-
 
 
 /**
