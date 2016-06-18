@@ -133,7 +133,7 @@ static void write_yannkins_table(xmlNode *document, yannkins_line_t **lines){
  * @param basename name of file without path
  * @return NULL if filename is not the name of a task log
  */
-yannkins_line_t *new_entry(char *filename, char *basename){
+static yannkins_line_t *new_entry(char *filename, char *basename){
 
     yannkins_line_t *entry = NULL;
     table_csv_t *log; // content of the file
@@ -209,7 +209,7 @@ yannkins_line_t *new_entry(char *filename, char *basename){
  * @param yannkinsRep the directory where Yannkins is installed
  * @return a table of yannkins_line_t with NULL at the end.
  */
-yannkins_line_t **init_lines_rep(char *yannkinsRep){
+static yannkins_line_t **init_lines_rep(char *yannkinsRep){
 
     struct dirent *lecture; // a directory entry
     DIR *rep; //directory to cross
@@ -256,7 +256,7 @@ yannkins_line_t **init_lines_rep(char *yannkinsRep){
  * @param yannkinsRep the directory where Yannkins is installed
  * @return a table of yannkins_line_t with NULL at the end.
  */
-yannkins_line_t **init_lines(char *project, char *yannkinsRep){
+static yannkins_line_t **init_lines(char *project, char *yannkinsRep){
 
     char *logdir; // name of directory
     
