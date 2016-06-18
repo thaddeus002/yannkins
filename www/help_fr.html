@@ -19,9 +19,9 @@
 Ce fichier doit contenir au minimun les champs suivants :
 <ul>
 <li>PROJECT_NAME : le nom du projet
-<li>SVN_DEPOT : nom du dépôt SVN du projet
-<li>SVN_USER : utilisateur SVN - peut être laissé vide
-<li>SVN_PASSWD : le mot de passe SVN - peut être laissé vide
+<li>SVN_DEPOT ou GIT_DEPOT : nom du dépôt SVN (ou GIT) du projet
+<li>SVN_USER ou GIT_USER : utilisateur pour authentification sur le dépôt - peut être laissé vide
+<li>SVN_PASSWD ou GIT_PASSWD : le mot de passe pour l'authentification - peut être laissé vide
 <li>COMPIL : commande de compilation
 <li>TESTS_UNI : commande d'éxécution des tests unitaires
 </ul>
@@ -33,7 +33,7 @@ La commande "analyse.sh" lance l'analyse de tous les projets et la mise à jour 
 index.html et des pages des projets. L'idéal consiste à placer cette commande dans une tâche
 cron pour la lancer automatiquement à horaires fixes. Il est aussi possible de la lancer 
 manuellement. Il suffit alors de consulter ces pages, soit localement soit les rendant 
-accéssibles par l'intermédiaire d'un serveur HTTP.
+accessibles par l'intermédiaire d'un serveur HTTP.
 </p>
 
 
