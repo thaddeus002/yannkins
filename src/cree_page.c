@@ -203,52 +203,6 @@ static yannkins_line_t *new_entry(char *filename, char *basename){
 }
 
 
-/**
- * NON UTILISE -> technique à déplacer dans analyse.c
- * Initialyze the lines for the table.
- * @param yannkinsRep the directory where Yannkins is installed
- * @return a table of yannkins_line_t with NULL at the end.
- */
-static yannkins_line_t **init_lines_rep(char *yannkinsRep){
-
-    struct dirent *lecture; // a directory entry
-    DIR *rep; //directory to cross
-    char *logdir; // name of directory
-    char *file; // name of a file
-    yannkins_line_t **lines = NULL; // allocated table of *line
-    int i = 0; // counter : number of entries in lines
-    int tailleAllouee = 0; // number of allocated entries in lines
-
-    logdir = malloc(strlen(yannkinsRep)+5);
-    sprintf(logdir, "%s/log", yannkinsRep);
-
-    rep = opendir(logdir);
-    while ((lecture = readdir(rep))) {
-        yannkins_line_t *entry;
-
-        file=malloc(strlen(yannkinsRep)+strlen(lecture->d_name)+6);
-        sprintf(file, "%s/log/%s", yannkinsRep, lecture->d_name);
-        entry = new_entry(file, lecture->d_name);
-        free(file);
-
-        // add entry
-        if(entry!=NULL){
-            if(i>=tailleAllouee){
-                tailleAllouee+=20;
-                lines = realloc(lines, tailleAllouee*sizeof(yannkins_line_t *));
-            }
-            lines[i]=entry;
-            i++;
-        }
-    }
-    closedir(rep);
-    lines = realloc(lines, (i+1)*sizeof(yannkins_line_t *));
-    lines[i]=NULL;
-
-    free(logdir);
-    return lines;
-}
-
 
 /**
  * Initialyze the lines for the table.
