@@ -10,13 +10,12 @@ The resume page for a project will show results (build success or failure, tests
 The project analysis can be launch manually or with cron. A web server is mandatory if you want a remote acces. Local visualisation only need a browser.
 
 Projects will be configured in text files located in directory `${YANNKINS_DIR}/projects/`.
-One cron task will perform projects analysis : svn checkout/update or git clone/pull, building, units tests, ... defined in projects' configuration files. After the analysis are executed, an other program will generate HTML reports with the logs of the analysis. 
+One cron task will perform projects analysis : svn checkout/update or git clone/pull, building, units tests, ... defined in projects' configuration files. After the analysis are executed, an HTML reports will be generated with the logs of the analysis. 
 
 ![screenshot](assets/yannkins_screenshot.png)
 
-## What is already available ?
+## Limitations
 
-The project is just beginning, so is not still completed.
 Only GIT, and SVN are supported.
 
 ## How to get started ?
@@ -31,9 +30,9 @@ Only GIT, and SVN are supported.
 
 **Configure a project**
 
-Define a environment variable YANNKINS_HOME to point to the working directory for Yannkins.
-Create directories `${YANNKINS_HOME}/projets`, `${YANNKINS_HOME}/log`, `${YANNKINS_HOME}/svn`, and `${YANNKINS_HOME}/www`. This last can be a symbilic link to `/var/www/html`.
-Then create a file describing your project. Your can inspire yourself with the example `yannkins/projects/fheroes2` in yannkins' repository.
+Define a environment variable YANNKINS_HOME to point to the working directory for Yannkins. It may be for example `/var/yannkins` or `${HOME}/.yannkins`.
+Create directories `${YANNKINS_HOME}/projets`, `${YANNKINS_HOME}/log`, `${YANNKINS_HOME}/reos`, and `${YANNKINS_HOME}/www`. This last can be a symbilic link to `/var/www/html`.
+Then create a file describing your project. Your can inspire yourself with the example `yannkins/projects/fheroes2` in `${YANNKINS_HOME}/projects` repository.
 
 **Launch the analyse**
 
@@ -41,8 +40,8 @@ Launch the script `analyse.sh`.
 
 **View the results**
 
-A the end of analyse, you must find html files in `${YANNKINS_HOME}/www`. Open index.html in a browser to acces the list of yours projects, with links to projects' pages.
-If this process completes succefully, you may want to put the task `/usr/local/bin/analyse.sh` in a crontab to execute it automatically.
+At the end of analyse, you must find html files in `${YANNKINS_HOME}/www`. Open index.html in a browser to acces the list of yours projects, with links to projects' pages.
+You may want to put the task `/usr/local/bin/analyse.sh` in a crontab to execute it automatically.
 
 ## License
 
