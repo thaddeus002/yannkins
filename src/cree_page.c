@@ -63,10 +63,10 @@
  * Data to show for one task. This is one line in a project's resume table.
  */
 typedef struct yannkins_line_t_ {
-    int result; /**< this is "ok" or "fail" */ 
+    int result; /**< this is "ok" (0) or "fail" (1) */ 
     char *name; /**< the task's name */
     char date[17]; /**< the last execution date */
-    // TODO : add the last success date
+    char lastSuccessDate[17]; /**< the date of last successfull exectution */
 } yannkins_line_t;
 
 // FUNCTIONS
@@ -86,7 +86,7 @@ static void write_yannkins_table(xmlNode *document, yannkins_line_t **lines){
     yannkins_line_t *line; // current line
     int i = 0; // counter
     htmlTable *table;
-    char *headers[4] = { "Last result" , "Task", "Last execution date", "Console output" };
+    char *headers[5] = { "Last result" , "Task", "Last execution date", "Last success date", "Console output" };
     int nbLines;
 
     if(lines == NULL){
@@ -100,7 +100,7 @@ static void write_yannkins_table(xmlNode *document, yannkins_line_t **lines){
         line = lines[nbLines];
     }
 
-    table = create_html_table(4, nbLines, headers);
+    table = create_html_table(5, nbLines, headers);
 
     line = lines[0];
     while(line != NULL){
@@ -117,12 +117,12 @@ static void write_yannkins_table(xmlNode *document, yannkins_line_t **lines){
         html_add_image_with_size_in_table(table, icon, 32, 32, 0, i);
 
         html_set_text_in_table(table, line->name, 1, i);
-        
         html_set_text_in_table(table, line->date, 2, i);
+        html_set_text_in_table(table, line->lastSuccessDate, 3, i);
 
         consoleOutputPath = malloc(sizeof(char) * (strlen(line->name) + 13));
         sprintf(consoleOutputPath, "log/%s_console", line->name);
-        html_add_link_in_table(table, "see", consoleOutputPath, 3, i);
+        html_add_link_in_table(table, "see", consoleOutputPath, 4, i);
         free(consoleOutputPath);
 
         i++;
@@ -141,10 +141,11 @@ static void write_yannkins_table(xmlNode *document, yannkins_line_t **lines){
  */
 static yannkins_line_t *new_entry(char *filename, char *basename){
 
-    yannkins_line_t *entry = NULL;
+    yannkins_line_t *entry = NULL; // return value
     table_csv_t *log; // content of the file
     ligne_csv_t *ligne; // a line of the file
     ligne_csv_t *last; // last line of the file
+    char *lastSuccessDate = NULL; // record for last success date
 
     // don't take in account "." and ".."
     if( (!strcmp(basename, ".")) || (!strcmp(basename,"..")) ){
@@ -178,6 +179,9 @@ static yannkins_line_t *new_entry(char *filename, char *basename){
     last=NULL;
     while(ligne!=NULL){
         last=ligne;
+        if(!strcmp(last->valeurs[1], "OK")){
+            lastSuccessDate = last->valeurs[0];
+        }
         ligne=ligne->next;
     }
 
@@ -192,6 +196,7 @@ static yannkins_line_t *new_entry(char *filename, char *basename){
     strcpy(entry->date, "NC");
     entry->name=malloc((strlen(basename)+1)*sizeof(char));
     strcpy(entry->name, basename);
+    strcpy(entry->lastSuccessDate, "-");
 
     if(strlen(last->valeurs[0])>0){
         strncpy(entry->date, last->valeurs[0], 16);
@@ -200,6 +205,11 @@ static yannkins_line_t *new_entry(char *filename, char *basename){
 
     if(strcmp(last->valeurs[1], "OK")){
         entry->result = 1;
+    }
+
+    if((lastSuccessDate != NULL) && (strlen(lastSuccessDate)>0)){
+        strncpy(entry->lastSuccessDate, lastSuccessDate, 16);
+        entry->lastSuccessDate[16]='\0';
     }
 
     // end
