@@ -1,4 +1,4 @@
-# yannkins
+# ![logo](logo.png)
 
 A simple continuous integration program for Linux. It launch configured tasks and create a nice html page to show results. Several projects can be managed.
 
