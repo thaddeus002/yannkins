@@ -67,6 +67,7 @@ typedef struct yannkins_line_t_ {
     char *name; /**< the task's name */
     char date[17]; /**< the last execution date */
     char lastSuccessDate[17]; /**< the date of last successfull exectution */
+    char *console_file; /**< the name of console output file */
 } yannkins_line_t;
 
 // FUNCTIONS
@@ -120,8 +121,8 @@ static void write_yannkins_table(xmlNode *document, yannkins_line_t **lines){
         html_set_text_in_table(table, line->date, 2, i);
         html_set_text_in_table(table, line->lastSuccessDate, 3, i);
 
-        consoleOutputPath = malloc(sizeof(char) * (strlen(line->name) + 13));
-        sprintf(consoleOutputPath, "log/%s_console", line->name);
+        consoleOutputPath = malloc(sizeof(char) * (strlen(line->console_file) + 5));
+        sprintf(consoleOutputPath, "log/%s", line->console_file);
         html_add_link_in_table(table, "see", consoleOutputPath, 4, i);
         free(consoleOutputPath);
 
@@ -137,15 +138,17 @@ static void write_yannkins_table(xmlNode *document, yannkins_line_t **lines){
  * @brief Create a struct for a line if the file passed in argument is the log file of a task.
  * @param filename complete name
  * @param basename name of file without path
+ * @param entryName the task's name, basename will be use instead if NULL
  * @return NULL if filename is not the name of a task log
  */
-static yannkins_line_t *new_entry(char *filename, char *basename){
+static yannkins_line_t *new_entry(char *filename, char *basename, char *entryName){
 
     yannkins_line_t *entry = NULL; // return value
     table_csv_t *log; // content of the file
     ligne_csv_t *ligne; // a line of the file
     ligne_csv_t *last; // last line of the file
     char *lastSuccessDate = NULL; // record for last success date
+    char *name =entryName; // task's name
 
     // don't take in account "." and ".."
     if( (!strcmp(basename, ".")) || (!strcmp(basename,"..")) ){
@@ -194,8 +197,9 @@ static yannkins_line_t *new_entry(char *filename, char *basename){
 
     entry->result = 0;
     strcpy(entry->date, "NC");
-    entry->name=malloc((strlen(basename)+1)*sizeof(char));
-    strcpy(entry->name, basename);
+    if(name == NULL) { name = basename; }
+    entry->name=malloc((strlen(name)+1)*sizeof(char));
+    strcpy(entry->name, name);
     strcpy(entry->lastSuccessDate, "-");
 
     if(strlen(last->valeurs[0])>0){
@@ -212,6 +216,9 @@ static yannkins_line_t *new_entry(char *filename, char *basename){
         entry->lastSuccessDate[16]='\0';
     }
 
+    entry->console_file = malloc((strlen(basename)+1+8)*sizeof(char));
+    sprintf(entry->console_file, "%s_console", basename);
+
     // end
     csv_destroy_table(log);
 
@@ -221,11 +228,11 @@ static yannkins_line_t *new_entry(char *filename, char *basename){
 
 /**
  * Initialyze the lines for the table.
- * @param project name of the project
+ * @param project the project's definition
  * @param yannkinsRep the directory where Yannkins is installed
  * @return a table of yannkins_line_t with NULL at the end.
  */
-static yannkins_line_t **init_lines(char *project, char *yannkinsRep){
+static yannkins_line_t **init_lines(yk_project *project, char *yannkinsRep){
 
     char *logdir; // name of directory
     
@@ -247,19 +254,25 @@ static yannkins_line_t **init_lines(char *project, char *yannkinsRep){
 		yannkins_line_t *entry;
 		char *file; // name of a file
 		char *basename;
-		
-		basename=malloc(strlen(taches[j])+strlen(project)+2);
-		sprintf(basename, "%s_%s", taches[j], project);
+		char *taskName = NULL;
+
+		basename=malloc(strlen(taches[j])+strlen(project->project_name)+2);
+		sprintf(basename, "%s_%s", taches[j], project->project_name);
 		file=malloc(strlen(logdir)+strlen(basename)+2);
 		sprintf(file, "%s/%s", logdir, basename);
 
-		entry = new_entry(file, basename);
+                // TODO : do this for all task, in a better way
+                if(j == 0) {
+                    taskName = "Source code recovery";
+		}
+                entry = new_entry(file, basename, taskName);
 		free(basename);
         free(file);
 
         // add the entry
         if(entry!=NULL){
-            if(i>=tailleAllouee){
+            // take in account the size for the last NULL pointer
+            if(i>=tailleAllouee-1){
                 tailleAllouee+=20;
                 lines = realloc(lines, tailleAllouee*sizeof(yannkins_line_t *));
             }
@@ -269,7 +282,6 @@ static yannkins_line_t **init_lines(char *project, char *yannkinsRep){
 	}
 
     free(logdir);
-    lines = realloc(lines, (i+1)*sizeof(yannkins_line_t *));
     lines[i]=NULL;
     return lines;
 }
@@ -303,7 +315,7 @@ static char *concat_path(char *beg, char *end) {
  */
 static int write_yannkins_html(yk_project *project, char *yannkinsRep){
 
-	yannkins_line_t **lines = init_lines(project->project_name, yannkinsRep);
+	yannkins_line_t **lines = init_lines(project, yannkinsRep);
 
 	char *fichier = NULL; // name of svn logs file
 	char *wwwdir; // directory where put the html outputs
@@ -340,6 +352,9 @@ static int write_yannkins_html(yk_project *project, char *yannkinsRep){
         while(lines[i]!=NULL){
             if(lines[i]->name!=NULL){
                 free(lines[i]->name);
+            }
+            if(lines[i]->console_file!=NULL) {
+                free(lines[i]->console_file);
             }
             free(lines[i]);
             i++;
