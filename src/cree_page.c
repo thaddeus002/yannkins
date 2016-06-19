@@ -38,11 +38,11 @@
 
 // SUFFIXES FOR DIFFERENT TYPES OF TASK
 /** @brief svn checkout tag */
-#define TACHE_SVN "SVN_CHECKOUT"
+#define REPOS_TASK "SVN_CHECKOUT"
 /** @brief compilation tag */
-#define TACHE_COMPILATION "COMPILATION"
+#define COMPILATION_TASK "COMPILATION"
 /** @brief success of tests tag */
-#define TACHE_TESTS "TESTS"
+#define TESTS_TASK "TESTS"
 /** @brief svn logs tag */
 #define SVNLOG "SVNLOG"
 /** @brief git logs tag */
@@ -137,7 +137,7 @@ static void write_yannkins_table(xmlNode *document, yannkins_line_t **lines){
 /**
  * @brief Create a struct for a line if the file passed in argument is the log file of a task.
  * @param filename complete name
- * @param basename name of file without path
+ * @param basename name of file without path. Console output is suppose to be in file "${basename}_console"
  * @param entryName the task's name, basename will be use instead if NULL
  * @return NULL if filename is not the name of a task log
  */
@@ -243,9 +243,9 @@ static yannkins_line_t **init_lines(yk_project *project, char *yannkinsRep){
 	int j;
 
 	char *taches[3];
-	taches[0]=TACHE_SVN;
-	taches[1]=TACHE_COMPILATION;
-	taches[2]=TACHE_TESTS;
+	taches[0]=REPOS_TASK;
+	taches[1]=COMPILATION_TASK;
+	taches[2]=TESTS_TASK;
 	
 	logdir = malloc(strlen(yannkinsRep)+5);
     sprintf(logdir, "%s/log", yannkinsRep);
