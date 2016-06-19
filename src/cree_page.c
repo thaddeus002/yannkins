@@ -74,6 +74,26 @@ typedef struct yannkins_line_t_ {
 
 
 /**
+ * @brief concatenate two strings adding a '/' between the two.
+ * @param beg the beginning string
+ * @param end the ending string
+ * @return a pointer to the concatenated string. Must be freed.
+ */
+static char *concat_path(char *beg, char *end) {
+
+	char *result = malloc(sizeof(char) *(strlen(beg)+strlen(end)+2));
+
+	if(result==NULL){
+		fprintf(stderr, "Allocation error\n");
+		return NULL;
+	}
+
+	sprintf(result, "%s/%s", beg, end);
+	return result;
+}
+
+
+/**
  * @brief Write the project's resume table at the end of a HTML document.
  *
  * The created table will contains a line by executed task to show the results
@@ -121,8 +141,7 @@ static void write_yannkins_table(xmlNode *document, yannkins_line_t **lines){
         html_set_text_in_table(table, line->date, 2, i);
         html_set_text_in_table(table, line->lastSuccessDate, 3, i);
 
-        consoleOutputPath = malloc(sizeof(char) * (strlen(line->console_file) + 5));
-        sprintf(consoleOutputPath, "log/%s", line->console_file);
+        consoleOutputPath = concat_path("log", line->console_file);
         html_add_link_in_table(table, "see", consoleOutputPath, 4, i);
         free(consoleOutputPath);
 
@@ -284,26 +303,6 @@ static yannkins_line_t **init_lines(yk_project *project, char *yannkinsRep){
     free(logdir);
     lines[i]=NULL;
     return lines;
-}
-
-
-/**
- * @brief concatenate two directory adding a '/' between the two.
- * @param beg the beginning string
- * @param end the ending string
- * @return a pointer to the concatenated string. Must be freed.
- */
-static char *concat_path(char *beg, char *end) {
-
-	char *result = malloc(sizeof(char) *(strlen(beg)+strlen(end)+2));
-
-	if(result==NULL){
-		fprintf(stderr, "Allocation error\n");
-		return NULL;
-	}
-
-	sprintf(result, "%s/%s", beg, end);
-	return result;
 }
 
 
