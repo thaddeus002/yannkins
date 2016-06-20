@@ -54,7 +54,7 @@ if [ $? -ne 0 ]; then
     exit 1
 fi
 
-${COMMANDE} &> ${FICCONSOLE}
+eval "${COMMANDE} &> ${FICCONSOLE}"
 RESULTAT=$?
 
 if [ ${RESULTAT} -eq 0 ]; then

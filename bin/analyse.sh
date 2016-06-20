@@ -15,6 +15,9 @@ PROJECTS_HOME="${YANNKINS_HOME}/projects"
 # Where are the repos local copy
 REPOS_HOME="${YANNKINS_HOME}/repos"
 
+#SVN command
+SVN="svn"
+
 
 # crossing projects
 for p in ${PROJECTS_HOME}/*; do
@@ -48,14 +51,25 @@ for p in ${PROJECTS_HOME}/*; do
 
         PRES=0
         if [ ${VS} == "SVN" ]; then
+            SVN="svn"
+            if [ ${SVN_USER}_ != _ ]; then
+            	SVN="${SVN} --username '${SVN_USER}'"
+            fi
+            
+            if [ ${SVN_PASSWD}_ != _ ]; then
+            	SVN="${SVN} --password '${SVN_PASSWD}'"
+            fi
+
             if [ ! -d ${REPOS_HOME}/${PROJECT_NAME} ]; then
 	        MSG="Checkout of repository\n"
-                COMMAND="svn co ${SVN_DEPOT}/trunk ${PROJECT_NAME}"
+                COMMAND="${SVN} co ${SVN_DEPOT} ${PROJECT_NAME}"
             else
                 PRES=1
                 MSG="Udpate repository\n"
-                COMMAND="svn update"
+                COMMAND="${SVN} update"
             fi
+            
+            
         fi
 
         if [ ${VS} == "GIT" ]; then
@@ -101,7 +115,7 @@ for p in ${PROJECTS_HOME}/*; do
         printf "Checking repository logs\n"
 
         if [ ${VS} == "SVN" ]; then
-            svn log -l 10 --xml ${SVN_DEPOT}/trunk > svnlogl10.xml
+            eval "${SVN} log -l 10 --xml ${SVN_DEPOT} > svnlogl10.xml"
             convert_log -i svnlogl10.xml -o ${YANNKINS_HOME}/log/SVNLOG_${PROJECT_NAME}
         fi
 
