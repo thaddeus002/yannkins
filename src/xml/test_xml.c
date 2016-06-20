@@ -18,17 +18,22 @@ int main(int argc, char **argv) {
     int err;
     char command[200];
 
+    fprintf(stdout, "Reading test document\n");
     document = read_xml_file(XML_FILE);
 
+    fprintf(stdout, "Writing test document in %s\n", OUTPUT_FILE);
     write_xml_node_in_file(OUTPUT_FILE, document);
 
+    fprintf(stdout, "Freeing memory\n");
     destroy_xmlNode(document);
 
+    fprintf(stdout, "Comparing input and output\n");
     sprintf(command, "[ $(diff %s %s | wc -l) -eq 0 ]", XML_FILE, OUTPUT_FILE);
     err = system(command);
     fprintf(stdout, "%s -> %d\n", command, err);
 
     if(err>=256) { err = 1; }
 
+    fprintf(stdout, "XML tests completed\n");
     return err;
 }
