@@ -63,7 +63,7 @@
  * Data to show for one task. This is one line in a project's resume table.
  */
 typedef struct yannkins_line_t_ {
-    int result; /**< this is "ok" (0) or "fail" (1) */ 
+    int result; /**< this is "ok" (0) or "fail" (1) */
     char *name; /**< the task's name */
     char date[17]; /**< the last execution date */
     char lastSuccessDate[17]; /**< the date of last successfull exectution */
@@ -81,15 +81,15 @@ typedef struct yannkins_line_t_ {
  */
 static char *concat_path(char *beg, char *end) {
 
-	char *result = malloc(sizeof(char) *(strlen(beg)+strlen(end)+2));
+    char *result = malloc(sizeof(char) *(strlen(beg)+strlen(end)+2));
 
-	if(result==NULL){
-		fprintf(stderr, "Allocation error\n");
-		return NULL;
-	}
+    if(result==NULL){
+        fprintf(stderr, "Allocation error\n");
+        return NULL;
+    }
 
-	sprintf(result, "%s/%s", beg, end);
-	return result;
+    sprintf(result, "%s/%s", beg, end);
+    return result;
 }
 
 
@@ -98,7 +98,7 @@ static char *concat_path(char *beg, char *end) {
  *
  * The created table will contains a line by executed task to show the results
  * such as "success", "execution date", "last success date", ...
- * The last column will present a link to see the last console output. 
+ * The last column will present a link to see the last console output.
  * @param document the HTML page where append the table
  * @param lines the datas to put in the table, must end with NULL value
  */
@@ -185,9 +185,9 @@ static yannkins_line_t *new_entry(char *filename, char *basename, char *entryNam
 
     // reading log file
     log = csv_read_file(filename, ';');
-	if(log==NULL){
-		return NULL;
-	}
+    if(log==NULL){
+        return NULL;
+    }
 
     if((log->nbCol < 2) || (log->nbLig < 1)){
         fprintf(stderr, "Incorrect file: %s\n%d column(s), %d line(s)\n", basename, log->nbCol, log->nbLig);
@@ -254,38 +254,38 @@ static yannkins_line_t *new_entry(char *filename, char *basename, char *entryNam
 static yannkins_line_t **init_lines(yk_project *project, char *yannkinsRep){
 
     char *logdir; // name of directory
-    
+
     yannkins_line_t **lines = NULL; // allocated table of *line
     int i = 0; // counter : number of entries in lines
     int tailleAllouee = 0; // number of allocated entries in lines
 
-	int j;
+    int j;
 
-	char *taches[3];
-	taches[0]=REPOS_TASK;
-	taches[1]=COMPILATION_TASK;
-	taches[2]=TESTS_TASK;
-	
-	logdir = malloc(strlen(yannkinsRep)+5);
+    char *taches[3];
+    taches[0]=REPOS_TASK;
+    taches[1]=COMPILATION_TASK;
+    taches[2]=TESTS_TASK;
+
+    logdir = malloc(strlen(yannkinsRep)+5);
     sprintf(logdir, "%s/log", yannkinsRep);
 
-	for(j=0; j<3; j++){
-		yannkins_line_t *entry;
-		char *file; // name of a file
-		char *basename;
-		char *taskName = NULL;
+    for(j=0; j<3; j++){
+        yannkins_line_t *entry;
+        char *file; // name of a file
+        char *basename;
+        char *taskName = NULL;
 
-		basename=malloc(strlen(taches[j])+strlen(project->project_name)+2);
-		sprintf(basename, "%s_%s", taches[j], project->project_name);
-		file=malloc(strlen(logdir)+strlen(basename)+2);
-		sprintf(file, "%s/%s", logdir, basename);
+        basename=malloc(strlen(taches[j])+strlen(project->project_name)+2);
+        sprintf(basename, "%s_%s", taches[j], project->project_name);
+        file=malloc(strlen(logdir)+strlen(basename)+2);
+        sprintf(file, "%s/%s", logdir, basename);
 
                 // TODO : do this for all task, in a better way
                 if(j == 0) {
                     taskName = "Source code recovery";
-		}
+        }
                 entry = new_entry(file, basename, taskName);
-		free(basename);
+        free(basename);
         free(file);
 
         // add the entry
@@ -298,7 +298,7 @@ static yannkins_line_t **init_lines(yk_project *project, char *yannkinsRep){
             lines[i]=entry;
             i++;
         }
-	}
+    }
 
     free(logdir);
     lines[i]=NULL;
@@ -314,20 +314,19 @@ static yannkins_line_t **init_lines(yk_project *project, char *yannkinsRep){
  */
 static int write_yannkins_html(yk_project *project, char *yannkinsRep){
 
-	yannkins_line_t **lines = init_lines(project, yannkinsRep);
+    yannkins_line_t **lines = init_lines(project, yannkinsRep);
 
-	char *fichier = NULL; // name of svn logs file
-	char *wwwdir; // directory where put the html outputs
-	char *filename; // name of the html file to create (without path)
-	char *report; // name of the html file to create (with path)
-	table_csv_t *data; // svn logs data
-	table_csv_t *data_s; // filtrated svn logs
-	char *elementsCherches[4];
-	int nb; // number of OK columns for svn logs
+    char *fichier = NULL; // name of svn logs file
+    char *wwwdir; // directory where put the html outputs
+    char *filename; // name of the html file to create (without path)
+    char *report; // name of the html file to create (with path)
+    table_csv_t *data; // svn logs data
+    table_csv_t *data_s; // filtrated svn logs
+    char *elementsCherches[4];
+    int nb; // number of OK columns for svn logs
     htmlDocument *page;
     xmlNode *bandeau;
     char *content;
-
 
     page = create_html_document(TITLE);
     html_add_css(page, "style/style.css");
@@ -344,7 +343,6 @@ static int write_yannkins_html(yk_project *project, char *yannkinsRep){
 
     write_yannkins_table(page, lines);
 
-  
     // freeing memory
     if(lines != NULL){
         int i = 0;
@@ -361,8 +359,7 @@ static int write_yannkins_html(yk_project *project, char *yannkinsRep){
         free(lines);
     }
 
-
-	// logs' table
+    // logs' table
     if(project->versioning_type == SVN) {
         fichier=malloc(sizeof(char)*(strlen(yannkinsRep)+strlen(SVNLOG)+strlen(project->project_name)+7));
         sprintf(fichier, "%s/log/%s_%s", yannkinsRep, SVNLOG, project->project_name);
@@ -375,42 +372,42 @@ static int write_yannkins_html(yk_project *project, char *yannkinsRep){
         data=csv_read_file(fichier, ';');
     }
 
-	if(data!=NULL) {
-		elementsCherches[0]="#";
-		elementsCherches[1]="author";
-		elementsCherches[2]="date";
-		elementsCherches[3]="commentaries";
-		data_s=csv_select_columns(data, elementsCherches, 4, &nb);
-		csv_truncate_column(data_s, elementsCherches[2], 20);
+    if(data!=NULL) {
+        elementsCherches[0]="#";
+        elementsCherches[1]="author";
+        elementsCherches[2]="date";
+        elementsCherches[3]="commentaries";
+        data_s=csv_select_columns(data, elementsCherches, 4, &nb);
+        csv_truncate_column(data_s, elementsCherches[2], 20);
 
         html_add_title_with_hr(page, 2, "Last revisions");
 
         html_add_table_from_data(page, data_s);
-        
-		csv_destroy_table(data_s);
-		csv_destroy_table(data);
-	}
+
+        csv_destroy_table(data_s);
+        csv_destroy_table(data);
+    }
 
     // write file
-	wwwdir = concat_path(yannkinsRep, "www");
-	if(wwwdir == NULL) {
-		return ERR_MEMORY;
-	}
+    wwwdir = concat_path(yannkinsRep, "www");
+    if(wwwdir == NULL) {
+        return ERR_MEMORY;
+    }
 
-	filename=malloc(sizeof(char)*(strlen(project->project_name)+6));
-	sprintf(filename, "%s.html", project->project_name);
-	
-	report = concat_path(wwwdir, filename);
-	free(wwwdir);
-	free(filename);
-	
-	if(report == NULL) {
-		return ERR_MEMORY;
-	}
+    filename=malloc(sizeof(char)*(strlen(project->project_name)+6));
+    sprintf(filename, "%s.html", project->project_name);
+
+    report = concat_path(wwwdir, filename);
+    free(wwwdir);
+    free(filename);
+
+    if(report == NULL) {
+        return ERR_MEMORY;
+    }
 
     html_write_to_file(page, report);
     destroy_html_document(page);
-	free(report);
+    free(report);
 
     return ERR_OK;
 }
@@ -418,15 +415,15 @@ static int write_yannkins_html(yk_project *project, char *yannkinsRep){
 
 int main(int argc, char **argv){
 
-	char *project;
-	char *project_file;
-	char projects_dir[1000];
-	struct dirent *lecture; // an entry of projects' directory
+    char *project;
+    char *project_file;
+    char projects_dir[1000];
+    struct dirent *lecture; // an entry of projects' directory
     DIR *rep; //directory to cross
     char *logdir; // name of directory
     char *yannkinsDir; // working directory
     char *htmlFile; // index.html file
-	htmlDocument *page;
+    htmlDocument *page;
     xmlNode *bandeau;
     htmlList *list;
     xmlNode *listItem;
@@ -434,11 +431,11 @@ int main(int argc, char **argv){
 
     yannkinsDir = getenv("YANNKINS_HOME");
 
-	if(yannkinsDir==NULL) {
-		fprintf(stderr, "Warning : YANNKINS_HOME environment variable not found, using \"%s\"\n", YANNKINS_DIR);
-		// use default
-		yannkinsDir = YANNKINS_DIR;
-	}
+    if(yannkinsDir==NULL) {
+        fprintf(stderr, "Warning : YANNKINS_HOME environment variable not found, using \"%s\"\n", YANNKINS_DIR);
+        // use default
+        yannkinsDir = YANNKINS_DIR;
+    }
 
     page = create_html_document(TITLE);
     html_add_css(page, "style/style.css");
@@ -448,12 +445,12 @@ int main(int argc, char **argv){
 
     html_add_title(page, 1, "Projects list");
 
-	sprintf(projects_dir, "%s/%s", yannkinsDir, PROJECTS_DIR);
+    sprintf(projects_dir, "%s/%s", yannkinsDir, PROJECTS_DIR);
     logdir = malloc(strlen(yannkinsDir)+5);
     sprintf(logdir, "%s/log", yannkinsDir);
 
     list = html_add_list(page);
-    
+
     rep = opendir(projects_dir);
     if(rep == NULL) {
         fprintf(stderr, "Error: can't open directory %s\n", projects_dir);
@@ -462,44 +459,44 @@ int main(int argc, char **argv){
 
     while ((lecture = readdir(rep))) {
 
-		if(lecture->d_type==DT_REG){
+        if(lecture->d_type==DT_REG){
 
-			char *project_def = malloc( (strlen(projects_dir)+strlen(lecture->d_name)+2) * sizeof(char) );
-			yk_project *project_struct;
+            char *project_def = malloc( (strlen(projects_dir)+strlen(lecture->d_name)+2) * sizeof(char) );
+            yk_project *project_struct;
 
-			sprintf(project_def, "%s/%s", projects_dir, lecture->d_name);
-			project_struct = yk_read_project_file(project_def);
-			free(project_def);
+            sprintf(project_def, "%s/%s", projects_dir, lecture->d_name);
+            project_struct = yk_read_project_file(project_def);
+            free(project_def);
 
-			project=project_struct->project_name;
+            project=project_struct->project_name;
 
-		    fprintf(stdout, "Treatment of project %s.\n", project_struct->project_name);
-			write_yannkins_html(project_struct, yannkinsDir);
+            fprintf(stdout, "Treatment of project %s.\n", project_struct->project_name);
+            write_yannkins_html(project_struct, yannkinsDir);
 
-			project_file=malloc(sizeof(char)*(strlen(project)+6));
-			sprintf(project_file, "%s.html", project);
+            project_file=malloc(sizeof(char)*(strlen(project)+6));
+            sprintf(project_file, "%s.html", project);
 
             listItem = html_add_list_item(list, NULL);
             html_add_link_in_node(listItem, project, project_file);
 
-			yk_destroy_project(project_struct);
-		}
-	}
-	closedir(rep);
+            yk_destroy_project(project_struct);
+        }
+    }
+    closedir(rep);
 
 
     // write file
 
-	htmlFile=concat_path(yannkinsDir, HTML_FILE);
+    htmlFile=concat_path(yannkinsDir, HTML_FILE);
 
-	if(htmlFile==NULL){
-		fprintf(stderr, "Can't allocate memory\n");
+    if(htmlFile==NULL){
+        fprintf(stderr, "Can't allocate memory\n");
         return ERR_MEMORY;
-	}
+    }
 
     html_write_to_file(page, htmlFile);
-	free(htmlFile);
+    free(htmlFile);
     destroy_html_document(page);
 
-	return 0;
+    return 0;
 }
