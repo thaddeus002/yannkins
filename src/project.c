@@ -12,7 +12,7 @@ yk_project *yk_read_project_file(char *filename){
 
     FILE *fd; /* file descriptor */
     yk_project *project = NULL; /* the new project */
-    char ligne[250]; // a line of file
+    char line[250]; // a line of file
     char *value; //position after the '=' in ligne
     int i; // position in string
     int eol; // end of line reatched
@@ -33,30 +33,30 @@ yk_project *yk_read_project_file(char *filename){
         project->compil_cmd=NULL;
         project->tests_cmd=NULL;
 
-        while(fgets(ligne, 250, fd)!=NULL){
+        while(fgets(line, 250, fd)!=NULL){
 
             eol=0;
 
             // don't care for comments lines
-            if(ligne[0]=='#') {
+            if(line[0]=='#') {
                 continue;
             }
 
             // we are looking for '=' position, but not at the beginning
             i=1;
-            while(i<strlen(ligne)){
-                if(ligne[i]=='=') {
+            while(i<strlen(line)){
+                if(line[i]=='=') {
                     break;
                 }
                 i++;
             }
 
-            if(i==strlen(ligne)){
+            if(i==strlen(line)){
                 continue;
             }
 
-            value=ligne+i+1;
-            ligne[i]='\0';
+            value=line+i+1;
+            line[i]='\0';
 
             if(value[0]=='"'){
                 value=value+1;
@@ -67,35 +67,35 @@ yk_project *yk_read_project_file(char *filename){
                 value[strlen(value)-1]='\0';
             }
 
-            if(!strcmp(ligne, "PROJECT_NAME")){
+            if(!strcmp(line, "PROJECT_NAME")){
                 project->project_name=malloc((strlen(value)+1)*sizeof(char));
                 strcpy(project->project_name, value);
-            } else if(!strcmp(ligne, "SVN_DEPOT")){
+            } else if(!strcmp(line, "SVN_DEPOT")){
                 project->versioning_type=SVN;
                 project->repository=malloc((strlen(value)+1)*sizeof(char));
                 strcpy(project->repository, value);
-            } else if(!strcmp(ligne, "GIT_DEPOT")){
+            } else if(!strcmp(line, "GIT_DEPOT")){
                 project->versioning_type=GIT;
                 project->repository=malloc((strlen(value)+1)*sizeof(char));
                 strcpy(project->repository, value);
-            } else if(!strcmp(ligne, "SVN_USER") || !strcmp(ligne, "GIT_USER")){
+            } else if(!strcmp(line, "SVN_USER") || !strcmp(line, "GIT_USER")){
                 project->repos_user=malloc((strlen(value)+1)*sizeof(char));
                 strcpy(project->repos_user, value);
-            } else if(!strcmp(ligne, "SVN_PASSWD") || !strcmp(ligne, "GIT_PASSWD")){
+            } else if(!strcmp(line, "SVN_PASSWD") || !strcmp(line, "GIT_PASSWD")){
                 project->repos_password=malloc((strlen(value)+1)*sizeof(char));
                 strcpy(project->repos_password, value);
-            } else if(!strcmp(ligne, "COMPIL")){
+            } else if(!strcmp(line, "COMPIL")){
                 project->compil_cmd=malloc((strlen(value)+1)*sizeof(char));
                 strcpy(project->compil_cmd, value);
-            } else if(!strcmp(ligne, "TESTS_UNI")){
+            } else if(!strcmp(line, "TESTS_UNI")){
                 project->tests_cmd=malloc((strlen(value)+1)*sizeof(char));
                 strcpy(project->tests_cmd, value);
             }
 
             // if we have not read the end of line
             if (!eol) {
-                while(fgets(ligne, 250, fd)!=NULL){
-                    if(ligne[strlen(ligne)-1]=='\n') {
+                while(fgets(line, 250, fd)!=NULL){
+                    if(line[strlen(line)-1]=='\n') {
                         break;
                     }
                 }
