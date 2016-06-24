@@ -21,7 +21,7 @@ typedef enum obj_type {
 
 
 int addAttribute(xmlNode *node, char *key, char *value){
-    
+
     xmlAttribute *last = node->attributes;
     xmlAttribute *new = malloc(sizeof(xmlAttribute));
 
@@ -154,10 +154,10 @@ xmlNode *init_xmlNode(char *header, char *openTag) {
             quotes = !quotes;
             pos++;
         }
-            
+
     }
     free(tag);
-    
+
     result->text = NULL;
     result->children = NULL;
     result->next = NULL;
@@ -168,10 +168,10 @@ xmlNode *init_xmlNode(char *header, char *openTag) {
 
 /**
  * @brief Read the next elementary object in the stream
- * 
+ *
  * An elementary object is a string of text (content of a tag), or a text between braces
  * '<' and '>' (a tag).
- * @return the next elementary object in the stream or NULL if end of file is reatched
+ * @return the next elementary object in the stream or empty string if end of file is reatched
  */
 static char *read_elementary_object(FILE *fd) {
 
@@ -179,13 +179,14 @@ static char *read_elementary_object(FILE *fd) {
     int objSize=0;
     int i=0; // number of chars read
     int c; // read charcater
-    objType type = UNDEFINED; 
+    objType type = UNDEFINED;
     int end=0; // to quit loop
 
+    obj=malloc(sizeof(char)*BUF_SIZE);
     c=fgetc(fd);
     // Suppress line feed, carriage return, and spaces before element
     while(isspace(c)) { c=fgetc(fd); }
-    
+
     i++;
     while(c!=EOF && !end) {
 
@@ -222,13 +223,8 @@ static char *read_elementary_object(FILE *fd) {
 
             if (i > objSize-1) {
                 // need realloc
-                if(obj==NULL) {
-                    obj=malloc(sizeof(char)*BUF_SIZE);
-                    objSize=BUF_SIZE;
-                } else {
-                    obj=realloc(obj, objSize+BUF_SIZE);
-                    objSize+=BUF_SIZE;
-                }
+                obj=realloc(obj, objSize+BUF_SIZE);
+                objSize+=BUF_SIZE;
             }
 
             obj[i-1]=c;
@@ -237,6 +233,7 @@ static char *read_elementary_object(FILE *fd) {
         if(!end) { c=fgetc(fd); i++; }
     }
 
+    if(c==EOF) { i--; }
     obj[i]='\0';
     // Suppress line feed, carriage return, and spaces at the end of the element
     while(isspace(obj[strlen(obj)-1])) { obj[strlen(obj)-1]='\0'; }
@@ -325,7 +322,7 @@ static xmlNode *lastChild(xmlNode *node){
     xmlNode *last = NULL;
 
     if(node==NULL) { return NULL; }
-    
+
     if(node->children == NULL) { return NULL; }
 
     last = node->children;
@@ -354,12 +351,12 @@ static xmlNode *read_xmlNode_in_stream(FILE *fd, char *header, char *openTag){
 
         object = read_elementary_object(fd);
 
-        if( (object == NULL) || (strlen(object)==0) ) {
-            if(object != NULL) free (object);
-            break;
+        if(strlen(object)==0) {
+            // end of file
+            endOfNode = 1;
         }
 
-        if(isContent(object)) {
+        else if(isContent(object)) {
             xmlNode *child = lastChild(result);
             if(child == NULL) {
                 result->text = copyString(object);
@@ -375,6 +372,7 @@ static xmlNode *read_xmlNode_in_stream(FILE *fd, char *header, char *openTag){
 
         free(object);
     }
+
     return result;
 }
 
@@ -389,7 +387,7 @@ static xmlNode *read_xmlDoc_in_stream(FILE *fd){
     char *header = NULL;
 
     object = read_elementary_object(fd);
-   
+
     while( (!isOpenTag(object)) && (object != NULL)){
         if(isHeader(object)) {
             header = copyString(object);
@@ -402,7 +400,7 @@ static xmlNode *read_xmlDoc_in_stream(FILE *fd){
         result = read_xmlNode_in_stream(fd, header, object);
         free(object);
     }
-    
+
     return result;
 }
 
@@ -424,7 +422,7 @@ xmlNode *read_xml_file(char *filename) {
 
     result = read_xmlDoc_in_stream(fd);
     fclose(fd);
-    
+
     return result;
 }
 
@@ -444,11 +442,11 @@ int write_xml_node(FILE *fd, xmlNode *document, int depth) {
     if(document->header != NULL) {
         fprintf(fd, "%s\n", document->header);
     }
-    
+
     for (i = 0; i < depth; i++) {
-    	fprintf(fd, "    ");
+        fprintf(fd, "    ");
     }
-        
+
     fprintf(fd, "<");
     if(document->name != NULL) {
         fprintf(fd, "%s", document->name);
@@ -465,7 +463,7 @@ int write_xml_node(FILE *fd, xmlNode *document, int depth) {
         fprintf(fd, "\n");
         lf = 1;
     }
-    
+
     if(document->text != NULL) {
         if(lf) for (i = 0; i < depth+1; i++) {
             fprintf(fd, "    ");
@@ -475,7 +473,7 @@ int write_xml_node(FILE *fd, xmlNode *document, int depth) {
             fprintf(fd, "\n");
         }
     }
-    
+
     err = write_xml_node(fd, document->children, depth+1);
 
     if(lf) for (i = 0; i < depth; i++) {
@@ -495,7 +493,7 @@ int write_xml_node(FILE *fd, xmlNode *document, int depth) {
     if(!err) {
         err = write_xml_node(fd, document->next, depth);
     }
-    
+
     return err;
 }
 
@@ -515,7 +513,7 @@ int write_xml_node_in_file(char *filename, xmlNode *document) {
 
     err = write_xml_node(fd, document, 0);
     fclose(fd);
-    
+
     return err;
 }
 
@@ -546,7 +544,7 @@ void destroy_xmlNode(xmlNode *document){
         free(attribute);
         attribute=next;
     }
-    
+
     if(document->text != NULL) {
         free(document->text);
     }
