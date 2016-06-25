@@ -14,9 +14,11 @@ One cron task will perform projects analysis : svn checkout/update or git clone/
 
 ![screenshot](assets/yannkins_screenshot.png)
 
-## Limitations
+## Supported versionning control systems
 
-Only GIT, and SVN are supported.
+** Git
+
+** SVN
 
 ## How to get started ?
 
