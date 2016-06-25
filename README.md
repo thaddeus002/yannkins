@@ -16,9 +16,9 @@ One cron task will perform projects analysis : svn checkout/update or git clone/
 
 ## Supported versionning control systems
 
-** Git
+* Git
 
-** SVN
+* SVN
 
 ## How to get started ?
 
