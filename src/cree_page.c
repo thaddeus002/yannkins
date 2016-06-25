@@ -48,7 +48,6 @@
 /** @brief git logs tag */
 #define GITLOG "GITLOG"
 
-
 // ERROR CODES
 /** @brief Error code allocation */
 #define ERR_MEMORY 2
@@ -56,6 +55,15 @@
 #define ERR_OPEN_FILE 1
 /** @brief Error code OK */
 #define ERR_OK 0
+
+// STRING CONSTANTS
+/** @brief how to display source code recovery task's name*/
+#define REPOS_LABEL "Source code recovery"
+/** @brief how to display compilation task's name*/
+#define COMPILATION_LABEL "Project 's compilation"
+/** @brief how to display tests task's name*/
+#define TESTS_LABEL "Units' tests execution"
+
 
 // TYPEDEF
 
@@ -280,11 +288,18 @@ static yannkins_line_t **init_lines(yk_project *project, char *yannkinsRep){
         file=malloc(strlen(logdir)+strlen(basename)+2);
         sprintf(file, "%s/%s", logdir, basename);
 
-                // TODO : do this for all task, in a better way
-                if(j == 0) {
-                    taskName = "Source code recovery";
+        // TODO : do this for all task, in a better way
+        switch(j) {
+        case 0:
+            taskName = REPOS_LABEL;
+            break;
+        case 1:
+            taskname = COMPILATION_LABEL;
+            break;
+        case 2:
+            taskname = TESTS_LABEL;
         }
-                entry = new_entry(file, basename, taskName);
+        entry = new_entry(file, basename, taskName);
         free(basename);
         free(file);
 
