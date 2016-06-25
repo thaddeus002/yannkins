@@ -5,9 +5,9 @@
 DEFAULT_DIR="/var/yannkins"
 
 if [ ${YANNKINS_HOME}_ == "_" ]; then
-	printf "Warning : Environment variable YANNKINS_HOME not found. Using %s.\n" ${DEFAULT_DIR}
-	export YANNKINS_HOME=${DEFAULT_DIR}
-fi 
+    printf "Warning : Environment variable YANNKINS_HOME not found. Using %s.\n" ${DEFAULT_DIR}
+    export YANNKINS_HOME=${DEFAULT_DIR}
+fi
 
 # Where projects are defined
 PROJECTS_HOME="${YANNKINS_HOME}/projects"
@@ -53,23 +53,21 @@ for p in ${PROJECTS_HOME}/*; do
         if [ ${VS} == "SVN" ]; then
             SVN="svn"
             if [ ${SVN_USER}_ != _ ]; then
-            	SVN="${SVN} --username '${SVN_USER}'"
+                SVN="${SVN} --username '${SVN_USER}'"
             fi
-            
+
             if [ ${SVN_PASSWD}_ != _ ]; then
-            	SVN="${SVN} --password '${SVN_PASSWD}'"
+                SVN="${SVN} --password '${SVN_PASSWD}'"
             fi
 
             if [ ! -d ${REPOS_HOME}/${PROJECT_NAME} ]; then
-	        MSG="Checkout of repository\n"
+                MSG="Checkout of repository\n"
                 COMMAND="${SVN} co ${SVN_DEPOT} ${PROJECT_NAME}"
             else
                 PRES=1
                 MSG="Udpate repository\n"
                 COMMAND="${SVN} update"
             fi
-            
-            
         fi
 
         if [ ${VS} == "GIT" ]; then
@@ -96,7 +94,7 @@ for p in ${PROJECTS_HOME}/*; do
         # Compiling project
         printf "Compilation\n"
         COMP=$(echo -n ${COMPIL} | wc -c)
-        if [ ${COMP} -gt 0 ]; then 
+        if [ ${COMP} -gt 0 ]; then
             cd ${REPOS_HOME}/${PROJECT_NAME}
             tache.sh COMPILATION_${PROJECT_NAME} "${COMPIL}"
             cd -
@@ -105,7 +103,7 @@ for p in ${PROJECTS_HOME}/*; do
         # tests
         printf "Tests\n"
         TESTS=$(echo -n ${TESTS_UNI} | wc -c)
-        if [ ${TESTS} -gt 0 ]; then 
+        if [ ${TESTS} -gt 0 ]; then
             cd ${REPOS_HOME}/${PROJECT_NAME}
             tache.sh TESTS_${PROJECT_NAME} "${TESTS_UNI}"
             cd -
