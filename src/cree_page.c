@@ -294,10 +294,10 @@ static yannkins_line_t **init_lines(yk_project *project, char *yannkinsRep){
             taskName = REPOS_LABEL;
             break;
         case 1:
-            taskname = COMPILATION_LABEL;
+            taskName = COMPILATION_LABEL;
             break;
         case 2:
-            taskname = TESTS_LABEL;
+            taskName = TESTS_LABEL;
         }
         entry = new_entry(file, basename, taskName);
         free(basename);
