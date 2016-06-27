@@ -172,7 +172,7 @@ static yannkins_line_t *new_entry(char *filename, char *basename, char *entryNam
 
     yannkins_line_t *entry = NULL; // return value
     table_csv_t *log; // content of the file
-    ligne_csv_t *ligne; // a line of the file
+    ligne_csv_t *logline; // a line of the file
     ligne_csv_t *last; // last line of the file
     char *lastSuccessDate = NULL; // record for last success date
     char *name =entryName; // task's name
@@ -205,14 +205,14 @@ static yannkins_line_t *new_entry(char *filename, char *basename, char *entryNam
     }
 
     // view last log line
-    ligne=log->lignes;
+    logline=log->lignes;
     last=NULL;
-    while(ligne!=NULL){
-        last=ligne;
+    while(logline!=NULL){
+        last=logline;
         if(!strcmp(last->valeurs[1], "OK")){
             lastSuccessDate = last->valeurs[0];
         }
-        ligne=ligne->next;
+        logline=logline->next;
     }
 
     if(last==NULL){
@@ -265,14 +265,14 @@ static yannkins_line_t **init_lines(yk_project *project, char *yannkinsRep){
 
     yannkins_line_t **lines = NULL; // allocated table of *line
     int i = 0; // counter : number of entries in lines
-    int tailleAllouee = 0; // number of allocated entries in lines
+    int allocatedSize = 0; // number of allocated entries in lines
 
     int j;
 
-    char *taches[3];
-    taches[0]=REPOS_TASK;
-    taches[1]=COMPILATION_TASK;
-    taches[2]=TESTS_TASK;
+    char *tasks[3];
+    tasks[0]=REPOS_TASK;
+    tasks[1]=COMPILATION_TASK;
+    tasks[2]=TESTS_TASK;
 
     logdir = malloc(strlen(yannkinsRep)+5);
     sprintf(logdir, "%s/log", yannkinsRep);
@@ -283,8 +283,8 @@ static yannkins_line_t **init_lines(yk_project *project, char *yannkinsRep){
         char *basename;
         char *taskName = NULL;
 
-        basename=malloc(strlen(taches[j])+strlen(project->project_name)+2);
-        sprintf(basename, "%s_%s", taches[j], project->project_name);
+        basename=malloc(strlen(tasks[j])+strlen(project->project_name)+2);
+        sprintf(basename, "%s_%s", tasks[j], project->project_name);
         file=malloc(strlen(logdir)+strlen(basename)+2);
         sprintf(file, "%s/%s", logdir, basename);
 
@@ -306,9 +306,9 @@ static yannkins_line_t **init_lines(yk_project *project, char *yannkinsRep){
         // add the entry
         if(entry!=NULL){
             // take in account the size for the last NULL pointer
-            if(i>=tailleAllouee-1){
-                tailleAllouee+=20;
-                lines = realloc(lines, tailleAllouee*sizeof(yannkins_line_t *));
+            if(i>=allocatedSize-1){
+                allocatedSize+=20;
+                lines = realloc(lines, allocatedSize*sizeof(yannkins_line_t *));
             }
             lines[i]=entry;
             i++;
