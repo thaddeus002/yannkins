@@ -20,6 +20,7 @@
 #include "xml/xml.h"
 #include "csv/csv.h"
 #include "project.h"
+#include "log_analyse.h"
 
 
 /** @brief default working directory */
@@ -388,6 +389,8 @@ static int write_yannkins_html(yk_project *project, char *yannkinsRep){
     }
 
     if(data!=NULL) {
+        char subtitle[500];
+
         elementsCherches[0]="#";
         elementsCherches[1]="author";
         elementsCherches[2]="date";
@@ -395,7 +398,8 @@ static int write_yannkins_html(yk_project *project, char *yannkinsRep){
         data_s=csv_select_columns(data, elementsCherches, 4, &nb);
         csv_truncate_column(data_s, elementsCherches[2], 20);
 
-        html_add_title_with_hr(page, 2, "Last revisions");
+        sprintf(subtitle, "Last %d commits (by %d authors)", data->nbLig, get_authors_number(data));
+        html_add_title_with_hr(page, 2, subtitle);
 
         html_add_table_from_data(page, data_s);
 
