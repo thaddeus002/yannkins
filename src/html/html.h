@@ -4,7 +4,7 @@
  * @author Yannick Garcia
  * @date 02/08/2015
  */
- 
+
 #ifndef HTML_H_
 #define HTML_H_
 
@@ -17,6 +17,8 @@
 
 /** @brief A HTML Document is a XML document */
 typedef xmlNode htmlDocument;
+/** @brief a HTML node */
+typedef xmlNode htmlElement;
 /** @brief Represents an HTML Table */
 typedef xmlNode htmlTable;
 /** @brief Represents an HTML List (<ul>) */
@@ -133,6 +135,16 @@ void html_add_date(htmlDocument *document, time_t date);
 xmlNode *html_add_image(htmlDocument *document, char *image);
 
 /**
+ * @brief Append an image to a node of the HTML document
+ * @param element the node to modify
+ * @param image the image's url
+ * @return the new image node
+ */
+xmlNode *html_add_image_in_node(htmlElement *element, char *image);
+
+
+
+/**
  * @brief Write a text with a hyperlink in a table.
  * @param table where append the link
  * @param text appearing text
@@ -153,7 +165,7 @@ xmlNode *html_add_link_in_table(htmlTable *table, char *text, char *link, int co
  */
 xmlNode *html_add_link_in_node(xmlNode *node, char *text, char *link);
 
- 
+
 /**
  * @brief Write the date in human readable form.
  * @param document where append the date

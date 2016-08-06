@@ -186,7 +186,7 @@ xmlNode *html_add_title(htmlDocument *document, int level, char *title) {
     if(l>=10) { l=9; }
     if(l<=0)  { l=1; }
     sprintf(htag, "<h%d>", l);
-    
+
     htitle = init_xmlNode(NULL, htag);
     htitle->text = copyString(title);
 
@@ -224,6 +224,16 @@ xmlNode *html_add_image(htmlDocument *document, char *image) {
     html_add_data(document, img);
     return img;
 }
+
+
+xmlNode *html_add_image_in_node(htmlElement *element, char *image){
+    xmlNode *img = init_xmlNode(NULL, "<img>");
+
+    addAttribute(img, "src", image);
+    add_child(element, img);
+    return img;
+}
+
 
 
 /** Find a table cell */
@@ -293,12 +303,12 @@ xmlNode *html_add_link_in_node(xmlNode *node, char *text, char *link){
 /** format a date in human readable string */
 char *html_write_date(time_t date) {
 
-	struct tm time;
-	localtime_r(&date, &time);
+    struct tm time;
+    localtime_r(&date, &time);
     char *sdate;
 
     sdate = malloc(sizeof(char) * 17);
-	sprintf(sdate, "%02d/%02d/%04d %02d:%02d", time.tm_mday, time.tm_mon + 1, time.tm_year + 1900, time.tm_hour, time.tm_min);
+    sprintf(sdate, "%02d/%02d/%04d %02d:%02d", time.tm_mday, time.tm_mon + 1, time.tm_year + 1900, time.tm_hour, time.tm_min);
     return sdate;
 }
 
@@ -361,7 +371,7 @@ xmlNode *html_add_image_with_size_in_table(htmlTable *table, char *image, int wi
     return img;
 }
 
-    
+
 int html_write_to_file(htmlDocument *document, char *filename) {
     return write_xml_node_in_file(filename, document);
 }
