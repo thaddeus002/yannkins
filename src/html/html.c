@@ -230,7 +230,7 @@ xmlNode *html_add_image_in_node(htmlElement *element, char *image){
     xmlNode *img = init_xmlNode(NULL, "<img>");
 
     addAttribute(img, "src", image);
-    add_child(element, img);
+    addChild(element, img);
     return img;
 }
 

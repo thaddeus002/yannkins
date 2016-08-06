@@ -48,7 +48,7 @@ char *xml_get_attribute(xmlNode *node, char *key) {
 
     while(attribute != NULL) {
 
-        if(!strcmp(attribute->key, key) {
+        if(!strcmp(attribute->key, key)) {
             value = copyString(attribute->value);
             break;
         }
