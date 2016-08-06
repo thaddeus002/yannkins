@@ -92,6 +92,16 @@ int addAttribute(xmlNode *node, char *key, char *value);
 
 
 /**
+ * @brief retrieve the value of an attribute if exist
+ * @param node where to look for
+ * @param key the looked for key
+ * @return A newly allocate copy of attribute value or null if not found
+ */
+char *xml_get_attribute(xmlNode *node, char *key);
+
+
+
+/**
  * @brief Add a child node to parent.
  * @param parent the node where add
  * @param child the node to add

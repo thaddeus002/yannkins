@@ -41,6 +41,26 @@ int addAttribute(xmlNode *node, char *key, char *value){
 }
 
 
+char *xml_get_attribute(xmlNode *node, char *key) {
+
+    char *value = NULL;
+    xmlAttribute *attribute = node->attributes;
+
+    while(attribute != NULL) {
+
+        if(!strcmp(attribute->key, key) {
+            value = copyString(attribute->value);
+            break;
+        }
+
+        attribute = attribute->next;
+    }
+
+    return value;
+}
+
+
+
 int addChild(xmlNode *parent, xmlNode *child){
 
     xmlNode *last = parent->children;
