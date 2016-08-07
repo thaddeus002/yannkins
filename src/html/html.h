@@ -66,7 +66,7 @@ htmlList *html_add_list(htmlDocument *document);
 xmlNode *html_add_list_item(htmlList *list, char *item);
 
 /**
- * @brief Create an emty html table.
+ * @brief Create an empty html table.
  * @param nbCol the number of columns of the new table
  * @param nbLines the number of lines of the new table
  * @param headers columns' headers

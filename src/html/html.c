@@ -99,22 +99,27 @@ xmlNode *html_add_list_item(htmlList *list, char *item){
 htmlTable *create_html_table(int nbCol, int nbLines, char **headers){
     xmlNode *table = init_xmlNode(NULL, "<table>");
     int i, j;
-    xmlNode *thead = init_xmlNode(NULL, "<thead>");
-    xmlNode *htr = init_xmlNode(NULL, "<tr>");
     xmlNode *tbody = init_xmlNode(NULL, "<tbody>");
 
-    addChild(table, thead);
-    addChild(thead, htr);
-    addChild(table, tbody);
 
+    if(headers != NULL) {
 
-    for(j=0; j<nbCol; j++) {
-        xmlNode *th;
-        if(headers[j]==NULL) { break; }
-        th = init_xmlNode(NULL, "<th>");
-        th->text = copyString(headers[j]);
-        addChild(htr, th);
+        xmlNode *thead = init_xmlNode(NULL, "<thead>");
+        xmlNode *htr = init_xmlNode(NULL, "<tr>");
+
+        addChild(table, thead);
+        addChild(thead, htr);
+
+        for(j=0; j<nbCol; j++) {
+            xmlNode *th;
+            if(headers[j]==NULL) { break; }
+            th = init_xmlNode(NULL, "<th>");
+            th->text = copyString(headers[j]);
+            addChild(htr, th);
+        }
     }
+
+    addChild(table, tbody);
 
     for(i=1; i<=nbLines; i++) {
         xmlNode *tr = init_xmlNode(NULL, "<tr>");
