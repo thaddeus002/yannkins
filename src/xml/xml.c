@@ -20,7 +20,8 @@ typedef enum obj_type {
 } objType;
 
 
-int addAttribute(xmlNode *node, char *key, char *value){
+
+int xml_add_attribute(xmlNode *node, char *key, char *value){
 
     xmlAttribute *last = node->attributes;
     xmlAttribute *new = malloc(sizeof(xmlAttribute));
@@ -61,7 +62,7 @@ char *xml_get_attribute(xmlNode *node, char *key) {
 
 
 
-int addChild(xmlNode *parent, xmlNode *child){
+int xml_add_child(xmlNode *parent, xmlNode *child){
 
     xmlNode *last = parent->children;
 
@@ -106,7 +107,7 @@ static char *clean_open_tag(char *openTag) {
 }
 
 
-xmlNode *init_xmlNode(char *header, char *openTag) {
+xmlNode *xml_init_node(char *header, char *openTag) {
     xmlNode *result = malloc(sizeof(xmlNode));
     char *name = NULL;
     char *key = NULL;
@@ -139,7 +140,7 @@ xmlNode *init_xmlNode(char *header, char *openTag) {
                     name = NULL;
                 } else {
                     if(key != NULL) {
-                        addAttribute(result, key, value);
+                        xml_add_attribute(result, key, value);
                     }
                 }
                 pos++;
@@ -164,7 +165,7 @@ xmlNode *init_xmlNode(char *header, char *openTag) {
                     result->name = copy_string(name);
                 } else {
                     if(key != NULL) {
-                        addAttribute(result, key, value);
+                        xml_add_attribute(result, key, value);
                     }
                 }
             }
@@ -361,7 +362,7 @@ static xmlNode *lastChild(xmlNode *node){
  * @return a pointer to the newly created node
  */
 static xmlNode *read_xmlNode_in_stream(FILE *fd, char *header, char *openTag){
-    xmlNode *result = init_xmlNode(header, openTag);
+    xmlNode *result = xml_init_node(header, openTag);
     char *object;
     int endOfNode = 0;
 
@@ -385,7 +386,7 @@ static xmlNode *read_xmlNode_in_stream(FILE *fd, char *header, char *openTag){
             }
         } else if(isOpenTag(object)) {
             xmlNode *child = read_xmlNode_in_stream(fd, NULL, object);
-            addChild(result, child);
+            xml_add_child(result, child);
         } else if (isCloseTag(object)) {
             endOfNode = 1;
         }
@@ -427,7 +428,7 @@ static xmlNode *read_xmlDoc_in_stream(FILE *fd){
 
 
 
-xmlNode *read_xml_file(char *filename) {
+xmlNode *xml_read_file(char *filename) {
 
     xmlNode *result = NULL;
 
@@ -447,7 +448,7 @@ xmlNode *read_xml_file(char *filename) {
 }
 
 
-int write_xml_node(FILE *fd, xmlNode *document, int depth) {
+int xml_write_node(FILE *fd, xmlNode *document, int depth) {
 
     /* to cross the attributes */
     xmlAttribute *attribute;
@@ -494,7 +495,7 @@ int write_xml_node(FILE *fd, xmlNode *document, int depth) {
         }
     }
 
-    err = write_xml_node(fd, document->children, depth+1);
+    err = xml_write_node(fd, document->children, depth+1);
 
     if(lf) for (i = 0; i < depth; i++) {
         fprintf(fd, "    ");
@@ -509,9 +510,8 @@ int write_xml_node(FILE *fd, xmlNode *document, int depth) {
         fprintf(fd, "%s\n", document->postText);
     }
 
-
     if(!err) {
-        err = write_xml_node(fd, document->next, depth);
+        err = xml_write_node(fd, document->next, depth);
     }
 
     return err;
@@ -519,7 +519,7 @@ int write_xml_node(FILE *fd, xmlNode *document, int depth) {
 
 
 
-int write_xml_node_in_file(char *filename, xmlNode *document) {
+int xml_write_node_in_file(char *filename, xmlNode *document) {
 
     FILE *fd;
     int err;
@@ -531,7 +531,7 @@ int write_xml_node_in_file(char *filename, xmlNode *document) {
         return 1;
     }
 
-    err = write_xml_node(fd, document, 0);
+    err = xml_write_node(fd, document, 0);
     fclose(fd);
 
     return err;
@@ -539,7 +539,7 @@ int write_xml_node_in_file(char *filename, xmlNode *document) {
 
 
 
-void destroy_xmlNode(xmlNode *document){
+void xml_destroy_node(xmlNode *document){
 
     /* to cross the attributes */
     xmlAttribute *attribute;
@@ -569,8 +569,8 @@ void destroy_xmlNode(xmlNode *document){
         free(document->text);
     }
 
-    destroy_xmlNode(document->children);
-    destroy_xmlNode(document->next);
+    xml_destroy_node(document->children);
+    xml_destroy_node(document->next);
 
     if(document->postText != NULL) {
         free(document->postText);

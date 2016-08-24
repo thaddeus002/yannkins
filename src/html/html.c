@@ -23,42 +23,42 @@
 
 htmlDocument *create_html_document(char *title){
 
-    htmlDocument *doc = init_xmlNode(HTML5_HEADER, "<html>");
-    xmlNode *head = init_xmlNode(NULL, "<head>");
-    xmlNode *body = init_xmlNode(NULL, "<body>");
-    xmlNode *htitle = init_xmlNode(NULL, "<title>");
-    xmlNode *meta = init_xmlNode(NULL, "<meta>");
+    htmlDocument *doc = xml_init_node(HTML5_HEADER, "<html>");
+    xmlNode *head = xml_init_node(NULL, "<head>");
+    xmlNode *body = xml_init_node(NULL, "<body>");
+    xmlNode *htitle = xml_init_node(NULL, "<title>");
+    xmlNode *meta = xml_init_node(NULL, "<meta>");
 
     htitle->text = copy_string(title);
-    addAttribute(meta, "charset", "utf-8");
+    xml_add_attribute(meta, "charset", "utf-8");
 
-    addChild(doc, head);
-    addChild(head, htitle);
-    addChild(head, meta);
-    addChild(doc, body);
+    xml_add_child(doc, head);
+    xml_add_child(head, htitle);
+    xml_add_child(head, meta);
+    xml_add_child(doc, body);
 
     return doc;
 }
 
 
 void destroy_html_document(htmlDocument *document) {
-    destroy_xmlNode(document);
+    xml_destroy_node(document);
 }
 
 
 void html_add_css(htmlDocument *document, char *cssFile) {
 
-    xmlNode *stylesheet = init_xmlNode(NULL, "<link>");
+    xmlNode *stylesheet = xml_init_node(NULL, "<link>");
     xmlNode *htmlChild;
 
-    addAttribute(stylesheet, "rel", "stylesheet");
-    addAttribute(stylesheet, "href", cssFile);
+    xml_add_attribute(stylesheet, "rel", "stylesheet");
+    xml_add_attribute(stylesheet, "href", cssFile);
 
     htmlChild=document->children;
 
     while(htmlChild!=NULL) {
         if(!strcmp(htmlChild->name, "head")) {
-            addChild(htmlChild, stylesheet);
+            xml_add_child(htmlChild, stylesheet);
             break;
         }
         htmlChild = htmlChild->next;
@@ -72,7 +72,7 @@ void html_add_data(htmlDocument *document, xmlNode *data){
 
     while(htmlChild!=NULL) {
         if(!strcmp(htmlChild->name, "body")) {
-            addChild(htmlChild, data);
+            xml_add_child(htmlChild, data);
             break;
         }
         htmlChild = htmlChild->next;
@@ -81,7 +81,7 @@ void html_add_data(htmlDocument *document, xmlNode *data){
 
 
 htmlList *html_add_list(htmlDocument *document) {
-    htmlList *list = init_xmlNode(NULL, "<ul>");
+    htmlList *list = xml_init_node(NULL, "<ul>");
 
     html_add_data(document, list);
     return list;
@@ -89,44 +89,44 @@ htmlList *html_add_list(htmlDocument *document) {
 
 
 xmlNode *html_add_list_item(htmlList *list, char *item){
-    xmlNode *hitem = init_xmlNode(NULL, "<li>");
+    xmlNode *hitem = xml_init_node(NULL, "<li>");
     hitem->text = copy_string(item);
-    addChild(list, hitem);
+    xml_add_child(list, hitem);
     return hitem;
 }
 
 
 htmlTable *create_html_table(int nbCol, int nbLines, char **headers){
-    xmlNode *table = init_xmlNode(NULL, "<table>");
+    xmlNode *table = xml_init_node(NULL, "<table>");
     int i, j;
-    xmlNode *tbody = init_xmlNode(NULL, "<tbody>");
+    xmlNode *tbody = xml_init_node(NULL, "<tbody>");
 
 
     if(headers != NULL) {
 
-        xmlNode *thead = init_xmlNode(NULL, "<thead>");
-        xmlNode *htr = init_xmlNode(NULL, "<tr>");
+        xmlNode *thead = xml_init_node(NULL, "<thead>");
+        xmlNode *htr = xml_init_node(NULL, "<tr>");
 
-        addChild(table, thead);
-        addChild(thead, htr);
+        xml_add_child(table, thead);
+        xml_add_child(thead, htr);
 
         for(j=0; j<nbCol; j++) {
             xmlNode *th;
             if(headers[j]==NULL) { break; }
-            th = init_xmlNode(NULL, "<th>");
+            th = xml_init_node(NULL, "<th>");
             th->text = copy_string(headers[j]);
-            addChild(htr, th);
+            xml_add_child(htr, th);
         }
     }
 
-    addChild(table, tbody);
+    xml_add_child(table, tbody);
 
     for(i=1; i<=nbLines; i++) {
-        xmlNode *tr = init_xmlNode(NULL, "<tr>");
-        addChild(tbody, tr);
+        xmlNode *tr = xml_init_node(NULL, "<tr>");
+        xml_add_child(tbody, tr);
         for(j=1; j<=nbCol; j++) {
-            xmlNode *td = init_xmlNode(NULL, "<td>");
-            addChild(tr, td);
+            xmlNode *td = xml_init_node(NULL, "<td>");
+            xml_add_child(tr, td);
         }
     }
 
@@ -156,7 +156,7 @@ htmlTable *html_add_table_from_data(htmlDocument *document, table_csv_t *data) {
     if(tbody == NULL) {
         // this may not append
         fprintf(stderr, "Warning: Unexpected null pointer in function html_add_table_from_data()\n");
-        destroy_xmlNode(table);
+        xml_destroy_node(table);
         return NULL;
     }
 
@@ -192,7 +192,7 @@ xmlNode *html_add_title(htmlDocument *document, int level, char *title) {
     if(l<=0)  { l=1; }
     sprintf(htag, "<h%d>", l);
 
-    htitle = init_xmlNode(NULL, htag);
+    htitle = xml_init_node(NULL, htag);
     htitle->text = copy_string(title);
 
     html_add_data(document, htitle);
@@ -202,7 +202,7 @@ xmlNode *html_add_title(htmlDocument *document, int level, char *title) {
 
 
 xmlNode *html_add_title_with_hr(htmlDocument *document, int level, char *title) {
-    xmlNode *hr = init_xmlNode(NULL, "<hr>");
+    xmlNode *hr = xml_init_node(NULL, "<hr>");
 
     xmlNode *htitle = html_add_title(document, level, title);
     html_add_data(document, hr);
@@ -212,9 +212,9 @@ xmlNode *html_add_title_with_hr(htmlDocument *document, int level, char *title) 
 
 
 xmlNode *html_add_link(htmlDocument *document, char *text, char *link){
-    xmlNode *hlink = init_xmlNode(NULL, "<a>");
+    xmlNode *hlink = xml_init_node(NULL, "<a>");
 
-    addAttribute(hlink, "href", link);
+    xml_add_attribute(hlink, "href", link);
     hlink->text=copy_string(text);
     html_add_data(document, hlink);
 
@@ -223,19 +223,19 @@ xmlNode *html_add_link(htmlDocument *document, char *text, char *link){
 
 
 xmlNode *html_add_image(htmlDocument *document, char *image) {
-    xmlNode *img = init_xmlNode(NULL, "<img>");
+    xmlNode *img = xml_init_node(NULL, "<img>");
 
-    addAttribute(img, "src", image);
+    xml_add_attribute(img, "src", image);
     html_add_data(document, img);
     return img;
 }
 
 
 xmlNode *html_add_image_in_node(htmlElement *element, char *image){
-    xmlNode *img = init_xmlNode(NULL, "<img>");
+    xmlNode *img = xml_init_node(NULL, "<img>");
 
-    addAttribute(img, "src", image);
-    addChild(element, img);
+    xml_add_attribute(img, "src", image);
+    xml_add_child(element, img);
     return img;
 }
 
@@ -283,10 +283,10 @@ xmlNode *html_add_link_in_table(htmlTable *table, char *text, char *link, int co
     td = find_table_cell(table, col, line);
 
     if(td != NULL) {
-        hlink = init_xmlNode(NULL, "<a>");
-        addAttribute(hlink, "href", link);
+        hlink = xml_init_node(NULL, "<a>");
+        xml_add_attribute(hlink, "href", link);
         hlink->text=copy_string(text);
-        addChild(td, hlink);
+        xml_add_child(td, hlink);
     }
 
     return hlink;
@@ -296,10 +296,10 @@ xmlNode *html_add_link_in_table(htmlTable *table, char *text, char *link, int co
 xmlNode *html_add_link_in_node(xmlNode *node, char *text, char *link){
     xmlNode *hlink;
 
-    hlink = init_xmlNode(NULL, "<a>");
-    addAttribute(hlink, "href", link);
+    hlink = xml_init_node(NULL, "<a>");
+    xml_add_attribute(hlink, "href", link);
     hlink->text=copy_string(text);
-    addChild(node, hlink);
+    xml_add_child(node, hlink);
 
     return hlink;
 }
@@ -347,9 +347,9 @@ xmlNode *html_add_image_in_table(htmlTable *table, char *image, int col, int lin
     td = find_table_cell(table, col, line);
 
     if(td != NULL) {
-        img = init_xmlNode(NULL, "<img>");
-        addAttribute(img, "src", image);
-        addChild(td, img);
+        img = xml_init_node(NULL, "<img>");
+        xml_add_attribute(img, "src", image);
+        xml_add_child(td, img);
     }
 
     return img;
@@ -364,13 +364,13 @@ xmlNode *html_add_image_with_size_in_table(htmlTable *table, char *image, int wi
     td = find_table_cell(table, col, line);
 
     if(td != NULL) {
-        img = init_xmlNode(NULL, "<img>");
-        addAttribute(img, "src", image);
+        img = xml_init_node(NULL, "<img>");
+        xml_add_attribute(img, "src", image);
         sprintf(attribute, "%d", width);
-        addAttribute(img, "width", attribute);
+        xml_add_attribute(img, "width", attribute);
         sprintf(attribute, "%d", height);
-        addAttribute(img, "height", attribute);
-        addChild(td, img);
+        xml_add_attribute(img, "height", attribute);
+        xml_add_child(td, img);
     }
 
     return img;
@@ -378,5 +378,5 @@ xmlNode *html_add_image_with_size_in_table(htmlTable *table, char *image, int wi
 
 
 int html_write_to_file(htmlDocument *document, char *filename) {
-    return write_xml_node_in_file(filename, document);
+    return xml_write_node_in_file(filename, document);
 }

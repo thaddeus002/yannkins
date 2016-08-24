@@ -13,7 +13,7 @@
  */
 void usage(char *prog) {
     fprintf(stderr, "Usage: %s [ -h ] -i <inputFile> -o <outputFile>\n", prog);
-	exit(1);
+    exit(1);
 }
 
 /**
@@ -29,24 +29,24 @@ int main(int argc, char **argv) {
     char *outputFile = NULL;
 
     /* reading arguments */
-	while ((c = getopt( argc, argv, "ioh" )) != EOF) {
-		switch(c){
-			case 'i' :
-				inputFile = argv[optind];
-			    break;
-			case 'o' :
-				outputFile = argv[optind];
-			    break;
-			default:
-				usage(argv[0]);
-		}
-	}
+    while ((c = getopt( argc, argv, "ioh" )) != EOF) {
+        switch(c){
+            case 'i' :
+                inputFile = argv[optind];
+                break;
+            case 'o' :
+                outputFile = argv[optind];
+                break;
+            default:
+                usage(argv[0]);
+        }
+    }
 
     if(inputFile == NULL || outputFile == NULL) {
         usage(argv[0]);
     }
 
-    document = read_xml_file(inputFile);
+    document = xml_read_file(inputFile);
 
     if(document == NULL) {
         fprintf(stderr, "An error occurred, abort.\n");
@@ -55,14 +55,14 @@ int main(int argc, char **argv) {
 
     table = present_svn_log(document);
 
-    destroy_xmlNode(document);
+    xml_destroy_node(document);
 
     if(csv_write_file(outputFile, table, ';')) {
         fprintf(stderr, "Warning : Output file not created.\n");
     }
 
     csv_destroy_table(table);
-    
+
     return 0;
 }
 

@@ -19,17 +19,17 @@ int main(int argc, char **argv) {
 
     xmlNode *document;
     table_csv_t *table = NULL;
-    
-    document = read_xml_file(XML_FILE);
+
+    document = xml_read_file(XML_FILE);
 
     table = present_svn_log(document);
 
-    destroy_xmlNode(document);
+    xml_destroy_node(document);
 
     csv_write_file(CSV_FILE, table, ';');
 
     csv_destroy_table(table);
-    
+
     return 0;
 }
 

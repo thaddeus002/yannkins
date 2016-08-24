@@ -19,13 +19,13 @@ int main(int argc, char **argv) {
     char command[200];
 
     fprintf(stdout, "Reading test document\n");
-    document = read_xml_file(XML_FILE);
+    document = xml_read_file(XML_FILE);
 
     fprintf(stdout, "Writing test document in %s\n", OUTPUT_FILE);
-    write_xml_node_in_file(OUTPUT_FILE, document);
+    xml_write_node_in_file(OUTPUT_FILE, document);
 
     fprintf(stdout, "Freeing memory\n");
-    destroy_xmlNode(document);
+    xml_destroy_node(document);
 
     fprintf(stdout, "Comparing input and output\n");
     sprintf(command, "[ $(diff %s %s | wc -l) -eq 0 ]", XML_FILE, OUTPUT_FILE);

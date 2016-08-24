@@ -71,7 +71,7 @@ struct xmlNode_ {
  * @param openTag a valid node declaration
  * @return a new empty node
  */
-xmlNode *init_xmlNode(char *header, char *openTag);
+xmlNode *xml_init_node(char *header, char *openTag);
 
 
 /**
@@ -79,7 +79,7 @@ xmlNode *init_xmlNode(char *header, char *openTag);
  * @param filename the name of file to read
  * @return the data under xmlNode format
  */
-xmlNode *read_xml_file(char *filename);
+xmlNode *xml_read_file(char *filename);
 
 /**
  * Add a new attribute to a node
@@ -88,7 +88,7 @@ xmlNode *read_xml_file(char *filename);
  * @param value the value of the new attribute
  * @return 0 in case of success
  */
-int addAttribute(xmlNode *node, char *key, char *value);
+int xml_add_attribute(xmlNode *node, char *key, char *value);
 
 
 /**
@@ -107,7 +107,7 @@ char *xml_get_attribute(xmlNode *node, char *key);
  * @param child the node to add
  * @return 0 on success
  */
-int addChild(xmlNode *parent, xmlNode *child);
+int xml_add_child(xmlNode *parent, xmlNode *child);
 
 
 
@@ -118,7 +118,7 @@ int addChild(xmlNode *parent, xmlNode *child);
  * @param depth for the indentation
  * @return 0 if the function was successfull
  */
-int write_xml_node(FILE *fd, xmlNode *document, int depth);
+int xml_write_node(FILE *fd, xmlNode *document, int depth);
 
 
 /**
@@ -127,14 +127,14 @@ int write_xml_node(FILE *fd, xmlNode *document, int depth);
  * @param document the data
  * @return 0 if the function was successfull
  */
-int write_xml_node_in_file(char *filename, xmlNode *document);
+int xml_write_node_in_file(char *filename, xmlNode *document);
 
 
 /**
  * @brief Free memory allocated for a xmlNode
  * @param document the data to free
  */
-void destroy_xmlNode(xmlNode *document);
+void xml_destroy_node(xmlNode *document);
 
 
 

@@ -347,7 +347,7 @@ static int write_yannkins_html(yk_project *project, char *yannkinsRep){
     page = create_html_document(TITLE);
     html_add_css(page, "style/style.css");
 
-    bandeau = read_xml_file("www/bandeau.html");
+    bandeau = xml_read_file("www/bandeau.html");
     html_add_data(page, bandeau);
 
     content = malloc(sizeof(char) * (strlen(project->project_name) + 9));
@@ -459,7 +459,7 @@ int main(int argc, char **argv){
     page = create_html_document(TITLE);
     html_add_css(page, "style/style.css");
 
-    bandeau = read_xml_file("www/bandeau.html");
+    bandeau = xml_read_file("www/bandeau.html");
     html_add_data(page, bandeau);
 
     html_add_title(page, 1, "Projects list");

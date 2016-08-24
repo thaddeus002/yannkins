@@ -39,10 +39,4 @@ table_csv_t *present_svn_log(xmlNode *logDocument);
 
 
 
-
-
-
-
-
-
 #endif
