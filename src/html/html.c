@@ -29,7 +29,7 @@ htmlDocument *create_html_document(char *title){
     xmlNode *htitle = init_xmlNode(NULL, "<title>");
     xmlNode *meta = init_xmlNode(NULL, "<meta>");
 
-    htitle->text = copyString(title);
+    htitle->text = copy_string(title);
     addAttribute(meta, "charset", "utf-8");
 
     addChild(doc, head);
@@ -90,7 +90,7 @@ htmlList *html_add_list(htmlDocument *document) {
 
 xmlNode *html_add_list_item(htmlList *list, char *item){
     xmlNode *hitem = init_xmlNode(NULL, "<li>");
-    hitem->text = copyString(item);
+    hitem->text = copy_string(item);
     addChild(list, hitem);
     return hitem;
 }
@@ -114,7 +114,7 @@ htmlTable *create_html_table(int nbCol, int nbLines, char **headers){
             xmlNode *th;
             if(headers[j]==NULL) { break; }
             th = init_xmlNode(NULL, "<th>");
-            th->text = copyString(headers[j]);
+            th->text = copy_string(headers[j]);
             addChild(htr, th);
         }
     }
@@ -165,7 +165,7 @@ htmlTable *html_add_table_from_data(htmlDocument *document, table_csv_t *data) {
     for(i=1; i<=nbLines; i++) {
         td=tr->children;
         for(j=1; j<=nbCol; j++) {
-            td->text = copyString(csvLine->valeurs[j-1]);
+            td->text = copy_string(csvLine->valeurs[j-1]);
             td=td->next;
         }
         tr=tr->next;
@@ -193,7 +193,7 @@ xmlNode *html_add_title(htmlDocument *document, int level, char *title) {
     sprintf(htag, "<h%d>", l);
 
     htitle = init_xmlNode(NULL, htag);
-    htitle->text = copyString(title);
+    htitle->text = copy_string(title);
 
     html_add_data(document, htitle);
 
@@ -215,7 +215,7 @@ xmlNode *html_add_link(htmlDocument *document, char *text, char *link){
     xmlNode *hlink = init_xmlNode(NULL, "<a>");
 
     addAttribute(hlink, "href", link);
-    hlink->text=copyString(text);
+    hlink->text=copy_string(text);
     html_add_data(document, hlink);
 
     return hlink;
@@ -285,7 +285,7 @@ xmlNode *html_add_link_in_table(htmlTable *table, char *text, char *link, int co
     if(td != NULL) {
         hlink = init_xmlNode(NULL, "<a>");
         addAttribute(hlink, "href", link);
-        hlink->text=copyString(text);
+        hlink->text=copy_string(text);
         addChild(td, hlink);
     }
 
@@ -298,7 +298,7 @@ xmlNode *html_add_link_in_node(xmlNode *node, char *text, char *link){
 
     hlink = init_xmlNode(NULL, "<a>");
     addAttribute(hlink, "href", link);
-    hlink->text=copyString(text);
+    hlink->text=copy_string(text);
     addChild(node, hlink);
 
     return hlink;
@@ -335,7 +335,7 @@ void html_set_text_in_table(htmlTable *table, char *text, int col, int line) {
     td = find_table_cell(table, col, line);
 
     if(td != NULL) {
-        td->text=copyString(text);
+        td->text=copy_string(text);
     }
 }
 

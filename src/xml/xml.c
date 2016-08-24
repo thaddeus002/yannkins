@@ -25,9 +25,9 @@ int addAttribute(xmlNode *node, char *key, char *value){
     xmlAttribute *last = node->attributes;
     xmlAttribute *new = malloc(sizeof(xmlAttribute));
 
-    new->key = copyString(key);
+    new->key = copy_string(key);
     suppress_quotes(value);
-    new->value = copyString(value);
+    new->value = copy_string(value);
     new->next = NULL;
 
     if(last==NULL) {
@@ -49,7 +49,7 @@ char *xml_get_attribute(xmlNode *node, char *key) {
     while(attribute != NULL) {
 
         if(!strcmp(attribute->key, key)) {
-            value = copyString(attribute->value);
+            value = copy_string(attribute->value);
             break;
         }
 
@@ -116,7 +116,7 @@ xmlNode *init_xmlNode(char *header, char *openTag) {
     char *tag;
     int quotes=0; // 1 if quotes where opened
 
-    result->header = copyString(header);
+    result->header = copy_string(header);
     result->name = NULL;
     result->attributes = NULL;
 
@@ -135,7 +135,7 @@ xmlNode *init_xmlNode(char *header, char *openTag) {
             if(!quotes) {
                 tag[pos]='\0';
                 if(name!=NULL){
-                    result->name = copyString(name);
+                    result->name = copy_string(name);
                     name = NULL;
                 } else {
                     if(key != NULL) {
@@ -161,7 +161,7 @@ xmlNode *init_xmlNode(char *header, char *openTag) {
                 closed = 1;
                 tag[pos]='\0';
                 if(name!=NULL){
-                    result->name = copyString(name);
+                    result->name = copy_string(name);
                 } else {
                     if(key != NULL) {
                         addAttribute(result, key, value);
@@ -379,9 +379,9 @@ static xmlNode *read_xmlNode_in_stream(FILE *fd, char *header, char *openTag){
         else if(isContent(object)) {
             xmlNode *child = lastChild(result);
             if(child == NULL) {
-                result->text = copyString(object);
+                result->text = copy_string(object);
             } else {
-                child->postText = copyString(object);
+                child->postText = copy_string(object);
             }
         } else if(isOpenTag(object)) {
             xmlNode *child = read_xmlNode_in_stream(fd, NULL, object);
@@ -410,7 +410,7 @@ static xmlNode *read_xmlDoc_in_stream(FILE *fd){
 
     while( (!isOpenTag(object)) && (object != NULL)){
         if(isHeader(object)) {
-            header = copyString(object);
+            header = copy_string(object);
         }
         free(object);
         object = read_elementary_object(fd);

@@ -1,6 +1,6 @@
 /**
  * @file utils.h
- * @brief Utilitaries functions to manipule char strings. 
+ * @brief Utilitaries functions to manipule char strings.
  */
 
 #ifndef UTILS_H_
@@ -35,7 +35,7 @@ void to_upper_case(char *chaine);
  * @param object the string to cop
  * @return the new string
  */
-char *copyString(char *object);
+char *copy_string(char *object);
 
 
 
