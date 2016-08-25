@@ -21,7 +21,7 @@
 
 
 
-htmlDocument *create_html_document(char *title){
+htmlDocument *html_create_document(char *title){
 
     htmlDocument *doc = xml_init_node(HTML5_HEADER, "<html>");
     xmlNode *head = xml_init_node(NULL, "<head>");
@@ -41,7 +41,7 @@ htmlDocument *create_html_document(char *title){
 }
 
 
-void destroy_html_document(htmlDocument *document) {
+void html_destroy_document(htmlDocument *document) {
     xml_destroy_node(document);
 }
 
@@ -96,7 +96,7 @@ xmlNode *html_add_list_item(htmlList *list, char *item){
 }
 
 
-htmlTable *create_html_table(int nbCol, int nbLines, char **headers){
+htmlTable *html_create_table(int nbCol, int nbLines, char **headers){
     xmlNode *table = xml_init_node(NULL, "<table>");
     int i, j;
     xmlNode *tbody = xml_init_node(NULL, "<tbody>");
@@ -146,7 +146,7 @@ htmlTable *html_add_table_from_data(htmlDocument *document, table_csv_t *data) {
     nbCol = data->nbCol;
     nbLines = data->nbLig;
 
-    table = create_html_table(nbCol, nbLines, data->entetes);
+    table = html_create_table(nbCol, nbLines, data->entetes);
 
     tbody = table->children;
     while( (tbody!=NULL) && (strcmp(tbody->name,"tbody")) ) {

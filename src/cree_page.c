@@ -130,7 +130,7 @@ static void write_yannkins_table(xmlNode *document, yannkins_line_t **lines){
         line = lines[nbLines];
     }
 
-    table = create_html_table(5, nbLines, headers);
+    table = html_create_table(5, nbLines, headers);
 
     line = lines[0];
     while(line != NULL){
@@ -344,7 +344,7 @@ static int write_yannkins_html(yk_project *project, char *yannkinsRep){
     xmlNode *bandeau;
     char *content;
 
-    page = create_html_document(TITLE);
+    page = html_create_document(TITLE);
     html_add_css(page, "style/style.css");
 
     bandeau = xml_read_file("www/bandeau.html");
@@ -425,7 +425,7 @@ static int write_yannkins_html(yk_project *project, char *yannkinsRep){
     }
 
     html_write_to_file(page, report);
-    destroy_html_document(page);
+    html_destroy_document(page);
     free(report);
 
     return ERR_OK;
@@ -456,7 +456,7 @@ int main(int argc, char **argv){
         yannkinsDir = YANNKINS_DIR;
     }
 
-    page = create_html_document(TITLE);
+    page = html_create_document(TITLE);
     html_add_css(page, "style/style.css");
 
     bandeau = xml_read_file("www/bandeau.html");
@@ -515,7 +515,7 @@ int main(int argc, char **argv){
 
     html_write_to_file(page, htmlFile);
     free(htmlFile);
-    destroy_html_document(page);
+    html_destroy_document(page);
 
     return 0;
 }

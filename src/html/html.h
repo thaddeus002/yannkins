@@ -29,13 +29,13 @@ typedef xmlNode htmlList;
  * @param title the document's title
  * @return the newly created document
  */
-htmlDocument *create_html_document(char *title);
+htmlDocument *html_create_document(char *title);
 
 /**
  * @brief Free the memory used by an HTML document.
  * @param document the structure to free
  */
-void destroy_html_document(htmlDocument *document);
+void html_destroy_document(htmlDocument *document);
 
 /**
  * @brief add a stylesheet in the document's header
@@ -72,7 +72,7 @@ xmlNode *html_add_list_item(htmlList *list, char *item);
  * @param headers columns' headers
  * @return the new table
  */
-htmlTable *create_html_table(int nbCol, int nbLines, char **headers);
+htmlTable *html_create_table(int nbCol, int nbLines, char **headers);
 
 
 /**
