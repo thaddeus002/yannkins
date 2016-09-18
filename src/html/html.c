@@ -9,7 +9,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "html.h"
-#include "../csv/utils.h"
 
 /**
  * @brief old header of HTML page
@@ -19,6 +18,7 @@
 /** @brief Header to use in pages */
 #define HTML5_HEADER "<!DOCTYPE html>"
 
+#define STRDUP(x) x!=NULL?strdup(x):NULL
 
 
 htmlDocument *html_create_document(char *title){
@@ -29,7 +29,7 @@ htmlDocument *html_create_document(char *title){
     xmlNode *htitle = xml_init_node(NULL, "<title>");
     xmlNode *meta = xml_init_node(NULL, "<meta>");
 
-    htitle->text = copy_string(title);
+    htitle->text = STRDUP(title);
     xml_add_attribute(meta, "charset", "utf-8");
 
     xml_add_child(doc, head);
@@ -90,7 +90,7 @@ htmlList *html_add_list(htmlDocument *document) {
 
 xmlNode *html_add_list_item(htmlList *list, char *item){
     xmlNode *hitem = xml_init_node(NULL, "<li>");
-    hitem->text = copy_string(item);
+    hitem->text = STRDUP(item);
     xml_add_child(list, hitem);
     return hitem;
 }
@@ -114,7 +114,7 @@ htmlTable *html_create_table(int nbCol, int nbLines, char **headers){
             xmlNode *th;
             if(headers[j]==NULL) { break; }
             th = xml_init_node(NULL, "<th>");
-            th->text = copy_string(headers[j]);
+            th->text = STRDUP(headers[j]);
             xml_add_child(htr, th);
         }
     }
@@ -165,7 +165,7 @@ htmlTable *html_add_table_from_data(htmlDocument *document, table_csv_t *data) {
     for(i=1; i<=nbLines; i++) {
         td=tr->children;
         for(j=1; j<=nbCol; j++) {
-            td->text = copy_string(csvLine->valeurs[j-1]);
+            td->text = STRDUP(csvLine->valeurs[j-1]);
             td=td->next;
         }
         tr=tr->next;
@@ -193,7 +193,7 @@ xmlNode *html_add_title(htmlDocument *document, int level, char *title) {
     sprintf(htag, "<h%d>", l);
 
     htitle = xml_init_node(NULL, htag);
-    htitle->text = copy_string(title);
+    htitle->text = STRDUP(title);
 
     html_add_data(document, htitle);
 
@@ -215,7 +215,7 @@ xmlNode *html_add_link(htmlDocument *document, char *text, char *link){
     xmlNode *hlink = xml_init_node(NULL, "<a>");
 
     xml_add_attribute(hlink, "href", link);
-    hlink->text=copy_string(text);
+    hlink->text=STRDUP(text);
     html_add_data(document, hlink);
 
     return hlink;
@@ -285,7 +285,7 @@ xmlNode *html_add_link_in_table(htmlTable *table, char *text, char *link, int co
     if(td != NULL) {
         hlink = xml_init_node(NULL, "<a>");
         xml_add_attribute(hlink, "href", link);
-        hlink->text=copy_string(text);
+        hlink->text=STRDUP(text);
         xml_add_child(td, hlink);
     }
 
@@ -298,7 +298,7 @@ xmlNode *html_add_link_in_node(xmlNode *node, char *text, char *link){
 
     hlink = xml_init_node(NULL, "<a>");
     xml_add_attribute(hlink, "href", link);
-    hlink->text=copy_string(text);
+    hlink->text=STRDUP(text);
     xml_add_child(node, hlink);
 
     return hlink;
@@ -335,7 +335,7 @@ void html_set_text_in_table(htmlTable *table, char *text, int col, int line) {
     td = find_table_cell(table, col, line);
 
     if(td != NULL) {
-        td->text=copy_string(text);
+        td->text=STRDUP(text);
     }
 }
 

@@ -26,9 +26,9 @@ int xml_add_attribute(xmlNode *node, char *key, char *value){
     xmlAttribute *last = node->attributes;
     xmlAttribute *new = malloc(sizeof(xmlAttribute));
 
-    new->key = copy_string(key);
+    new->key = strdup(key);
     suppress_quotes(value);
-    new->value = copy_string(value);
+    new->value = strdup(value);
     new->next = NULL;
 
     if(last==NULL) {
@@ -50,7 +50,7 @@ char *xml_get_attribute(xmlNode *node, char *key) {
     while(attribute != NULL) {
 
         if(!strcmp(attribute->key, key)) {
-            value = copy_string(attribute->value);
+            value = strdup(attribute->value);
             break;
         }
 
@@ -117,7 +117,12 @@ xmlNode *xml_init_node(char *header, char *openTag) {
     char *tag;
     int quotes=0; // 1 if quotes where opened
 
-    result->header = copy_string(header);
+    /*if(header != NULL) {
+        result->header = strdup(header);
+    } else {
+        result->header = NULL;
+    }*/
+    result->header=header!=NULL?strdup(header):NULL;
     result->name = NULL;
     result->attributes = NULL;
 
@@ -136,7 +141,7 @@ xmlNode *xml_init_node(char *header, char *openTag) {
             if(!quotes) {
                 tag[pos]='\0';
                 if(name!=NULL){
-                    result->name = copy_string(name);
+                    result->name = strdup(name);
                     name = NULL;
                 } else {
                     if(key != NULL) {
@@ -162,7 +167,7 @@ xmlNode *xml_init_node(char *header, char *openTag) {
                 closed = 1;
                 tag[pos]='\0';
                 if(name!=NULL){
-                    result->name = copy_string(name);
+                    result->name = strdup(name);
                 } else {
                     if(key != NULL) {
                         xml_add_attribute(result, key, value);
@@ -380,9 +385,9 @@ static xmlNode *read_xmlNode_in_stream(FILE *fd, char *header, char *openTag){
         else if(isContent(object)) {
             xmlNode *child = lastChild(result);
             if(child == NULL) {
-                result->text = copy_string(object);
+                result->text = strdup(object);
             } else {
-                child->postText = copy_string(object);
+                child->postText = strdup(object);
             }
         } else if(isOpenTag(object)) {
             xmlNode *child = read_xmlNode_in_stream(fd, NULL, object);
@@ -411,13 +416,14 @@ static xmlNode *read_xmlDoc_in_stream(FILE *fd){
 
     while( (!isOpenTag(object)) && (object != NULL)){
         if(isHeader(object)) {
-            header = copy_string(object);
+            header = strdup(object);
         }
         free(object);
         object = read_elementary_object(fd);
     }
 
     if(object != NULL) {
+
         result = read_xmlNode_in_stream(fd, header, object);
         free(object);
     }

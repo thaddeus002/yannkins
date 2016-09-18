@@ -30,14 +30,6 @@ void suppress_quotes(char *chaine);
 void to_upper_case(char *chaine);
 
 
-/**
- * @brief Allocate memory and copy the content of a given string
- * @param object the string to cop
- * @return the new string
- */
-char *copy_string(char *object);
-
-
 
 
 #endif
