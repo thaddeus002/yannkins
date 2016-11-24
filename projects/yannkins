@@ -1,7 +1,4 @@
 PROJECT_NAME="Yannkins"
-SVN_DEPOT=""
-SVN_USER=""
-SVN_PASSWD=""
 GIT_DEPOT="https://github.com/thaddeus002/yannkins.git"
 GIT_USER=""
 GIT_PASSWD=""

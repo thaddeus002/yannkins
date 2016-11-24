@@ -33,8 +33,8 @@ One cron task will perform projects analysis : svn checkout/update or git clone/
 **Configure a project**
 
 Define a environment variable YANNKINS_HOME to point to the working directory for Yannkins. It may be for example `/var/yannkins` or `${HOME}/.yannkins`.
-Create directories `${YANNKINS_HOME}/projets`, `${YANNKINS_HOME}/log`, `${YANNKINS_HOME}/repos`, and `${YANNKINS_HOME}/www`. This last can be a symbilic link to `/var/www/html`.
-Then create a file describing your project. Your can inspire yourself with the example `yannkins/projects/fheroes2` in `${YANNKINS_HOME}/projects` repository.
+Create directories `${YANNKINS_HOME}/projects`, `${YANNKINS_HOME}/log`, `${YANNKINS_HOME}/repos`, and `${YANNKINS_HOME}/www`. This last can be a symbilic link to `/var/www/html`.
+Then create a file describing your project. Your can inspire yourself with the example `projects/fheroes2` or `projects/yannkins`.
 
 **Launch the analyse**
 
