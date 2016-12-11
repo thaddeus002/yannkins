@@ -44,7 +44,7 @@ char *clean_date_format(char *date){
     if(strlen(result)>=20) {
         result[19]='\0';
     }
-    
+
     return result;
 }
 
@@ -74,13 +74,13 @@ char *clean_date_format(char *date){
  *    2) replace ';' characters in msg fields
  *
  */
-table_csv_t *present_svn_log(xmlNode *logDocument){
+csv_table_t *present_svn_log(xmlNode *logDocument){
 
-    table_csv_t *table;
+    csv_table_t *table;
     char *headers[4];
     xmlNode *logentry;
 
-    
+
     headers[0]="#";
     headers[1]=AUTHOR;
     headers[2]=DATE;

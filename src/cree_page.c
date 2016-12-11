@@ -172,9 +172,9 @@ static void write_yannkins_table(xmlNode *document, yannkins_line_t **lines){
 static yannkins_line_t *new_entry(char *filename, char *basename, char *entryName){
 
     yannkins_line_t *entry = NULL; // return value
-    table_csv_t *log; // content of the file
-    ligne_csv_t *logline; // a line of the file
-    ligne_csv_t *last; // last line of the file
+    csv_table_t *log; // content of the file
+    csv_line_t *logline; // a line of the file
+    csv_line_t *last; // last line of the file
     char *lastSuccessDate = NULL; // record for last success date
     char *name =entryName; // task's name
 
@@ -336,8 +336,8 @@ static int write_yannkins_html(yk_project *project, char *yannkinsRep){
     char *wwwdir; // directory where put the html outputs
     char *filename; // name of the html file to create (without path)
     char *report; // name of the html file to create (with path)
-    table_csv_t *data; // svn logs data
-    table_csv_t *data_s; // filtrated svn logs
+    csv_table_t *data; // svn logs data
+    csv_table_t *data_s; // filtrated svn logs
     char *elementsCherches[4];
     int nb; // number of OK columns for svn logs
     htmlDocument *page;

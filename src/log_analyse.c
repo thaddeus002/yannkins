@@ -57,7 +57,7 @@ static int decrease_month(int month) {
 /**
  * Add a new line to the result table.
  */
-static void add_line(table_csv_t *result, int numMonth, int number){
+static void add_line(csv_table_t *result, int numMonth, int number){
 
     char sMonth[100];
     char sNumber[100];
@@ -75,7 +75,7 @@ static void add_line(table_csv_t *result, int numMonth, int number){
 /**
  * Add a new line to the result table. *
  */
-static void add_line_authors(table_csv_t *result, int numMonth, int *numbers){
+static void add_line_authors(csv_table_t *result, int numMonth, int *numbers){
 
     char **content;
     int i;
@@ -106,9 +106,9 @@ static void add_line_authors(table_csv_t *result, int numMonth, int *numbers){
 
 
 
-table_csv_t *nb_by_month(table_csv_t *table, char *date_header) {
+csv_table_t *nb_by_month(csv_table_t *table, char *date_header) {
 
-    table_csv_t *result;
+    csv_table_t *result;
     char *headers[2] = { "month", "number of commits" };
     int i; // line counter
     int numMonth; // month's number
@@ -186,12 +186,12 @@ static int contains(char **list, char *element) {
  * \param
  * \return a newly allocated table ending with NULL
  */
-static char **get_authors(table_csv_t *table, int *nbAuthors, char *author_header) {
+static char **get_authors(csv_table_t *table, int *nbAuthors, char *author_header) {
 
     int size = 20;
     int nb = 0;
     char **authors;
-    ligne_csv_t *line;
+    csv_line_t *line;
     int col = -1;
     int i;
 
@@ -260,7 +260,7 @@ static void free_authors(char **authors) {
 
 
 
-int get_authors_number(table_csv_t *vcsLogTable) {
+int get_authors_number(csv_table_t *vcsLogTable) {
 
     int nbAuthors;
     char **authors = get_authors(vcsLogTable, &nbAuthors, "author");
@@ -293,9 +293,9 @@ static void add_count(int *numbers, char **authors, char *author){
 
 
 
-table_csv_t *nb_by_month_and_by_authors(table_csv_t *table, char *date_header, char *author_header) {
+csv_table_t *nb_by_month_and_by_authors(csv_table_t *table, char *date_header, char *author_header) {
 
-    table_csv_t *result;
+    csv_table_t *result;
     char **headers;
     char **authors;
     int nbAuthors = 0;

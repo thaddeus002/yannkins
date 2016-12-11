@@ -34,7 +34,7 @@
  *    2) replace ';' characters in msg fields
  *
  */
-table_csv_t *present_svn_log(xmlNode *logDocument);
+csv_table_t *present_svn_log(xmlNode *logDocument);
 
 
 

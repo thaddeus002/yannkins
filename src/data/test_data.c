@@ -18,7 +18,7 @@
 int main(int argc, char **argv) {
 
     xmlNode *document;
-    table_csv_t *table = NULL;
+    csv_table_t *table = NULL;
 
     document = xml_read_file(XML_FILE);
 

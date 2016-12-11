@@ -134,14 +134,14 @@ htmlTable *html_create_table(int nbCol, int nbLines, char **headers){
 }
 
 
-htmlTable *html_add_table_from_data(htmlDocument *document, table_csv_t *data) {
+htmlTable *html_add_table_from_data(htmlDocument *document, csv_table_t *data) {
 
     int nbCol, nbLines;
     int i, j;
     htmlTable *table;
     xmlNode *tbody;
     xmlNode *tr, *td;
-    ligne_csv_t *csvLine;
+    csv_line_t *csvLine;
 
     nbCol = data->nbCol;
     nbLines = data->nbLig;

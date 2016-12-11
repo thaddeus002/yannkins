@@ -1,7 +1,7 @@
 /**
  * @file csv.h
  * @brief Utilitaries functions and types to manipulates data. These data
- * can be read from or write in csv files. 
+ * can be read from or write in csv files.
  * @author Yannick Garcia
  */
 
@@ -12,21 +12,21 @@
 
 
 /** @brief Structur representing one csv line or one serie of data */
-typedef struct ligne_csv_t_ {
-	char **valeurs; /**< @brief fields values */
+typedef struct csv_line_t_ {
+    char **valeurs; /**< @brief fields values */
 
-	struct ligne_csv_t_ *next; /**< @brief to make a linked list of csv lines */
-} ligne_csv_t;
+    struct csv_line_t_ *next; /**< @brief to make a linked list of csv lines */
+} csv_line_t;
 
 
 /** @brief An entire csv file */
 typedef struct {
-	int nbCol; /**< @brief number of colums - Don't directly modify this value */
-	int nbLig; /**< @brief number of lines - Don't directly modify this value */
-	char **entetes; /**< @brief columns' names */
+    int nbCol; /**< @brief number of colums - Don't directly modify this value */
+    int nbLig; /**< @brief number of lines - Don't directly modify this value */
+    char **entetes; /**< @brief columns' names */
 
-	ligne_csv_t *lignes; /**< @brief a linked list of lines */
-} table_csv_t;
+    csv_line_t *lignes; /**< @brief a linked list of lines */
+} csv_table_t;
 
 
 
@@ -43,7 +43,7 @@ typedef struct {
  * @param delimiter the split character
  * @return NULL if the file can not be read
  */
-table_csv_t *csv_read_file(char *filename, char delimiter);
+ csv_table_t *csv_read_file(char *filename, char delimiter);
 
 
 /**
@@ -51,10 +51,10 @@ table_csv_t *csv_read_file(char *filename, char delimiter);
  * @param table the origin table
  * @param searchedElts table of columns names to look for
  * @param nbSearchedElts number of elements in searchedElts
- * @param nbFoundElts the function will plce here  the number of columns found 
+ * @param nbFoundElts the function will plce here  the number of columns found
  * @return the new table
  */
-table_csv_t *csv_select_columns(table_csv_t *table, char **searchedElts, int nbSearchedElts, int *nbFoundElts);
+csv_table_t *csv_select_columns(csv_table_t *table, char **searchedElts, int nbSearchedElts, int *nbFoundElts);
 
 
 /**
@@ -64,14 +64,14 @@ table_csv_t *csv_select_columns(table_csv_t *table, char **searchedElts, int nbS
  * @param ltk the length to keep
  * @return 0 in case of success
  */
-int csv_truncate_column(table_csv_t *table, char *columnsName, int ltk);
+int csv_truncate_column(csv_table_t *table, char *columnsName, int ltk);
 
 
 /**
- * @brief free memory occuped by a table_csv_t
+ * @brief free memory occuped by a csv_table_t
  * @param table the struct to free
  */
-void csv_destroy_table(table_csv_t *table);
+void csv_destroy_table(csv_table_t *table);
 
 
 /**
@@ -81,7 +81,7 @@ void csv_destroy_table(table_csv_t *table);
  * @param value value to find in the column
  * @return the new table with only the selected lines
  */
-table_csv_t *csv_select_lines(table_csv_t *table, const char *columnsName, const char *value);
+csv_table_t *csv_select_lines(csv_table_t *table, const char *columnsName, const char *value);
 
 
 /**
@@ -92,7 +92,7 @@ table_csv_t *csv_select_lines(table_csv_t *table, const char *columnsName, const
  * @param max the maximun value for the column
  * @return the new table with only the selected lines
  */
-table_csv_t *csv_select_lines_range(table_csv_t *table, const char *columnsName, const char *min, const char *max);
+csv_table_t *csv_select_lines_range(csv_table_t *table, const char *columnsName, const char *min, const char *max);
 
 
 /**
@@ -103,16 +103,16 @@ table_csv_t *csv_select_lines_range(table_csv_t *table, const char *columnsName,
  * @param line line number (beginning at 1) to look for
  * @return a non null code if un error occured
  */
-int csv_find_value(char value[100], table_csv_t *table, char *columnsName, int line); 
+int csv_find_value(char value[100], csv_table_t *table, char *columnsName, int line);
 
 
 /**
  * @brief create an empty data table
  * @param headers headers of columns
- * @param nbCol number of columns 
+ * @param nbCol number of columns
  * @return the newly created table
  */
-table_csv_t *csv_create_table(char **headers, int nbCol);
+csv_table_t *csv_create_table(char **headers, int nbCol);
 
 
 /**
@@ -126,7 +126,7 @@ table_csv_t *csv_create_table(char **headers, int nbCol);
  * @param contentLength to number of elements in content
  * @return a non null code if un error occured
  */
-int csv_add_line(table_csv_t *table, char **content, int contentLength);
+int csv_add_line(csv_table_t *table, char **content, int contentLength);
 
 
 /**
@@ -134,7 +134,7 @@ int csv_add_line(table_csv_t *table, char **content, int contentLength);
  * @param table the data to print
  * @param output the stream where print the data
  */
-void csv_show_table(table_csv_t *table, FILE *output);
+void csv_show_table(csv_table_t *table, FILE *output);
 
 
 /**
@@ -143,7 +143,7 @@ void csv_show_table(table_csv_t *table, FILE *output);
  * @param columnsName the name of the column to sort by
  * @return a non null code if un error occured
  */
-int csv_sort_table_decreasing(table_csv_t *table, const char *columnsName);
+int csv_sort_table_decreasing(csv_table_t *table, const char *columnsName);
 
 
 /**
@@ -151,15 +151,15 @@ int csv_sort_table_decreasing(table_csv_t *table, const char *columnsName);
  *
  * The first table will be added the lines of the seconds if the headers lines are
  * identicals.
- * @param table1 the first table 
+ * @param table1 the first table
  * @param table2 the second table
  * @return a non null code if un error occured
  */
-int csv_merge_tables(table_csv_t *table1, table_csv_t *table2);
+int csv_merge_tables(csv_table_t *table1, csv_table_t *table2);
 
 
 /**
- * @brief write a file with the content of a table_csv_t
+ * @brief write a file with the content of a csv_table_t
  *
  * In case of \n or delimiter character in a field, this field will be between
  * doble quotes.
@@ -168,7 +168,7 @@ int csv_merge_tables(table_csv_t *table1, table_csv_t *table2);
  * @param delimiter fields delimiter
  * @return a non null code if un error occured
  */
-int csv_write_file(char *filename, table_csv_t *table, char delimiter);
+int csv_write_file(char *filename, csv_table_t *table, char delimiter);
 
 
 #endif

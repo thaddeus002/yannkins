@@ -39,7 +39,7 @@
  * \param the name of the date column
  * \return a new table with results
  */
-table_csv_t *nb_by_month(table_csv_t *table, char *date_header);
+csv_table_t *nb_by_month(csv_table_t *table, char *date_header);
 
 
 
@@ -52,7 +52,7 @@ table_csv_t *nb_by_month(table_csv_t *table, char *date_header);
  * \param author_header the name of the author column
  * \return a new table with results
  */
-table_csv_t *nb_by_month_and_by_authors(table_csv_t *table, char *date_header, char *author_header);
+csv_table_t *nb_by_month_and_by_authors(csv_table_t *table, char *date_header, char *author_header);
 
 
 
@@ -62,7 +62,7 @@ table_csv_t *nb_by_month_and_by_authors(table_csv_t *table, char *date_header, c
  * @param vcsLogTable a table of log for the Versionning Control System
  * @return the number of authors in the given table
  */
-int get_authors_number(table_csv_t *vcsLogTable);
+int get_authors_number(csv_table_t *vcsLogTable);
 
 
 #endif

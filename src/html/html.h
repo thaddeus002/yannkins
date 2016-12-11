@@ -81,7 +81,7 @@ htmlTable *html_create_table(int nbCol, int nbLines, char **headers);
  * @param data the data to add
  * @return the added table
  */
-htmlTable *html_add_table_from_data(htmlDocument *document, table_csv_t *data);
+htmlTable *html_add_table_from_data(htmlDocument *document, csv_table_t *data);
 
 
 /**

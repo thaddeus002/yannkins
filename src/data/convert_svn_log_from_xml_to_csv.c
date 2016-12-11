@@ -23,7 +23,7 @@ void usage(char *prog) {
 int main(int argc, char **argv) {
 
     xmlNode *document;
-    table_csv_t *table = NULL;
+    csv_table_t *table = NULL;
     int c;
     char *inputFile = NULL;
     char *outputFile = NULL;
