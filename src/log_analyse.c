@@ -197,7 +197,7 @@ static char **get_authors(csv_table_t *table, int *nbAuthors, char *author_heade
 
     // find column number
     for(i = 0; i<table->nbCol; i++) {
-        if(!strcmp(author_header, table->entetes[i])) {
+        if(!strcmp(author_header, table->headers[i])) {
             col = i;
         }
     }
@@ -212,10 +212,10 @@ static char **get_authors(csv_table_t *table, int *nbAuthors, char *author_heade
     authors[0] = NULL;
 
 
-    line = table->lignes;
+    line = table->lines;
     while(line != NULL) {
 
-        char *author = line->valeurs[col];
+        char *author = line->values[col];
 
         if(!contains(authors, author)){
 

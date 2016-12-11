@@ -206,12 +206,12 @@ static yannkins_line_t *new_entry(char *filename, char *basename, char *entryNam
     }
 
     // view last log line
-    logline=log->lignes;
+    logline=log->lines;
     last=NULL;
     while(logline!=NULL){
         last=logline;
-        if(!strcmp(last->valeurs[1], "OK")){
-            lastSuccessDate = last->valeurs[0];
+        if(!strcmp(last->values[1], "OK")){
+            lastSuccessDate = last->values[0];
         }
         logline=logline->next;
     }
@@ -230,12 +230,12 @@ static yannkins_line_t *new_entry(char *filename, char *basename, char *entryNam
     strcpy(entry->name, name);
     strcpy(entry->lastSuccessDate, "-");
 
-    if(strlen(last->valeurs[0])>0){
-        strncpy(entry->date, last->valeurs[0], 16);
+    if(strlen(last->values[0])>0){
+        strncpy(entry->date, last->values[0], 16);
         entry->date[16]='\0';
     }
 
-    if(strcmp(last->valeurs[1], "OK")){
+    if(strcmp(last->values[1], "OK")){
         entry->result = 1;
     }
 

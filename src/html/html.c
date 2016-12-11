@@ -146,7 +146,7 @@ htmlTable *html_add_table_from_data(htmlDocument *document, csv_table_t *data) {
     nbCol = data->nbCol;
     nbLines = data->nbLig;
 
-    table = html_create_table(nbCol, nbLines, data->entetes);
+    table = html_create_table(nbCol, nbLines, data->headers);
 
     tbody = table->children;
     while( (tbody!=NULL) && (strcmp(tbody->name,"tbody")) ) {
@@ -161,11 +161,11 @@ htmlTable *html_add_table_from_data(htmlDocument *document, csv_table_t *data) {
     }
 
     tr=tbody->children;
-    csvLine=data->lignes;
+    csvLine=data->lines;
     for(i=1; i<=nbLines; i++) {
         td=tr->children;
         for(j=1; j<=nbCol; j++) {
-            td->text = STRDUP(csvLine->valeurs[j-1]);
+            td->text = STRDUP(csvLine->values[j-1]);
             td=td->next;
         }
         tr=tr->next;
