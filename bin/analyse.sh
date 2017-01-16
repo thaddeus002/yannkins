@@ -23,6 +23,13 @@ SVN="svn"
 for p in ${PROJECTS_HOME}/*; do
     if [ $p != "${PROJECTS_HOME}/*" ]; then
 
+	#Reinit
+	PROJECT_NAME=""
+        SVN_DEPOT=""
+	SVN_USER=""
+	SVN_PASSWD=""
+        GIT_DEPOT=""
+
         . $p
 
         if [ ${PROJECT_NAME}_ == _ ]; then
