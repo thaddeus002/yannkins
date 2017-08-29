@@ -27,7 +27,7 @@ One cron task will perform projects analysis : svn checkout/update or git clone/
 
     $ git clone https://github.com/thaddeus002/yannkins.git
 
-**Compile source**
+### Compile source
 
     $ cd yannkins; make; make install
 
