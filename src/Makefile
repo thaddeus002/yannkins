@@ -28,6 +28,9 @@ xml/xml.o:
 cree_page: $(OBJS)
 	gcc -o cree_page $(OBJS)
 
+tache: tache.c
+	gcc -o tache tache.c
+
 convert_log:
 	make -C data convert_log
 	mv data/convert_log .
@@ -40,4 +43,4 @@ clean:
 	rm -f $(OBJS) cree_page.o data/convert_log.o
 
 mrproper: clean
-	rm -f cree_page convert_log
+	rm -f cree_page convert_log tache
