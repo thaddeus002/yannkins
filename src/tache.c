@@ -21,6 +21,8 @@
 #include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h> //system()
+#include <unistd.h>
+#include <errno.h>
 
 
 void usage(char *prog) {
@@ -38,10 +40,10 @@ char stringDate[50];
  *         statically allocated memory zone : don't free it.
  */
 char *printDate(time_t date) {
-    struct tm *sdate = localtime(date);
+    struct tm *sdate = localtime(&date);
     // %d/%m/%Y %H:%M
-    sprintf(stringDate, "%02d/%02d/%04d %02d:%02d", sdate->tm_mday, sdate->tm_mon+1, sdate->year+1900
-            sdate->hour, sdate->tm_min);
+    sprintf(stringDate, "%02d/%02d/%04d %02d:%02d", sdate->tm_mday, sdate->tm_mon+1, sdate->tm_year+1900,
+            sdate->tm_hour, sdate->tm_min);
     return stringDate;
 }
 
@@ -57,7 +59,7 @@ int main(int argc, char **argv) {
     FILE *flog;
     char ficconsole[200];
     FILE *fconsole;
-
+    struct stat buf;
 
     if(argc != 3) {
         usage(argv[0]);
@@ -68,10 +70,26 @@ int main(int argc, char **argv) {
     date = time(NULL);
 
     err = mkdir(LOGDIR, 0750);
-    if(err) {
-        fprintf(stderr, "Could not create the directory %s\n", LOGDIR);
-        fprintf(stderr, "%s : task %s not completed\n", printDate(date), tache);
-        exit(err);
+    if(err == -1) {
+
+        if(errno != EEXIST) {
+            fprintf(stderr, "Could not create the directory %s\n", LOGDIR);
+            fprintf(stderr, "%s : task %s not completed\n", printDate(date), tache);
+            exit(errno);
+        }
+
+        err = stat(LOGDIR, &buf);
+        if(err) {
+            fprintf(stderr, "Stat failed for file %s\n", LOGDIR);
+            fprintf(stderr, "%s : task %s not completed\n", printDate(date), tache);
+            exit(err);
+        }
+
+        if(!S_ISDIR(buf.st_mode)) {
+            fprintf(stderr, "Error : file %s exist but is not a directory\n", LOGDIR);
+            fprintf(stderr, "%s : task %s not completed\n", printDate(date), tache);
+            exit(err);
+        }
     }
 
     sprintf(ficlog, "%s/%s", LOGDIR, tache);
