@@ -114,7 +114,7 @@ int main(int argc, char **argv) {
     }
     fclose(fconsole);
 
-    sprintf(command, "%s &> %s", commande, ficconsole);
+    sprintf(command, "%s > %s 2>&1", commande, ficconsole);
     resultat = system(command);
 
     if(!resultat) {
