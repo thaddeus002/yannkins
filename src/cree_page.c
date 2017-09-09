@@ -258,7 +258,8 @@ static yannkins_line_t *new_entry(char *filename, char *basename, char *entryNam
  * Initialyze the lines for the table.
  * @param project the project's definition
  * @param yannkinsRep the directory where Yannkins is installed
- * @return a table of yannkins_line_t with NULL at the end.
+ * @return a table of yannkins_line_t with NULL at the end, or NULL if there
+ * are no elements.
  */
 static yannkins_line_t **init_lines(yk_project *project, char *yannkinsRep){
 
@@ -307,7 +308,7 @@ static yannkins_line_t **init_lines(yk_project *project, char *yannkinsRep){
         // add the entry
         if(entry!=NULL){
             // take in account the size for the last NULL pointer
-            if(i>=allocatedSize-1){
+            if(i>=allocatedSize-2){
                 allocatedSize+=20;
                 lines = realloc(lines, allocatedSize*sizeof(yannkins_line_t *));
             }
@@ -317,6 +318,10 @@ static yannkins_line_t **init_lines(yk_project *project, char *yannkinsRep){
     }
 
     free(logdir);
+    if(i == 0) {
+      // We have no valid entry and "lines" was not allocated
+      return NULL;
+    }
     lines[i]=NULL;
     return lines;
 }
@@ -326,7 +331,7 @@ static yannkins_line_t **init_lines(yk_project *project, char *yannkinsRep){
  * Write the HTML report page of a project.
  * @param project the project definition
  * @param yannkinsRep the directory where Yannkins is installed
- * @return a error code. Can be ERR_OPEN_FILE if an error occured while opening the file with write flag.
+ * @return an error code. Can be ERR_OPEN_FILE if an error occured while opening the file with write flag.
  */
 static int write_yannkins_html(yk_project *project, char *yannkinsRep){
 
