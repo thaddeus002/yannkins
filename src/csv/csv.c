@@ -177,7 +177,7 @@ void csv_destroy_table(csv_table_t *table){
         for(i=0; i<table->nbCol; i++) if(table->headers[i]!=NULL) free(table->headers[i]);
         free(table->headers);
     }
-    return;
+
     ligne=table->lines;
     while(ligne!=NULL){
         if(ligne->values!=NULL){
