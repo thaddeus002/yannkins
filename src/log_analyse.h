@@ -59,8 +59,8 @@ csv_table_t *nb_by_month_and_by_authors(csv_table_t *table, char *date_header, c
 /**
  * Count the number of authors in a VCS log table.
  *
- * @param vcsLogTable a table of log for the Versionning Control System
- * @return the number of authors in the given table
+ * \param vcsLogTable a table of log for the Versionning Control System
+ * \return the number of authors in the given table
  */
 int get_authors_number(csv_table_t *vcsLogTable);
 

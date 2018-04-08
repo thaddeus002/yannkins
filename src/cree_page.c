@@ -1,6 +1,6 @@
 /**
- * @file cree_page.c
- * @brief Create the HTML pages.
+ * \file cree_page.c
+ * \brief Create the HTML pages.
  *
  * This program must be run after the tasks of configurated projects. It will create the index pages
  * with the links to projects resumes, plus one page by projects.
@@ -23,46 +23,46 @@
 #include "log_analyse.h"
 
 
-/** @brief default working directory */
+/** \brief default working directory */
 #define YANNKINS_DIR "/var/yannkins"
-/** @brief where are the projects defined */
+/** \brief where are the projects defined */
 #define PROJECTS_DIR "projects"
 
-/** @brief title of the html page */
+/** \brief title of the html page */
 #define TITLE "Yannkins' statistics - The best of continuous integration services"
-/** @brief image for failed task */
+/** \brief image for failed task */
 #define FAIL_ICON "icons/fail.png"
-/** @brief image for successfull task */
+/** \brief image for successfull task */
 #define OK_ICON "icons/ok.png"
-/** @brief index html page for report */
+/** \brief index html page for report */
 #define HTML_FILE "www/index.html"
 
 // SUFFIXES FOR DIFFERENT TYPES OF TASK
-/** @brief svn checkout tag */
+/** \brief svn checkout tag */
 #define REPOS_TASK "SVN_CHECKOUT"
-/** @brief compilation tag */
+/** \brief compilation tag */
 #define COMPILATION_TASK "COMPILATION"
-/** @brief success of tests tag */
+/** \brief success of tests tag */
 #define TESTS_TASK "TESTS"
-/** @brief svn logs tag */
+/** \brief svn logs tag */
 #define SVNLOG "SVNLOG"
-/** @brief git logs tag */
+/** \brief git logs tag */
 #define GITLOG "GITLOG"
 
 // ERROR CODES
-/** @brief Error code allocation */
+/** \brief Error code allocation */
 #define ERR_MEMORY 2
-/** @brief Error code opening file */
+/** \brief Error code opening file */
 #define ERR_OPEN_FILE 1
-/** @brief Error code OK */
+/** \brief Error code OK */
 #define ERR_OK 0
 
 // STRING CONSTANTS
-/** @brief how to display source code recovery task's name*/
+/** \brief how to display source code recovery task's name*/
 #define REPOS_LABEL "Source code recovery"
-/** @brief how to display compilation task's name*/
+/** \brief how to display compilation task's name*/
 #define COMPILATION_LABEL "Project 's compilation"
-/** @brief how to display tests task's name*/
+/** \brief how to display tests task's name*/
 #define TESTS_LABEL "Units' tests execution"
 
 
@@ -83,10 +83,10 @@ typedef struct yannkins_line_t_ {
 
 
 /**
- * @brief concatenate two strings adding a '/' between the two.
- * @param beg the beginning string
- * @param end the ending string
- * @return a pointer to the concatenated string. Must be freed.
+ * \brief concatenate two strings adding a '/' between the two.
+ * \param beg the beginning string
+ * \param end the ending string
+ * \return a pointer to the concatenated string. Must be freed.
  */
 static char *concat_path(char *beg, char *end) {
 
@@ -103,13 +103,13 @@ static char *concat_path(char *beg, char *end) {
 
 
 /**
- * @brief Write the project's resume table at the end of a HTML document.
+ * \brief Write the project's resume table at the end of a HTML document.
  *
  * The created table will contains a line by executed task to show the results
  * such as "success", "execution date", "last success date", ...
  * The last column will present a link to see the last console output.
- * @param document the HTML page where append the table
- * @param lines the datas to put in the table, must end with NULL value
+ * \param document the HTML page where append the table
+ * \param lines the datas to put in the table, must end with NULL value
  */
 static void write_yannkins_table(xmlNode *document, yannkins_line_t **lines){
 
@@ -163,11 +163,11 @@ static void write_yannkins_table(xmlNode *document, yannkins_line_t **lines){
 
 
 /**
- * @brief Create a struct for a line if the file passed in argument is the log file of a task.
- * @param filename complete name
- * @param basename name of file without path. Console output is suppose to be in file "${basename}_console"
- * @param entryName the task's name, basename will be use instead if NULL
- * @return NULL if filename is not the name of a task log
+ * \brief Create a struct for a line if the file passed in argument is the log file of a task.
+ * \param filename complete name
+ * \param basename name of file without path. Console output is suppose to be in file "${basename}_console"
+ * \param entryName the task's name, basename will be use instead if NULL
+ * \return NULL if filename is not the name of a task log
  */
 static yannkins_line_t *new_entry(char *filename, char *basename, char *entryName){
 
@@ -256,9 +256,9 @@ static yannkins_line_t *new_entry(char *filename, char *basename, char *entryNam
 
 /**
  * Initialyze the lines for the table.
- * @param project the project's definition
- * @param yannkinsRep the directory where Yannkins is installed
- * @return a table of yannkins_line_t with NULL at the end, or NULL if there
+ * \param project the project's definition
+ * \param yannkinsRep the directory where Yannkins is installed
+ * \return a table of yannkins_line_t with NULL at the end, or NULL if there
  * are no elements.
  */
 static yannkins_line_t **init_lines(yk_project *project, char *yannkinsRep){
@@ -329,9 +329,9 @@ static yannkins_line_t **init_lines(yk_project *project, char *yannkinsRep){
 
 /**
  * Write the HTML report page of a project.
- * @param project the project definition
- * @param yannkinsRep the directory where Yannkins is installed
- * @return an error code. Can be ERR_OPEN_FILE if an error occured while opening the file with write flag.
+ * \param project the project definition
+ * \param yannkinsRep the directory where Yannkins is installed
+ * \return an error code. Can be ERR_OPEN_FILE if an error occured while opening the file with write flag.
  */
 static int write_yannkins_html(yk_project *project, char *yannkinsRep){
 
