@@ -18,16 +18,18 @@ REPOS_HOME="${YANNKINS_HOME}/repos"
 #SVN command
 SVN="svn"
 
+#Task execution program
+TACHE="tache"
 
 # crossing projects
 for p in ${PROJECTS_HOME}/*; do
     if [ $p != "${PROJECTS_HOME}/*" ]; then
 
-	#Reinit
-	PROJECT_NAME=""
+        #Reinit
+        PROJECT_NAME=""
         SVN_DEPOT=""
-	SVN_USER=""
-	SVN_PASSWD=""
+        SVN_USER=""
+        SVN_PASSWD=""
         GIT_DEPOT=""
 
         . $p
@@ -95,7 +97,7 @@ for p in ${PROJECTS_HOME}/*; do
             cd ${PROJECT_NAME}
         fi
         printf "%s\n" "${COMMAND}"
-        tache.sh "SVN_CHECKOUT_${PROJECT_NAME}" "${COMMAND}"
+        ${TACHE} "SVN_CHECKOUT_${PROJECT_NAME}" "${COMMAND}"
         cd ${YANNKINS_HOME}
 
         # Compiling project
@@ -103,7 +105,7 @@ for p in ${PROJECTS_HOME}/*; do
         COMP=$(echo -n ${COMPIL} | wc -c)
         if [ ${COMP} -gt 0 ]; then
             cd ${REPOS_HOME}/${PROJECT_NAME}
-            tache.sh COMPILATION_${PROJECT_NAME} "${COMPIL}"
+            ${TACHE} COMPILATION_${PROJECT_NAME} "${COMPIL}"
             cd -
         fi
 
@@ -112,7 +114,7 @@ for p in ${PROJECTS_HOME}/*; do
         TESTS=$(echo -n ${TESTS_UNI} | wc -c)
         if [ ${TESTS} -gt 0 ]; then
             cd ${REPOS_HOME}/${PROJECT_NAME}
-            tache.sh TESTS_${PROJECT_NAME} "${TESTS_UNI}"
+            ${TACHE} TESTS_${PROJECT_NAME} "${TESTS_UNI}"
             cd -
         fi
 
