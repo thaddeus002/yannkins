@@ -10,3 +10,4 @@ html.o: html.c html.h
 clean:
 	rm -f *.o *~
 
+.PHONY: clean

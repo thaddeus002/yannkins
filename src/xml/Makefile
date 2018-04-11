@@ -20,3 +20,4 @@ test: test_xml
 test_xml: test_xml.c xml.o ../csv/utils.o
 	$(CC) -Wall -o test_xml test_xml.c xml.o ../csv/utils.o
 
+.PHONY: clean test

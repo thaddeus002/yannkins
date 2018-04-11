@@ -44,3 +44,5 @@ clean:
 
 mrproper: clean
 	rm -f cree_page convert_log tache
+
+.PHONY: clean mrproper tests

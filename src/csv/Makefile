@@ -13,3 +13,5 @@ csv.o: csv.c csv.h
 
 clean:
 	rm -f *.o *~
+
+.PHONY: clean

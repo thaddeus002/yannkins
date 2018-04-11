@@ -33,3 +33,5 @@ clean:
 
 mrproper: clean
 	rm -f test_data convert_log
+
+.PHONY: clean mrproper test
