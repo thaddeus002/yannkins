@@ -21,6 +21,7 @@
 #include "csv/csv.h"
 #include "project.h"
 #include "log_analyse.h"
+#include "logger.h"
 
 
 /** \brief default working directory */
@@ -93,7 +94,7 @@ static char *concat_path(char *beg, char *end) {
     char *result = malloc(sizeof(char) *(strlen(beg)+strlen(end)+2));
 
     if(result==NULL){
-        fprintf(stderr, "Allocation error\n");
+        log_error("Allocation error");
         return NULL;
     }
 
@@ -199,7 +200,7 @@ static yannkins_line_t *new_entry(char *filename, char *basename, char *entryNam
     }
 
     if((log->nbCol < 2) || (log->nbLig < 1)){
-        fprintf(stderr, "Incorrect file: %s\n%d column(s), %d line(s)\n", basename, log->nbCol, log->nbLig);
+        log_warning("Incorrect file: %s\n%d column(s), %d line(s)", basename, log->nbCol, log->nbLig);
         csv_show_table(log, stderr);
         csv_destroy_table(log);
         return NULL;
@@ -454,9 +455,10 @@ int main(int argc, char **argv){
 
 
     yannkinsDir = getenv("YANNKINS_HOME");
+    init_log(INFO);
 
     if(yannkinsDir==NULL) {
-        fprintf(stderr, "Warning : YANNKINS_HOME environment variable not found, using \"%s\"\n", YANNKINS_DIR);
+        warning("YANNKINS_HOME environment variable not found, using \"%s\"", YANNKINS_DIR);
         // use default
         yannkinsDir = YANNKINS_DIR;
     }
@@ -477,7 +479,7 @@ int main(int argc, char **argv){
 
     rep = opendir(projects_dir);
     if(rep == NULL) {
-        fprintf(stderr, "Error: can't open directory %s\n", projects_dir);
+        log_error("Can't open directory %s", projects_dir);
         return 1;
     }
 
@@ -494,7 +496,8 @@ int main(int argc, char **argv){
 
             project=project_struct->project_name;
 
-            fprintf(stdout, "Treatment of project %s.\n", project_struct->project_name);
+            log_info(Treatment of project %s.", project_struct->project_name);
+
             write_yannkins_html(project_struct, yannkinsDir);
 
             project_file=malloc(sizeof(char)*(strlen(project)+6));
@@ -514,7 +517,7 @@ int main(int argc, char **argv){
     htmlFile=concat_path(yannkinsDir, HTML_FILE);
 
     if(htmlFile==NULL){
-        fprintf(stderr, "Can't allocate memory\n");
+        log_error("Can't allocate memory");
         return ERR_MEMORY;
     }
 
