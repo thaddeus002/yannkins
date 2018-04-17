@@ -21,6 +21,10 @@ static LogLevel_t initLevel = LOG_LEVEL_DEBUG;
 /** no logs if false */
 static bool initialized = false;
 
+/** For tests, write logs on console instead of a file */
+static bool console = false;
+
+
 /**
  * Open the logs stream.
  *
@@ -42,14 +46,30 @@ int init_log(const LogLevel_t minLevel) {
     }
 
     initLevel = minLevel;
+    console = false;
     initialized = true;
     return 0;
 }
+
+
+/**
+ * In test mode the logs are shown in the console.
+ *
+ * \return 0 in case of success or an error code
+ */
+int init_log_console() {
+    initLevel = LOG_LEVEL_DEBUG;
+    console = true;
+    initialized = true;
+    return 0;
+}
+
 
 /**
  * Close the log stream.
  */
 int close_log() {
+    console = false;
     initialized = false;
     return 0;
 }
@@ -75,10 +95,16 @@ static void log_message_va(const LogLevel_t level, const char *message_fmt, va_l
         return;
     }
 
-    FILE *fd = fopen(LOGFILE, "a+");
-    if(fd == NULL) {
-        fprintf(stderr, "Fail opening log file\n");
-        return;
+    FILE *out = stdout;
+    FILE *fd = NULL;
+
+    if(!console) {
+        fd = fopen(LOGFILE, "a+");
+        if(fd == NULL) {
+            // Fail opening log file - abort logging
+            return;
+        }
+        out = fd;
     }
 
     char *levelName;
@@ -99,11 +125,13 @@ static void log_message_va(const LogLevel_t level, const char *message_fmt, va_l
             levelName = "";
     }
 
-    fprintf(fd, "%s - Yannkins %s: ", write_date(), levelName);
-    vfprintf(fd, message_fmt, va);
-    fprintf(fd, "\n");
+    fprintf(out, "%s - Yannkins %s: ", write_date(), levelName);
+    vfprintf(out, message_fmt, va);
+    fprintf(out, "\n");
 
-    fclose(fd);
+    if(fd != NULL) {
+        fclose(fd);
+    }
 }
 
 /**

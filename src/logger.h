@@ -28,6 +28,13 @@ typedef enum {
 int init_log(const LogLevel_t minLevel);
 
 /**
+ * In test mode the logs are shown in the console.
+ *
+ * \return 0 in case of success or an error code
+ */
+int init_log_console();
+
+/**
  * Close the log stream.
  */
 int close_log();
