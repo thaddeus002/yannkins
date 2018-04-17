@@ -16,7 +16,7 @@
 #define LOGFILE "yannkins.log"
 
 /** minimun level for logs to be stored */
-static LogLevel_t initLevel = DEBUG;
+static LogLevel_t initLevel = LOG_LEVEL_DEBUG;
 
 /** no logs if false */
 static bool initialized = false;
@@ -83,16 +83,16 @@ static void log_message_va(const LogLevel_t level, const char *message_fmt, va_l
 
     char *levelName;
     switch(level) {
-        case ERROR:
+        case LOG_LEVEL_ERROR:
             levelName = "ERROR";
             break;
-        case WARNING:
+        case LOG_LEVEL_WARNING:
             levelName = "WARNING";
             break;
-        case INFO:
+        case LOG_LEVEL_INFO:
             levelName = "INFO";
             break;
-        case DEBUG:
+        case LOG_LEVEL_DEBUG:
             levelName = "DEBUG";
             break;
         default:
@@ -118,42 +118,46 @@ void log_message(const LogLevel_t level, const char *message_fmt, ...){
     va_end(ap);
 }
 
+
 /**
  * Write a debug log.
  */
-void log_debug(const char *message_fmt, ...){
+void log_debug(const char *message_fmt, ...) {
     va_list ap;
     va_start(ap, message_fmt);
-    log_message_va(DEBUG, message_fmt, ap);
+    log_message_va(LOG_LEVEL_DEBUG, message_fmt, ap);
     va_end(ap);
 }
+
 
 /**
  * Write a info log.
  */
-void log_info(const char *message_fmt, ...){
+void log_info(const char *message_fmt, ...) {
     va_list ap;
     va_start(ap, message_fmt);
-    log_message_va(INFO, message_fmt, ap);
+    log_message_va(LOG_LEVEL_INFO, message_fmt, ap);
     va_end(ap);
 }
+
 
 /**
  * Write a warning log.
  */
-void log_warning(const char *message_fmt, ...){
+void log_warning(const char *message_fmt, ...) {
     va_list ap;
     va_start(ap, message_fmt);
-    log_message_va(WARNING, message_fmt, ap);
+    log_message_va(LOG_LEVEL_WARNING, message_fmt, ap);
     va_end(ap);
 }
+
 
 /**
  * Write a error log.
  */
-void log_error(const char *message_fmt, ...){
+void log_error(const char *message_fmt, ...) {
     va_list ap;
     va_start(ap, message_fmt);
-    log_message_va(ERROR, message_fmt, ap);
+    log_message_va(LOG_LEVEL_ERROR, message_fmt, ap);
     va_end(ap);
 }

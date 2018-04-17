@@ -455,10 +455,10 @@ int main(int argc, char **argv){
 
 
     yannkinsDir = getenv("YANNKINS_HOME");
-    init_log(INFO);
+    init_log(LOG_LEVEL_INFO);
 
     if(yannkinsDir==NULL) {
-        warning("YANNKINS_HOME environment variable not found, using \"%s\"", YANNKINS_DIR);
+        log_warning("YANNKINS_HOME environment variable not found, using \"%s\"", YANNKINS_DIR);
         // use default
         yannkinsDir = YANNKINS_DIR;
     }
@@ -496,7 +496,7 @@ int main(int argc, char **argv){
 
             project=project_struct->project_name;
 
-            log_info(Treatment of project %s.", project_struct->project_name);
+            log_info("Treatment of project %s.", project_struct->project_name);
 
             write_yannkins_html(project_struct, yannkinsDir);
 

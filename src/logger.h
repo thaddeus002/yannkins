@@ -11,11 +11,11 @@
 
 /** the log level */
 typedef enum {
-    DEBUG,
-    INFO,
-    WARNING,
-    ERROR,
-    NONE
+    LOG_LEVEL_DEBUG,
+    LOG_LEVEL_INFO,
+    LOG_LEVEL_WARNING,
+    LOG_LEVEL_ERROR,
+    LOG_LEVEL_NONE
 } LogLevel_t;
 
 
@@ -60,3 +60,4 @@ void log_warning(const char *message_fmt, ...);
 void log_error(const char *message_fmt, ...);
 
 #endif
+
