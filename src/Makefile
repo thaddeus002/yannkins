@@ -2,7 +2,7 @@
 OBJS=cree_page.o project.o log_analyse.o csv/csv.o csv/utils.o xml/xml.o html/html.o logger.o
 CFLAGS=
 
-all:cree_page convert_log
+all: cree_page convert_log tache
 
 %.c: %.h
 

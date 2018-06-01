@@ -20,7 +20,7 @@ mrproper:
 
 install: all
 	install -d $(PREFIX)/bin
-	install -m 755 src/cree_page src/convert_log $(PREFIX)/bin/
+	install -m 755 src/cree_page src/convert_log src/tache $(PREFIX)/bin/
 	install -m 755 bin/*.sh $(PREFIX)/bin/
 	install -d $(YANNKINS_HOME)/www
 	install -m 644 www/*.html $(YANNKINS_HOME)/www/
