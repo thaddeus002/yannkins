@@ -10,7 +10,10 @@
 #endif
 
 all:
-	make -C src
+	make YANNKINS_HOME=$(YANNKINS_HOME) -C src
+	@printf "\nYannkins working directory is fixed to %s\n" "$(YANNKINS_DIR)"
+	@printf "Use the environment variable $YANNKINS_HOME to override this setting\n"
+	@printf "Then type \"make install\" to install yannkins\n\n"
 
 clean:
 	make -C src clean

@@ -2,6 +2,10 @@
 OBJS=cree_page.o project.o log_analyse.o csv/csv.o csv/utils.o xml/xml.o html/html.o logger.o
 CFLAGS=
 
+ifdef YANNKINS_HOME
+CFLAGS+=-DYANNKINS_HOME=\"$(YANNKINS_HOME)\"
+endif
+
 all: cree_page convert_log tache
 
 %.c: %.h
@@ -22,10 +26,10 @@ xml/xml.o:
 	gcc -c $(CFLAGS) $<
 
 cree_page: $(OBJS)
-	gcc -o cree_page $(OBJS)
+	gcc $(CFLAGS) -o cree_page $(OBJS)
 
 tache: tache.c
-	gcc -o tache tache.c
+	gcc $(CFLAGS) -o tache tache.c
 
 convert_log:
 	make -C data convert_log

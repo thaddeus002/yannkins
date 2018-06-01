@@ -4,7 +4,7 @@
 # Default Yannkins' working directory
 DEFAULT_DIR="/var/yannkins"
 
-if [ ${YANNKINS_HOME}_ == "_" ]; then
+if [ -z ${YANNKINS_HOME} ]; then
     printf "Warning : Environment variable YANNKINS_HOME not found. Using %s.\n" ${DEFAULT_DIR}
     export YANNKINS_HOME=${DEFAULT_DIR}
 fi
