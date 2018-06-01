@@ -1,10 +1,6 @@
 
-#ifndef PREFIX
-	PREFIX=/usr/local
-#endif
-
 OBJS=cree_page.o project.o log_analyse.o csv/csv.o csv/utils.o xml/xml.o html/html.o logger.o
-CFLAGS="-I$(PREFIX)/include"
+CFLAGS=
 
 all:cree_page convert_log
 
@@ -40,7 +36,8 @@ tests:
 	make -C data test
 
 clean:
-	rm -f $(OBJS) cree_page.o data/convert_log.o
+	rm -f $(OBJS)
+	make -C data clean
 
 mrproper: clean
 	rm -f cree_page convert_log tache

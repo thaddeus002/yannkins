@@ -29,9 +29,9 @@ convert_log: convert_svn_log_from_xml_to_csv.c $(OBJS)
 	$(CC) -Wall -o convert_log convert_svn_log_from_xml_to_csv.c $(OBJS)
 
 clean:
-	rm -f *.o *~
+	rm -f *.o *~ test_data
 
 mrproper: clean
-	rm -f test_data convert_log
+	rm -f convert_log
 
 .PHONY: clean mrproper test

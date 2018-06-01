@@ -2,3 +2,8 @@
 doc
 poubelle
 output*
+bin/tache
+convert_log
+cree_page
+test_logger
+*.log
