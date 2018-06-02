@@ -9,6 +9,8 @@ ifndef YANNKINS_HOME
 	YANNKINS_HOME=/var/yannkins
 endif
 
+VERSION=$(shell cat VERSION)
+
 all: src/cree_page src/convert_log src/tache
 
 src/cree_page src/convert_log src/tache:
@@ -29,11 +31,12 @@ install: src/cree_page src/convert_log src/tache
 	install -m 755 bin/*.sh $(PREFIX)/bin/
 	install -d $(YANNKINS_HOME)/www
 	install -m 644 www/*.html $(YANNKINS_HOME)/www/
+	sed -i -e 's/%VERSION%/$(VERSION)/' $(YANNKINS_HOME)/www/about.html
 	install -d $(YANNKINS_HOME)/www/icons $(YANNKINS_HOME)/www/style
 	install -m 644 www/icons/* $(YANNKINS_HOME)/www/icons/
 	install -m 644 www/style/* $(YANNKINS_HOME)/www/style
 	install -d $(YANNKINS_HOME)/log
-	ln -s ../log $(YANNKINS_HOME)/www
+	ln -s ../log $(YANNKINS_HOME)/www || true
 	@printf "\nInstallation of Yannkins completed\n"
 	@printf "Yannkins working dir is %s\n\n" "$(YANNKINS_HOME)"
 
