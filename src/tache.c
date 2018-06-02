@@ -1,12 +1,14 @@
 /**
  * \file tache.c
- * \brief This script is a task to be executed by yannkins.
+ * \brief Execute a task and log the output and the result in
+ * Yannkins' format.
  *
- * You need put in parameters the name of the task and the command
+ * You need put in parameters the name of the task and the command.
  * One line will be added in the log file ${LOGDIR}/${TASK} :
  *     ${date};FAIL (in case of failure)
  *     ${date};OK   (in case of success)
- * The file ${LOGDIR}/${TASK}_console will content the last console output
+ * The file ${LOGDIR}/${TASK}_console will content the last console
+ * output.
  */
 
 #define IC "Yannkins"
@@ -126,4 +128,5 @@ int main(int argc, char **argv) {
     fprintf(flog, "%s;%s\n", printDate(date), stringResult);
 
     fclose(flog);
+    return 0;
 }
