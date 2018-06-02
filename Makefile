@@ -32,6 +32,8 @@ install: src/cree_page src/convert_log src/tache
 	install -d $(YANNKINS_HOME)/www/icons $(YANNKINS_HOME)/www/style
 	install -m 644 www/icons/* $(YANNKINS_HOME)/www/icons/
 	install -m 644 www/style/* $(YANNKINS_HOME)/www/style
+	install -d $(YANNKINS_HOME)/log
+	ln -s ../log $(YANNKINS_HOME)/www
 	@printf "\nInstallation of Yannkins completed\n"
 	@printf "Yannkins working dir is %s\n\n" "$(YANNKINS_HOME)"
 
