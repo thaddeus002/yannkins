@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "csv/csv.h"
+#include "logger.h"
 #include "log_analyse.h"
 
 
@@ -130,7 +131,7 @@ csv_table_t *nb_by_month(csv_table_t *table, char *date_header) {
         err = csv_find_value(value, table, date_header, i);
 
         if(err) {
-            fprintf(stderr, "An error occured line %d: %d\n", i, err);
+            log_error("An error occured line %d: %d", i, err);
             continue;
         }
 
@@ -203,7 +204,7 @@ static char **get_authors(csv_table_t *table, int *nbAuthors, char *author_heade
     }
 
     if(col < 0) {
-        fprintf(stderr, "Error : column \"%s\" not found\n", author_header);
+        log_error("column \"%s\" not found", author_header);
         return NULL;
     }
 
@@ -337,14 +338,14 @@ csv_table_t *nb_by_month_and_by_authors(csv_table_t *table, char *date_header, c
         err = csv_find_value(value, table, date_header, i);
 
         if(err) {
-            fprintf(stderr, "An error occured line %d: %d\n", i, err);
+            log_error("An error occured line %d: %d", i, err);
             continue;
         }
 
         err = csv_find_value(author, table, author_header, i);
 
         if(err) {
-            fprintf(stderr, "An error occured line %d: %d\n", i, err);
+            log_error("An error occured line %d: %d", i, err);
             continue;
         }
 

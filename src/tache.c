@@ -25,7 +25,7 @@
 #include <stdlib.h> //system()
 #include <unistd.h>
 #include <errno.h>
-
+#include "logger.h"
 
 void usage(char *prog) {
     fprintf(stderr, "Execute a %s task\n", IC);
@@ -33,21 +33,6 @@ void usage(char *prog) {
     exit(1);
 }
 
-char stringDate[50];
-
-/**
- * Format a timestamp in a readable format (%d/%m/%Y %H:%M).
- * \date a timestamp
- * \return a char string representing the date. This is a pointer to a
- *         statically allocated memory zone : don't free it.
- */
-char *printDate(time_t date) {
-    struct tm *sdate = localtime(&date);
-    // %d/%m/%Y %H:%M
-    sprintf(stringDate, "%02d/%02d/%04d %02d:%02d", sdate->tm_mday, sdate->tm_mon+1, sdate->tm_year+1900,
-            sdate->tm_hour, sdate->tm_min);
-    return stringDate;
-}
 
 int main(int argc, char **argv) {
 
@@ -71,25 +56,24 @@ int main(int argc, char **argv) {
     commande = argv[2];
     date = time(NULL);
 
+    init_log(LOG_LEVEL_INFO);
+
     err = mkdir(LOGDIR, 0750);
     if(err == -1) {
 
         if(errno != EEXIST) {
-            fprintf(stderr, "Could not create the directory %s\n", LOGDIR);
-            fprintf(stderr, "%s : task %s not completed\n", printDate(date), tache);
+            log_error("Task %s could not create the directory %s. Exiting", tache, LOGDIR);
             exit(errno);
         }
 
         err = stat(LOGDIR, &buf);
         if(err) {
-            fprintf(stderr, "Stat failed for file %s\n", LOGDIR);
-            fprintf(stderr, "%s : task %s not completed\n", printDate(date), tache);
+            log_error("Task %s : Stat failed for file %s. Exiting", tache, LOGDIR);
             exit(err);
         }
 
         if(!S_ISDIR(buf.st_mode)) {
-            fprintf(stderr, "Error : file %s exist but is not a directory\n", LOGDIR);
-            fprintf(stderr, "%s : task %s not completed\n", printDate(date), tache);
+            log_error("Task %s : file %s exist but is not a directory. Exiting", tache, LOGDIR);
             exit(err);
         }
     }
@@ -97,8 +81,7 @@ int main(int argc, char **argv) {
     sprintf(ficlog, "%s/%s", LOGDIR, tache);
     flog = fopen(ficlog, "a");
     if(flog == NULL) {
-        fprintf(stderr, "Could not create or modify the file %s\n", ficlog);
-        fprintf(stderr, "%s : task %s not completed\n", printDate(date), tache);
+        log_error("Task %s could not create or modify the file %s. Exiting", tache, ficlog);
         exit(1);
     }
 
@@ -110,8 +93,7 @@ int main(int argc, char **argv) {
     sprintf(ficconsole, "%s/%s_console", LOGDIR, tache);
     fconsole = fopen(ficconsole, "w");
     if(fconsole == NULL) {
-        fprintf(stderr, "Could not create or modify the file %s\n", ficconsole);
-        fprintf(stderr, "%s : task %s not completed\n", printDate(date), tache);
+        log_error("Task %s could not create or modify the file %s. Exiting", tache, ficconsole);
         exit(1);
     }
     fclose(fconsole);
@@ -128,5 +110,6 @@ int main(int argc, char **argv) {
     fprintf(flog, "%s;%s\n", printDate(date), stringResult);
 
     fclose(flog);
+    close_log();
     return 0;
 }

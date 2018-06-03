@@ -4,6 +4,7 @@
  */
 
 #include "project.h"
+#include "logger.h"
 #include <stdio.h>
 #include <stdlib.h> //malloc
 #include <string.h>
@@ -20,7 +21,7 @@ yk_project *yk_read_project_file(char *filename){
     fd = fopen(filename, "r");
 
     if (fd == NULL) {
-        fprintf(stderr, "Can not open file %s\n", filename);
+        log_warning("Can not open file %s", filename);
     } else {
 
         project = malloc(sizeof(yk_project));

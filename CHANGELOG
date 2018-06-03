@@ -1,0 +1,4 @@
+Version 0.2
+Replace shell script "tache.sh" by a C program
+Replace some console output by a logfile
+Add a CHANGELOG file
