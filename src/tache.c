@@ -33,6 +33,21 @@ void usage(char *prog) {
     exit(1);
 }
 
+char stringDate[50];
+
+/**
+ * Format a timestamp in a readable format (%d/%m/%Y %H:%M).
+ * \date a timestamp
+ * \return a char string representing the date. This is a pointer to a
+ *         statically allocated memory zone : don't free it.
+ */
+char *printDate(time_t date) {
+    struct tm *sdate = localtime(&date);
+    // %d/%m/%Y %H:%M
+    sprintf(stringDate, "%02d/%02d/%04d %02d:%02d", sdate->tm_mday, sdate->tm_mon+1, sdate->tm_year+1900,
+            sdate->tm_hour, sdate->tm_min);
+    return stringDate;
+}
 
 int main(int argc, char **argv) {
 

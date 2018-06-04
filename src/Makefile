@@ -29,7 +29,7 @@ cree_page: $(OBJS)
 	gcc $(CFLAGS) -o cree_page $(OBJS)
 
 tache: tache.c
-	gcc $(CFLAGS) -o tache tache.c
+	gcc $(CFLAGS) -o tache tache.c logger.o
 
 convert_log:
 	make -C data convert_log
