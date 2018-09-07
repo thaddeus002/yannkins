@@ -43,7 +43,7 @@ typedef struct {
  * @param delimiter the split character
  * @return NULL if the file can not be read
  */
- csv_table_t *csv_read_file(char *filename, char delimiter);
+csv_table_t *csv_read_file(char *filename, char delimiter);
 
 
 /**

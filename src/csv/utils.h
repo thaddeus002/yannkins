@@ -18,16 +18,16 @@ char *suppress_quotes_new_string(char *string);
 
 /**
  * @brief Delete the doble quotes of a string.
- * @param chaine the string to modify
+ * @param string the string to modify
  */
-void suppress_quotes(char *chaine);
+void suppress_quotes(char *string);
 
 
 /**
  * @brief Convert à String to uppercase.
- * @param chaine the string to modify
+ * @param string the string to modify
  */
-void to_upper_case(char *chaine);
+void to_upper_case(char *string);
 
 
 

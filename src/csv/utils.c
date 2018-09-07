@@ -27,27 +27,27 @@ char *suppress_quotes_new_string(char *string){
     return result;
 }
 
-void suppress_quotes(char *chaine){
+void suppress_quotes(char *string){
     int l; /* length of the string */
     int i; /* counter */
 
-    l=strlen(chaine);
+    l=strlen(string);
     if(l>=2){
-        if((chaine[0]=='"') && (chaine[l-1]=='"')){
+        if((string[0]=='"') && (string[l-1]=='"')){
             for(i=0; i<l-2; i++){
-                chaine[i]=chaine[i+1];
+                string[i]=string[i+1];
             }
-            chaine[l-2]='\0';
+            string[l-2]='\0';
         }
     }
 }
 
 
-void to_upper_case(char *chaine){
+void to_upper_case(char *string){
     int i; /* counter */
 
-    for(i=0;i<strlen(chaine);i++)
-        if((chaine[i]>='a') && (chaine[i]<='z'))
-            chaine[i]=chaine[i]+'A'-'a';
+    for(i=0;i<strlen(string);i++)
+        if((string[i]>='a') && (string[i]<='z'))
+            string[i]=string[i]+'A'-'a';
 }
 
