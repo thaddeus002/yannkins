@@ -25,15 +25,16 @@
 #include <stdlib.h> //system()
 #include <unistd.h>
 #include <errno.h>
+#include <string.h>
 #include "logger.h"
 
-void usage(char *prog) {
+static void usage(char *prog) {
     fprintf(stderr, "Execute a %s task\n", IC);
     fprintf(stderr, "Usage : %s <TASK_NAME> <COMMAND>\n", prog);
     exit(1);
 }
 
-char stringDate[50];
+static char stringDate[50];
 
 /**
  * Format a timestamp in a readable format (%d/%m/%Y %H:%M).
@@ -41,7 +42,7 @@ char stringDate[50];
  * \return a char string representing the date. This is a pointer to a
  *         statically allocated memory zone : don't free it.
  */
-char *printDate(time_t date) {
+static char *printDate(time_t date) {
     struct tm *sdate = localtime(&date);
     // %d/%m/%Y %H:%M
     sprintf(stringDate, "%02d/%02d/%04d %02d:%02d", sdate->tm_mday, sdate->tm_mon+1, sdate->tm_year+1900,
@@ -49,18 +50,100 @@ char *printDate(time_t date) {
     return stringDate;
 }
 
+/**
+ * Save the task's result in the appropriate file.
+ *
+ * \param date the execution date
+ * \param resultat task's return value (0==success)
+ * \param tache the task's name
+ * \return 0 if the result was saved
+ */
+static int save_result(time_t date, int resultat, const char *tache){
+
+    char *stringResult;
+    char *ficlog;
+    FILE *flog = NULL;
+
+    if(!resultat) {
+        stringResult = "OK";
+    } else {
+        stringResult = "FAIL";
+    }
+
+    ficlog = malloc(sizeof(char) * (strlen(LOGDIR) + strlen(tache) + 2));
+    if(ficlog == NULL) {
+        log_error("Task %s could not allocate memory. Task's result won't be saved.", tache);
+        return 1;
+    }
+
+    sprintf(ficlog, "%s/%s", LOGDIR, tache);
+    flog = fopen(ficlog, "a");
+    free(ficlog);
+    if(flog == NULL) {
+        log_error("Task %s could not create or modify the file %s. Task's result won't be saved.", tache, ficlog);
+        return 2;
+    }
+
+    fseek(flog, 0, SEEK_END);
+    if(!ftell(flog)) {
+        fprintf(flog, "date;result\n");
+    }
+
+    fprintf(flog, "%s;%s\n", printDate(date), stringResult);
+    fclose(flog);
+    return 0;
+}
+
+
+/**
+ * Run the command, putting the standard output in a "console filelog".
+ * \param tache task's name
+ * \param commande the command
+ * \param resultat to store the return value of the command
+ * \return 0 is the run was done
+ */
+static int run_task(const char *tache, const char *commande, int *resultat) {
+
+    char *command;
+    int err;
+    char *ficconsole;
+    FILE *fconsole = NULL;
+
+    ficconsole = malloc(sizeof(char) * (strlen(LOGDIR) + strlen(tache) + 10));
+    if(ficconsole == NULL) {
+        log_error("Task %s could not allocate memory. Task aborted.", tache);
+        return 1;
+    }
+
+    sprintf(ficconsole, "%s/%s_console", LOGDIR, tache);
+    fconsole = fopen(ficconsole, "w");
+    if(fconsole == NULL) {
+        log_error("Task %s could not create or modify the file %s. Task aborted", tache, ficconsole);
+        return 2;
+    }
+    fclose(fconsole);
+
+    command = malloc(sizeof(char) * (strlen(commande) + strlen(ficconsole) + 10));
+    if(command == NULL) {
+        log_error("Task %s could not allocate memory. Task aborted.", tache);
+        return 1;
+    }
+
+    sprintf(command, "%s > %s 2>&1", commande, ficconsole);
+    free(ficconsole);
+    *resultat = system(command);
+    free(command);
+    return 0;
+}
+
+
 int main(int argc, char **argv) {
 
-    char *tache, *commande;
-    char command[200];
+    char *tache;
+    char *commande;
     time_t date;
     int resultat = 0;
-    char *stringResult;
     int err = 0;
-    char ficlog[200];
-    FILE *flog;
-    char ficconsole[200];
-    FILE *fconsole;
     struct stat buf;
 
     if(argc != 3) {
@@ -78,53 +161,28 @@ int main(int argc, char **argv) {
 
         if(errno != EEXIST) {
             log_error("Task %s could not create the directory %s. Exiting", tache, LOGDIR);
-            exit(errno);
+            err = errno;
+            goto complete;
         }
 
         err = stat(LOGDIR, &buf);
         if(err) {
             log_error("Task %s : Stat failed for file %s. Exiting", tache, LOGDIR);
-            exit(err);
+            goto complete;
         }
 
         if(!S_ISDIR(buf.st_mode)) {
             log_error("Task %s : file %s exist but is not a directory. Exiting", tache, LOGDIR);
-            exit(err);
+            goto complete;
         }
     }
 
-    sprintf(ficlog, "%s/%s", LOGDIR, tache);
-    flog = fopen(ficlog, "a");
-    if(flog == NULL) {
-        log_error("Task %s could not create or modify the file %s. Exiting", tache, ficlog);
-        exit(1);
-    }
+    err = run_task(tache, commande, &resultat);
+    if(err) goto complete;
 
-    fseek(flog, 0, SEEK_END);
-    if(!ftell(flog)) {
-        fprintf(flog, "date;result\n");
-    }
+    err = save_result(date, resultat, tache);
 
-    sprintf(ficconsole, "%s/%s_console", LOGDIR, tache);
-    fconsole = fopen(ficconsole, "w");
-    if(fconsole == NULL) {
-        log_error("Task %s could not create or modify the file %s. Exiting", tache, ficconsole);
-        exit(1);
-    }
-    fclose(fconsole);
-
-    sprintf(command, "%s > %s 2>&1", commande, ficconsole);
-    resultat = system(command);
-
-    if(!resultat) {
-        stringResult = "OK";
-    } else {
-        stringResult = "FAIL";
-    }
-
-    fprintf(flog, "%s;%s\n", printDate(date), stringResult);
-
-    fclose(flog);
+  complete:
     close_log();
-    return 0;
+    return err;
 }
