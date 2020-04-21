@@ -21,9 +21,11 @@
 #include <time.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <stdio.h>
 #include <stdlib.h> //system()
 #include <unistd.h>
+#include <fcntl.h>
 #include <errno.h>
 #include <string.h>
 #include "logger.h"
@@ -96,18 +98,45 @@ static int save_result(time_t date, int resultat, const char *tache){
 
 
 /**
- * Run the command, putting the standard output in a "console filelog".
+ * Run the "system" function to execute a command redirecting output in
+ * a file.
+ *
+ * \param logfile the file to use for the command's output
+ * \param command the command to execute in a shell
+ * \return the exit status of the command
+ */
+static int exec_command(char *logfile, const char *command) {
+
+    remove(logfile);
+
+    close(1);
+    if(open(logfile, O_WRONLY|O_CREAT|O_APPEND, S_IRUSR|S_IWUSR|S_IRGRP|S_IROTH) == -1) {
+        log_error("fail to write output on %s", logfile);
+    } else {
+        close(2);
+        dup2(1, 2);
+    }
+
+    return system(command)/256;
+}
+
+
+/**
+ * Run the "system" function to execute a command redirecting output in
+ * a file. The run is done in a forked process to not lose the standard
+ * outputs.
+ *
  * \param tache task's name
- * \param commande the command
+ * \param commande the command to execute in a shell
  * \param resultat to store the return value of the command
  * \return 0 is the run was done
  */
 static int run_task(const char *tache, const char *commande, int *resultat) {
 
-    char *command;
     int err;
     char *ficconsole;
     FILE *fconsole = NULL;
+    pid_t pid;
 
     ficconsole = malloc(sizeof(char) * (strlen(LOGDIR) + strlen(tache) + 10));
     if(ficconsole == NULL) {
@@ -123,16 +152,29 @@ static int run_task(const char *tache, const char *commande, int *resultat) {
     }
     fclose(fconsole);
 
-    command = malloc(sizeof(char) * (strlen(commande) + strlen(ficconsole) + 10));
-    if(command == NULL) {
-        log_error("Task %s could not allocate memory. Task aborted.", tache);
+    pid = fork();
+    if(pid == -1) {
+        log_error("Fork failure : command \"%s\" not runned", commande);
         return 1;
     }
 
-    sprintf(command, "%s > %s 2>&1", commande, ficconsole);
+    if(pid == 0) {
+        int err = exec_command(ficconsole, commande);
+        free(ficconsole);
+        log_debug("forked process exits with status %d", err);
+        exit(err);
+    } else {
+        int wstatus;
+        waitpid(pid, &wstatus, 0);
+        if (!WIFEXITED(wstatus)) {
+            *resultat = 1;
+        } else {
+            *resultat = WEXITSTATUS(wstatus);
+            log_debug("parent process get status %d", *resultat);
+        }
+    }
+
     free(ficconsole);
-    *resultat = system(command);
-    free(command);
     return 0;
 }
 
@@ -178,7 +220,10 @@ int main(int argc, char **argv) {
     }
 
     err = run_task(tache, commande, &resultat);
-    if(err) goto complete;
+    if(err) {
+        log_error("task %s was not executed", tache);
+        goto complete;
+    }
 
     err = save_result(date, resultat, tache);
 
