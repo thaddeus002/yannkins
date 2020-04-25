@@ -12,11 +12,16 @@
  */
 
 #define IC "Yannkins"
+
+/*
+ * This will define where the output files will be created.
+ * Define the constant YANNKINS_HOME at build time to use another
+ * directory.
+ */
 #ifndef YANNKINS_HOME
-#define YANNKINS_HOME "."
+#define YANNKINS_HOME "/var/yannkins"
 #endif
-#define DIR YANNKINS_HOME
-#define LOGDIR DIR"/log"
+#define LOGDIR YANNKINS_HOME"/log"
 
 #include <time.h>
 #include <sys/stat.h>
@@ -128,23 +133,24 @@ static int exec_command(char *logfile, const char *command) {
  *
  * \param tache task's name
  * \param commande the command to execute in a shell
+ * \param logdir directory of the ouptut files
  * \param resultat to store the return value of the command
  * \return 0 is the run was done
  */
-static int run_task(const char *tache, const char *commande, int *resultat) {
+static int run_task(const char *tache, const char *commande, char *logdir, int *resultat) {
 
     int err;
     char *ficconsole;
     FILE *fconsole = NULL;
     pid_t pid;
 
-    ficconsole = malloc(sizeof(char) * (strlen(LOGDIR) + strlen(tache) + 10));
+    ficconsole = malloc(sizeof(char) * (strlen(logdir) + strlen(tache) + 10));
     if(ficconsole == NULL) {
         log_error("Task %s could not allocate memory. Task aborted.", tache);
         return 1;
     }
 
-    sprintf(ficconsole, "%s/%s_console", LOGDIR, tache);
+    sprintf(ficconsole, "%s/%s_console", logdir, tache);
     fconsole = fopen(ficconsole, "w");
     if(fconsole == NULL) {
         log_error("Task %s could not create or modify the file %s. Task aborted", tache, ficconsole);
@@ -179,6 +185,37 @@ static int run_task(const char *tache, const char *commande, int *resultat) {
 }
 
 
+/**
+ * \return 0 in case of success
+ */
+static int create_directory(char *dirname) {
+
+    struct stat buf;
+    int err = mkdir(dirname, 0750);
+
+    if(err == -1) {
+
+        if(errno != EEXIST) {
+            log_error("Could not create the directory %s. Exiting", dirname);
+            return err;
+        }
+
+        err = stat(dirname, &buf);
+        if(err) {
+            log_error("Stat failed for file %s. Exiting", dirname);
+            return err;
+        }
+
+        if(!S_ISDIR(buf.st_mode)) {
+            log_error("File %s exist but is not a directory. Exiting", dirname);
+            err = -1;
+        }
+    }
+
+    return err;
+}
+
+
 int main(int argc, char **argv) {
 
     char *tache;
@@ -186,7 +223,6 @@ int main(int argc, char **argv) {
     time_t date;
     int resultat = 0;
     int err = 0;
-    struct stat buf;
 
     if(argc != 3) {
         usage(argv[0]);
@@ -198,36 +234,18 @@ int main(int argc, char **argv) {
 
     init_log(LOG_LEVEL_INFO);
 
-    err = mkdir(LOGDIR, 0750);
-    if(err == -1) {
+    err = create_directory(LOGDIR);
 
-        if(errno != EEXIST) {
-            log_error("Task %s could not create the directory %s. Exiting", tache, LOGDIR);
-            err = errno;
-            goto complete;
-        }
-
-        err = stat(LOGDIR, &buf);
-        if(err) {
-            log_error("Task %s : Stat failed for file %s. Exiting", tache, LOGDIR);
-            goto complete;
-        }
-
-        if(!S_ISDIR(buf.st_mode)) {
-            log_error("Task %s : file %s exist but is not a directory. Exiting", tache, LOGDIR);
-            goto complete;
-        }
+    if(!err) {
+        err = run_task(tache, commande, LOGDIR, &resultat);
     }
 
-    err = run_task(tache, commande, &resultat);
-    if(err) {
+    if(!err) {
+        err = save_result(date, resultat, tache);
+    } else {
         log_error("task %s was not executed", tache);
-        goto complete;
     }
 
-    err = save_result(date, resultat, tache);
-
-  complete:
     close_log();
     return err;
 }
