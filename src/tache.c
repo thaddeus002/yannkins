@@ -13,15 +13,15 @@
 
 #define IC "Yannkins"
 
-/*
- * This will define where the output files will be created.
- * Define the constant YANNKINS_HOME at build time to use another
- * directory.
+
+/**
+ * \brief default working directory can be overriden by environment variable
+ * "YANNKINS_HOME"
  */
-#ifndef YANNKINS_HOME
-#define YANNKINS_HOME "/var/yannkins"
-#endif
-#define LOGDIR YANNKINS_HOME"/log"
+#define YANNKINS_DIR "/var/yannkins"
+
+/** \brief where are created output files */
+#define LOG_DIR "log"
 
 #include <time.h>
 #include <sys/stat.h>
@@ -63,9 +63,10 @@ static char *printDate(time_t date) {
  * \param date the execution date
  * \param resultat task's return value (0==success)
  * \param tache the task's name
+ * \param logdir directory where the logs are saved
  * \return 0 if the result was saved
  */
-static int save_result(time_t date, int resultat, const char *tache){
+static int save_result(time_t date, int resultat, const char *tache, char *logdir){
 
     char *stringResult;
     char *ficlog;
@@ -77,13 +78,13 @@ static int save_result(time_t date, int resultat, const char *tache){
         stringResult = "FAIL";
     }
 
-    ficlog = malloc(sizeof(char) * (strlen(LOGDIR) + strlen(tache) + 2));
+    ficlog = malloc(sizeof(char) * (strlen(logdir) + strlen(tache) + 2));
     if(ficlog == NULL) {
         log_error("Task %s could not allocate memory. Task's result won't be saved.", tache);
         return 1;
     }
 
-    sprintf(ficlog, "%s/%s", LOGDIR, tache);
+    sprintf(ficlog, "%s/%s", logdir, tache);
     flog = fopen(ficlog, "a");
     free(ficlog);
     if(flog == NULL) {
@@ -216,6 +217,26 @@ static int create_directory(char *dirname) {
 }
 
 
+static char *get_logdir() {
+
+    char *logdir;
+    char *yannkinsDir = getenv("YANNKINS_HOME");
+
+    if(yannkinsDir == NULL) {
+        // use default
+        yannkinsDir = YANNKINS_DIR;
+    }
+
+    logdir = malloc((strlen(yannkinsDir) + strlen(LOG_DIR) + 2) * sizeof(char));
+
+    if(logdir != NULL) {
+        sprintf(logdir, "%s/%s", yannkinsDir, LOG_DIR);
+    }
+
+    return logdir;
+}
+
+
 int main(int argc, char **argv) {
 
     char *tache;
@@ -223,6 +244,7 @@ int main(int argc, char **argv) {
     time_t date;
     int resultat = 0;
     int err = 0;
+    char *logdir;
 
     if(argc != 3) {
         usage(argv[0]);
@@ -234,16 +256,26 @@ int main(int argc, char **argv) {
 
     init_log(LOG_LEVEL_INFO);
 
-    err = create_directory(LOGDIR);
+    logdir = get_logdir();
 
-    if(!err) {
-        err = run_task(tache, commande, LOGDIR, &resultat);
+    if(logdir != NULL) {
+        err = create_directory(logdir);
+    } else {
+        err = 1;
     }
 
     if(!err) {
-        err = save_result(date, resultat, tache);
+        err = run_task(tache, commande, logdir, &resultat);
+    }
+
+    if(!err) {
+        err = save_result(date, resultat, tache, logdir);
     } else {
         log_error("task %s was not executed", tache);
+    }
+
+    if(logdir != NULL) {
+        free(logdir);
     }
 
     close_log();
